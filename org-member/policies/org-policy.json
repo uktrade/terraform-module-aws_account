@@ -1,0 +1,20 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "*",
+      "Resource": "*"
+    },
+    {
+      "Sid": "DisableMarketplace",
+      "Effect": "Deny",
+      "Action": [
+        "aws-marketplace:*"
+      ],
+      "Resource": [
+        "*"
+      ]
+    }
+  ]
+}

@@ -12,7 +12,7 @@ resource "aws_flow_log" "vpc_log" {
   provider = "aws.member"
   count = "${length(data.aws_vpcs.vpcs.ids)}"
   log_group_name = "${element(aws_cloudwatch_log_group.vpc_log.*.name, count.index)}"
-  iam_role_arn = "${aws_iam_role.vpc_log.id}"
+  iam_role_arn = "${aws_iam_role.vpc_log.arn}"
   vpc_id = "${element(data.aws_vpcs.vpcs.ids, count.index)}"
   traffic_type = "ALL"
 }

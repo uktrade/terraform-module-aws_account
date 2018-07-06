@@ -20,7 +20,7 @@ data "aws_region" "member" {
 }
 
 data "aws_region" "all_regions" {
-  provider = "aws.member"
+  provider = "aws.master"
 }
 
 data "aws_caller_identity" "master" {

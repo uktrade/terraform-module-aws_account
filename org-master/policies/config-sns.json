@@ -1,0 +1,7 @@
+{
+  "Statement": [{
+    "Effect": "Allow",
+    "Action": "sts:AssumeRole",
+    "Resource": "${config_role_arn}"
+  }]
+}
