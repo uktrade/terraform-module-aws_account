@@ -20,6 +20,31 @@ resource "aws_iam_role_policy_attachment" "config_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRole"
 }
 
+resource "aws_s3_bucket" "config_bucket" {
+  bucket = "aws-config-${data.aws_caller_identity.member.account_id}"
+  acl = "private"
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+}
+
+data "template_file" "config_s3_policy" {
+  template = "${file("${path.module}/policies/config-s3.json")}"
+  vars {
+    config_s3_arn = "${aws_s3_bucket.config_bucket.arn}"
+  }
+}
+
+resource "aws_iam_role_policy" "config_s3_policy" {
+  name = "config_s3_policy"
+  role = "${aws_iam_role.config_role.id}"
+  policy = "${data.template_file.config_s3_policy.rendered}"
+}
+
 resource "aws_config_configuration_recorder_status" "config" {
   provider = "aws.member"
   name = "${aws_config_configuration_recorder.config.name}"
@@ -37,7 +62,7 @@ resource "aws_config_aggregate_authorization" "member" {
 resource "aws_config_delivery_channel" "member" {
   provider = "aws.member"
   name = "aws-config-${data.aws_caller_identity.member.account_id}"
-  s3_bucket_name = "aws-config-${data.aws_caller_identity.member.account_id}"
+  s3_bucket_name = "${aws_s3_bucket.config_bucket.id}"
   sns_topic_arn = ""
   snapshot_delivery_properties {
     delivery_frequency = "One_Hour"

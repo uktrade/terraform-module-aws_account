@@ -43,6 +43,31 @@ resource "aws_iam_role_policy_attachment" "master_config_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRole"
 }
 
+resource "aws_s3_bucket" "master_config_bucket" {
+  bucket = "aws-config-${data.aws_caller_identity.master.account_id}"
+  acl = "private"
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+}
+
+data "template_file" "config_s3_policy" {
+  template = "${file("${path.module}/policies/config-s3.json")}"
+  vars {
+    config_s3_arn = "${aws_s3_bucket.master_config_bucket.arn}"
+  }
+}
+
+resource "aws_iam_role_policy" "config_s3_policy" {
+  name = "config_s3_policy"
+  role = "${aws_iam_role.master_config_role.id}"
+  policy = "${data.template_file.config_s3_policy.rendered}"
+}
+
 resource "aws_config_configuration_recorder_status" "master_config" {
   provider = "aws.master"
   name = "${aws_config_configuration_recorder.master_config.name}"
@@ -52,7 +77,7 @@ resource "aws_config_configuration_recorder_status" "master_config" {
 resource "aws_config_delivery_channel" "master" {
   provider = "aws.master"
   name = "aws-config-${data.aws_caller_identity.master.account_id}"
-  s3_bucket_name = "aws-config-${data.aws_caller_identity.master.account_id}"
+  s3_bucket_name = "${aws_s3_bucket.master_config_bucket.id}"
   sns_topic_arn = "${aws_sns_topic.config_sns.arn}"
   snapshot_delivery_properties {
     delivery_frequency = "One_Hour"
