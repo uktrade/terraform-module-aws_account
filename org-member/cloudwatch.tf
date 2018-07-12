@@ -12,7 +12,7 @@ resource "aws_cloudwatch_event_rule" "member" {
 
 resource "aws_cloudwatch_event_target" "member" {
   provider = "aws.member"
-  arn = "${aws_cloudwatch_event_rule.member.arn}"
+  arn = "${var.org["cloudwatch_eventbus_arn"]}"
   rule = "${aws_cloudwatch_event_rule.member.name}"
   target_id = "org-member-${data.aws_caller_identity.member.account_id}"
 }

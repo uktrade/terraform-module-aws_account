@@ -5,7 +5,10 @@ variable "org" {
 
 variable "member" {
   type = "map"
-  default = {}
+  default = {
+    "aws_shared_credentials_file" = "~/.aws/credentials"
+    "aws_profile" = "default"
+  }
 }
 
 provider "aws" {
@@ -13,7 +16,37 @@ provider "aws" {
 }
 
 provider "aws" {
+  alias = "master.config"
+  shared_credentials_file = "${var.org["aws_shared_credentials_file"]}"
+  profile = "${var.org["aws_profile"]}"
+  region = "${var.org["aws_config_region"]}"
+}
+
+data "aws_caller_identity" "master_config" {
+  provider = "aws.master.config"
+}
+
+data "aws_region" "master_config" {
+  provider = "aws.master.config"
+}
+
+provider "aws" {
   alias = "member"
+}
+
+provider "aws" {
+  alias = "member.config"
+  shared_credentials_file = "${var.member["aws_shared_credentials_file"]}"
+  profile = "${var.member["aws_profile"]}"
+  region = "${var.org["aws_config_region"]}"
+}
+
+data "aws_caller_identity" "member_config" {
+  provider = "aws.member.config"
+}
+
+data "aws_region" "member_config" {
+  provider = "aws.member.config"
 }
 
 data "aws_region" "master" {
