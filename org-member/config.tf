@@ -82,21 +82,26 @@ resource "aws_config_delivery_channel" "member" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "config_sns_policy" {
+resource "aws_iam_role" "master_config_sts" {
   provider = "aws.master"
-  role = "${var.org["config_role_name"]}"
-  policy_arn = "${aws_iam_policy.config_sns_policy.arn}"
+  name = "${var.org["config_role_name"]}"
+  assume_role_policy = "${data.aws_iam_policy_document.master_config_sts.json}"
 }
 
-resource "aws_iam_policy" "config_sns_policy" {
+data "aws_iam_policy_document" "master_config_sts" {
   provider = "aws.master"
-  name = "aws-config-${data.aws_caller_identity.member.account_id}"
-  policy = "${data.template_file.config_sns_role_policy.rendered}"
-}
-
-data "template_file" "config_sns_role_policy" {
-  template = "${file("${path.module}/policies/config-sns.json")}"
-  vars {
-    config_role_arn = "${aws_iam_role.config_role.arn}"
+  source_json = "${data.aws_iam_role.master_config_role.assume_role_policy}"
+  statement {
+    sid = "OrgAccoount${data.aws_caller_identity.member.account_id}"
+    actions = ["sts:AssumeRole"]
+    principals {
+      type = "AWS"
+      identifiers = ["${aws_iam_role.config_role.arn}"]
+    }
   }
+}
+
+data "aws_iam_role" "master_config_role" {
+  provider = "aws.master"
+  name = "${var.org["config_role_name"]}"
 }

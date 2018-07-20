@@ -11,7 +11,25 @@ resource "aws_config_configuration_aggregator" "master" {
 resource "aws_iam_role" "master_config_role" {
   provider = "aws.master"
   name = "config-role"
-  assume_role_policy = "${file("${path.module}/policies/config-sts.json")}"
+  # assume_role_policy = "${file("${path.module}/policies/config-sts.json")}"
+  assume_role_policy = "${data.aws_iam_policy_document.master_config_sts.json}"
+}
+
+data "aws_iam_policy_document" "master_config_sts" {
+  source_json = "${data.aws_iam_role.master_config_role.assume_role_policy}"
+  statement {
+    sid = "DefaultPolicyForAWSConfig"
+    actions = ["sts:AssumeRole"]
+    principals {
+      type = "Service"
+      identifiers = ["config.amazonaws.com"]
+    }
+  }
+}
+
+data "aws_iam_role" "master_config_role" {
+  provider = "aws.master"
+  name = "config-role"
 }
 
 resource "aws_iam_role_policy_attachment" "config_organization" {
@@ -102,6 +120,7 @@ resource "aws_sns_topic_policy" "config_sns" {
   provider = "aws.master.config"
   arn = "${aws_sns_topic.config_sns.arn}"
   policy = "${data.template_file.config_sns_policy.rendered}"
+  # policy = "${data.aws_iam_policy_document.config_sns.json}"
 }
 
 data "template_file" "config_sns_policy" {
@@ -109,24 +128,5 @@ data "template_file" "config_sns_policy" {
   vars {
     config_sns_role = "${aws_iam_role.master_config_role.arn}"
     config_sns_arn = "${aws_sns_topic.config_sns.arn}"
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "config_sns_policy" {
-  provider = "aws.master"
-  role = "${aws_iam_role.master_config_role.id}"
-  policy_arn = "${aws_iam_policy.config_sns_policy.arn}"
-}
-
-resource "aws_iam_policy" "config_sns_policy" {
-  provider = "aws.master"
-  name = "aws-config-${data.aws_caller_identity.master.account_id}"
-  policy = "${data.template_file.config_sns_role_policy.rendered}"
-}
-
-data "template_file" "config_sns_role_policy" {
-  template = "${file("${path.module}/policies/config-sns.json")}"
-  vars {
-    config_role_arn = "${aws_iam_role.master_config_role.arn}"
   }
 }
