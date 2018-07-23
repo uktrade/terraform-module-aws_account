@@ -11,12 +11,10 @@ resource "aws_config_configuration_aggregator" "master" {
 resource "aws_iam_role" "master_config_role" {
   provider = "aws.master"
   name = "config-role"
-  # assume_role_policy = "${file("${path.module}/policies/config-sts.json")}"
   assume_role_policy = "${data.aws_iam_policy_document.master_config_sts.json}"
 }
 
 data "aws_iam_policy_document" "master_config_sts" {
-  source_json = "${data.aws_iam_role.master_config_role.assume_role_policy}"
   statement {
     sid = "DefaultPolicyForAWSConfig"
     actions = ["sts:AssumeRole"]
@@ -25,11 +23,6 @@ data "aws_iam_policy_document" "master_config_sts" {
       identifiers = ["config.amazonaws.com"]
     }
   }
-}
-
-data "aws_iam_role" "master_config_role" {
-  provider = "aws.master"
-  name = "config-role"
 }
 
 resource "aws_iam_role_policy_attachment" "config_organization" {
@@ -116,17 +109,24 @@ resource "aws_sns_topic" "config_sns" {
   name = "org-config-sns"
 }
 
-resource "aws_sns_topic_policy" "config_sns" {
-  provider = "aws.master.config"
-  arn = "${aws_sns_topic.config_sns.arn}"
-  policy = "${data.template_file.config_sns_policy.rendered}"
-  # policy = "${data.aws_iam_policy_document.config_sns.json}"
+resource "null_resource" "config_sns_policy" {
+  triggers = {
+    config_sns_policy = "${data.aws_iam_policy_document.config_sns_sts.json}"
+  }
+  provisioner "local-exec" {
+    command = "mkdir -p ${path.root}/.state && touch ${path.root}/.state/config_sns_policy.json"
+  }
 }
 
-data "template_file" "config_sns_policy" {
-  template = "${file("${path.module}/policies/config-sns-role.json")}"
-  vars {
-    config_sns_role = "${aws_iam_role.master_config_role.arn}"
-    config_sns_arn = "${aws_sns_topic.config_sns.arn}"
+data "aws_iam_policy_document" "config_sns_sts" {
+  provider = "aws.master"
+  statement {
+    sid = "DefaultPolicyForAWSConfig"
+    actions = ["SNS:Publish"]
+    principals {
+      type = "AWS"
+      identifiers = ["${aws_iam_role.master_config_role.arn}"]
+    }
+    resources = ["${aws_sns_topic.config_sns.arn}"]
   }
 }

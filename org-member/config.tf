@@ -82,26 +82,40 @@ resource "aws_config_delivery_channel" "member" {
   }
 }
 
-resource "aws_iam_role" "master_config_sts" {
-  provider = "aws.master"
-  name = "${var.org["config_role_name"]}"
-  assume_role_policy = "${data.aws_iam_policy_document.master_config_sts.json}"
+resource "aws_sns_topic_policy" "config_sns" {
+  provider = "aws.master.config"
+  arn = "${var.org["config_sns_arn"]}"
+  policy = "${data.aws_iam_policy_document.config_sns_sts.json}"
 }
 
-data "aws_iam_policy_document" "master_config_sts" {
+resource "local_file" "save_config_sns" {
+  content = "${data.aws_iam_policy_document.config_sns_sts.json}"
+  filename = "${path.root}/.state/config_sns_policy.json"
+}
+
+data "local_file" "read_config_sns" {
+  filename = "${path.root}/.state/config_sns_policy.json"
+}
+
+data "aws_iam_policy_document" "config_sns_sts" {
   provider = "aws.master"
-  source_json = "${data.aws_iam_role.master_config_role.assume_role_policy}"
+  override_json = "${data.local_file.read_config_sns.content}"
+  statement {
+    sid = "DefaultPolicyForAWSConfig"
+    actions = ["SNS:Publish"]
+    principals {
+      type = "AWS"
+      identifiers = ["${var.org["config_role_arn"]}"]
+    }
+    resources = ["${var.org["config_sns_arn"]}"]
+  }
   statement {
     sid = "OrgAccoount${data.aws_caller_identity.member.account_id}"
-    actions = ["sts:AssumeRole"]
+    actions = ["SNS:Publish"]
     principals {
       type = "AWS"
       identifiers = ["${aws_iam_role.config_role.arn}"]
     }
+    resources = ["${var.org["config_sns_arn"]}"]
   }
-}
-
-data "aws_iam_role" "master_config_role" {
-  provider = "aws.master"
-  name = "${var.org["config_role_name"]}"
 }
