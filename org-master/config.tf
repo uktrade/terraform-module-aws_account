@@ -109,6 +109,22 @@ resource "aws_sns_topic" "config_sns" {
   name = "org-config-sns"
 }
 
+resource "aws_iam_role_policy" "config_sns_policy" {
+  provider = "aws.master"
+  name = "config_sns_policy"
+  role = "${aws_iam_role.master_config_role.id}"
+  policy = "${data.aws_iam_policy_document.config_sns.json}"
+}
+
+data "aws_iam_policy_document" "config_sns" {
+  provider = "aws.master"
+  statement {
+    sid = "DefaultPolicyForAWSConfig"
+    actions = ["SNS:Publish"]
+    resources = ["${aws_sns_topic.config_sns.arn}"]
+  }
+}
+
 resource "null_resource" "config_sns_policy" {
   triggers = {
     config_sns_policy = "${data.aws_iam_policy_document.config_sns_sts.json}"

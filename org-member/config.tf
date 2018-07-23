@@ -82,6 +82,22 @@ resource "aws_config_delivery_channel" "member" {
   }
 }
 
+resource "aws_iam_role_policy" "config_sns_policy" {
+  provider = "aws.member"
+  name = "config_sns_policy"
+  role = "${aws_iam_role.config_role.id}"
+  policy = "${data.aws_iam_policy_document.config_sns.json}"
+}
+
+data "aws_iam_policy_document" "config_sns" {
+  provider = "aws.member"
+  statement {
+    sid = "DefaultPolicyForAWSConfig"
+    actions = ["SNS:Publish"]
+    resources = ["${var.org["config_sns_arn"]}"]
+  }
+}
+
 resource "aws_sns_topic_policy" "config_sns" {
   provider = "aws.master.config"
   arn = "${var.org["config_sns_arn"]}"
