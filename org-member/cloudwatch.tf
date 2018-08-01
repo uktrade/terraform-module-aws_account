@@ -19,7 +19,7 @@ resource "aws_cloudwatch_event_target" "member" {
 
 resource "aws_cloudwatch_event_target" "config" {
   provider = "aws.member.config"
-  arn = "${var.org["config_sns_arn"]}"
+  arn = "${var.org["cloudwatch_eventbus_arn"]}"
   rule = "${aws_cloudwatch_event_rule.config.name}"
   target_id = "org-config-${data.aws_caller_identity.member.account_id}"
 }
