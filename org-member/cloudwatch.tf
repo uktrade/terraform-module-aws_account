@@ -16,3 +16,30 @@ resource "aws_cloudwatch_event_target" "member" {
   rule = "${aws_cloudwatch_event_rule.member.name}"
   target_id = "org-member-${data.aws_caller_identity.member.account_id}"
 }
+
+resource "aws_cloudwatch_event_target" "config" {
+  provider = "aws.member.config"
+  arn = "${var.org["config_sns_arn"]}"
+  rule = "${aws_cloudwatch_event_rule.config.name}"
+  target_id = "org-config-${data.aws_caller_identity.member.account_id}"
+}
+
+resource "aws_cloudwatch_event_rule" "config" {
+  provider = "aws.member.config"
+  name = "rule-config-${data.aws_caller_identity.member.account_id}"
+  event_pattern = <<INPUT
+    {
+      "source": [
+        "aws.config"
+      ],
+      "detail-type": [
+        "Config Rules Compliance Change"
+      ],
+      "detail": {
+        "messageType": [
+          "ComplianceChangeNotification"
+        ]
+      }
+    }
+  INPUT
+}

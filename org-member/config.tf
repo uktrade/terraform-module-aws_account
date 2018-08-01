@@ -76,7 +76,6 @@ resource "aws_config_delivery_channel" "member" {
   provider = "aws.member.config"
   name = "aws-config-${data.aws_caller_identity.member.account_id}"
   s3_bucket_name = "${aws_s3_bucket.config_bucket.id}"
-  sns_topic_arn = "${var.org["config_sns_arn"]}"
   snapshot_delivery_properties {
     delivery_frequency = "One_Hour"
   }

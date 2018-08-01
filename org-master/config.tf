@@ -97,7 +97,6 @@ resource "aws_config_delivery_channel" "master" {
   provider = "aws.master.config"
   name = "aws-config-${data.aws_caller_identity.master.account_id}"
   s3_bucket_name = "${aws_s3_bucket.master_config_bucket.id}"
-  sns_topic_arn = "${aws_sns_topic.config_sns.arn}"
   snapshot_delivery_properties {
     delivery_frequency = "One_Hour"
   }
