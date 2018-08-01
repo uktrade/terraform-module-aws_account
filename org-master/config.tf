@@ -123,25 +123,3 @@ data "aws_iam_policy_document" "config_sns" {
     resources = ["${aws_sns_topic.config_sns.arn}"]
   }
 }
-
-resource "null_resource" "config_sns_policy" {
-  triggers = {
-    config_sns_policy = "${data.aws_iam_policy_document.config_sns_sts.json}"
-  }
-  provisioner "local-exec" {
-    command = "mkdir -p ${path.root}/.state && touch ${path.root}/.state/config_sns_policy.json"
-  }
-}
-
-data "aws_iam_policy_document" "config_sns_sts" {
-  provider = "aws.master"
-  statement {
-    sid = "DefaultPolicyForAWSConfig"
-    actions = ["SNS:Publish"]
-    principals {
-      type = "AWS"
-      identifiers = ["${aws_iam_role.master_config_role.arn}"]
-    }
-    resources = ["${aws_sns_topic.config_sns.arn}"]
-  }
-}
