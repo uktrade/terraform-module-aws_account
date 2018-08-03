@@ -9,7 +9,7 @@ resource "aws_sns_topic" "guardduty_sns" {
 }
 
 resource "aws_sns_topic_policy" "guardduty_sns" {
-  provider = "aws.master.config"
+  provider = "aws.master"
   arn = "${aws_sns_topic.guardduty_sns.id}"
   policy = "${data.aws_iam_policy_document.guardduty_sns.json}"
 }
