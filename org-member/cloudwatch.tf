@@ -40,12 +40,7 @@ resource "aws_cloudwatch_event_rule" "config" {
       ],
       "detail-type": [
         "Config Rules Compliance Change"
-      ],
-      "detail": {
-        "messageType": [
-          "ComplianceChangeNotification"
-        ]
-      }
+      ]
     }
   INPUT
 }

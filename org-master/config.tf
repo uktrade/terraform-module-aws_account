@@ -43,7 +43,7 @@ resource "aws_config_configuration_recorder" "master_config" {
 
 resource "aws_iam_role_policy_attachment" "master_config_policy" {
   provider = "aws.master"
-  role = "${aws_iam_role.master_config_role.id}"
+  role = "${aws_iam_role.master_config_role.name}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRole"
 }
 
@@ -82,7 +82,7 @@ data "template_file" "config_s3_policy" {
 resource "aws_iam_role_policy" "config_s3_policy" {
   provider = "aws.master"
   name = "config_s3_policy"
-  role = "${aws_iam_role.master_config_role.id}"
+  role = "${aws_iam_role.master_config_role.name}"
   policy = "${data.template_file.config_s3_policy.rendered}"
 }
 
@@ -108,10 +108,64 @@ resource "aws_sns_topic" "config_sns" {
   name = "org-config-sns"
 }
 
+resource "aws_sns_topic_policy" "config_sns" {
+  provider = "aws.master.config"
+  arn = "${aws_sns_topic.config_sns.id}"
+  policy = "${data.aws_iam_policy_document.config_sns_policy.json}"
+}
+
+data "aws_iam_policy_document" "config_sns_policy" {
+  provider = "aws.master.config"
+  statement {
+    sid = "Default SNS policy"
+    actions = [
+      "SNS:GetTopicAttributes",
+      "SNS:SetTopicAttributes",
+      "SNS:AddPermission",
+      "SNS:RemovePermission",
+      "SNS:DeleteTopic",
+      "SNS:Subscribe",
+      "SNS:ListSubscriptionsByTopic",
+      "SNS:Publish",
+      "SNS:Receive"
+    ]
+    principals {
+      type = "AWS"
+      identifiers = ["*"]
+    }
+    condition {
+      test = "StringEquals"
+      variable = "AWS:SourceOwner"
+      values = ["${data.aws_caller_identity.master.account_id}"]
+    }
+    resources = ["${aws_sns_topic.config_sns.id}"]
+  }
+
+  statement {
+    sid = "Allow AWS Config to publish events"
+    actions = ["SNS:Publish"]
+    principals {
+      type = "AWS"
+      identifiers = ["${aws_iam_role.master_config_role.arn}"]
+    }
+    resources = ["${aws_sns_topic.config_sns.id}"]
+  }
+
+  statement {
+    sid = "Allow CloudWatch Events to publish"
+    actions = ["SNS:Publish"]
+    principals {
+      type = "Service"
+      identifiers = ["events.amazonaws.com"]
+    }
+    resources = ["${aws_sns_topic.config_sns.id}"]
+  }
+}
+
 resource "aws_iam_role_policy" "config_sns_policy" {
   provider = "aws.master"
   name = "config_sns_policy"
-  role = "${aws_iam_role.master_config_role.id}"
+  role = "${aws_iam_role.master_config_role.name}"
   policy = "${data.aws_iam_policy_document.config_sns.json}"
 }
 

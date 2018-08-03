@@ -16,7 +16,7 @@ resource "aws_iam_role" "config_role" {
 
 resource "aws_iam_role_policy_attachment" "config_policy" {
   provider = "aws.member"
-  role = "${aws_iam_role.config_role.id}"
+  role = "${aws_iam_role.config_role.name}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRole"
 }
 
@@ -28,7 +28,7 @@ resource "aws_iam_policy" "config_service_policy" {
 
 resource "aws_iam_role_policy_attachment" "config_service_policy" {
   provider = "aws.member"
-  role = "${aws_iam_role.config_role.id}"
+  role = "${aws_iam_role.config_role.name}"
   policy_arn = "${aws_iam_policy.config_service_policy.id}"
 }
 
@@ -55,7 +55,7 @@ data "template_file" "config_s3_policy" {
 resource "aws_iam_role_policy" "config_s3_policy" {
   provider = "aws.member"
   name = "config_s3_policy"
-  role = "${aws_iam_role.config_role.id}"
+  role = "${aws_iam_role.config_role.name}"
   policy = "${data.template_file.config_s3_policy.rendered}"
 }
 
