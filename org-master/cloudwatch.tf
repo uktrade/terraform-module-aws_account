@@ -68,7 +68,7 @@ resource "aws_cloudwatch_event_target" "config" {
             "short": true
           }
         ],
-        "fallback": "<resourceType> <resourceId> <complianceType>",
+        "fallback": "<resourceType> <resourceId> <complianceType>"
       }]
     INPUT
   }
