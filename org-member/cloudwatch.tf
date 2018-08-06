@@ -5,6 +5,12 @@ resource "aws_cloudwatch_event_permission" "master" {
 }
 
 resource "aws_cloudwatch_event_permission" "master-config" {
+  provider = "aws.master"
+  principal = "${data.aws_caller_identity.member.account_id}"
+  statement_id = "account-${data.aws_caller_identity.member.account_id}"
+}
+
+resource "aws_cloudwatch_event_permission" "master-config_alt" {
   provider = "aws.master.config"
   principal = "${data.aws_caller_identity.member.account_id}"
   statement_id = "account-${data.aws_caller_identity.member.account_id}"
@@ -24,13 +30,36 @@ resource "aws_cloudwatch_event_target" "member" {
 }
 
 resource "aws_cloudwatch_event_target" "config" {
-  provider = "aws.member.config"
-  arn = "arn:aws:events:${data.aws_region.master_config.name}:${data.aws_caller_identity.master.account_id}:event-bus/default"
+  provider = "aws.member"
+  arn = "arn:aws:events:${data.aws_region.master.name}:${data.aws_caller_identity.master.account_id}:event-bus/default"
   rule = "${aws_cloudwatch_event_rule.config.name}"
   target_id = "org-config-${data.aws_caller_identity.member.account_id}"
 }
 
 resource "aws_cloudwatch_event_rule" "config" {
+  provider = "aws.member"
+  name = "rule-config-${data.aws_caller_identity.member.account_id}"
+  event_pattern = <<INPUT
+    {
+      "source": [
+        "aws.config"
+      ],
+      "detail-type": [
+        "Config Rules Compliance Change"
+      ]
+    }
+  INPUT
+}
+
+
+resource "aws_cloudwatch_event_target" "config_alt" {
+  provider = "aws.member.config"
+  arn = "arn:aws:events:${data.aws_region.master_config.name}:${data.aws_caller_identity.master.account_id}:event-bus/default"
+  rule = "${aws_cloudwatch_event_rule.config_alt.name}"
+  target_id = "org-config-${data.aws_caller_identity.member.account_id}"
+}
+
+resource "aws_cloudwatch_event_rule" "config_alt" {
   provider = "aws.member.config"
   name = "rule-config-${data.aws_caller_identity.member.account_id}"
   event_pattern = <<INPUT

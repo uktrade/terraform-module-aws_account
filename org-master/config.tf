@@ -1,13 +1,3 @@
-resource "aws_config_configuration_aggregator" "master" {
-  provider = "aws.master.config"
-  name = "aws-org-config"
-  organization_aggregation_source {
-    all_regions = true
-    role_arn = "${aws_iam_role.master_config_role.arn}"
-  }
-  depends_on = ["aws_iam_role_policy_attachment.config_organization"]
-}
-
 resource "aws_iam_role" "master_config_role" {
   provider = "aws.master"
   name = "config-role"
@@ -32,7 +22,7 @@ resource "aws_iam_role_policy_attachment" "config_organization" {
 }
 
 resource "aws_config_configuration_recorder" "master_config" {
-  provider = "aws.master.config"
+  provider = "aws.master"
   name = "config-${data.aws_caller_identity.master.account_id}"
   role_arn = "${aws_iam_role.master_config_role.arn}"
   recording_group {
@@ -87,14 +77,14 @@ resource "aws_iam_role_policy" "config_s3_policy" {
 }
 
 resource "aws_config_configuration_recorder_status" "master_config" {
-  provider = "aws.master.config"
+  provider = "aws.master"
   name = "${aws_config_configuration_recorder.master_config.name}"
   is_enabled = true
   depends_on = ["aws_config_delivery_channel.master"]
 }
 
 resource "aws_config_delivery_channel" "master" {
-  provider = "aws.master.config"
+  provider = "aws.master"
   name = "aws-config-${data.aws_caller_identity.master.account_id}"
   s3_bucket_name = "${aws_s3_bucket.master_config_bucket.id}"
   snapshot_delivery_properties {
@@ -104,18 +94,18 @@ resource "aws_config_delivery_channel" "master" {
 }
 
 resource "aws_sns_topic" "config_sns" {
-  provider = "aws.master.config"
+  provider = "aws.master"
   name = "org-config-sns"
 }
 
 resource "aws_sns_topic_policy" "config_sns" {
-  provider = "aws.master.config"
+  provider = "aws.master"
   arn = "${aws_sns_topic.config_sns.id}"
   policy = "${data.aws_iam_policy_document.config_sns_policy.json}"
 }
 
 data "aws_iam_policy_document" "config_sns_policy" {
-  provider = "aws.master.config"
+  provider = "aws.master"
   statement {
     sid = "Default SNS policy"
     actions = [
@@ -174,6 +164,6 @@ data "aws_iam_policy_document" "config_sns" {
   statement {
     sid = "DefaultPolicyForAWSConfig"
     actions = ["SNS:Publish"]
-    resources = ["${aws_sns_topic.config_sns.arn}"]
+    resources = ["${aws_sns_topic.config_sns.id}"]
   }
 }

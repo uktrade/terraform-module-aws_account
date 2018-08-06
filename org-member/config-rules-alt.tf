@@ -1,5 +1,5 @@
-resource "aws_config_config_rule" "config_rule_cloudtrail" {
-  provider = "aws.member"
+resource "aws_config_config_rule" "config_rule_cloudtrail_alt" {
+  provider = "aws.member.config"
   name = "cloudtrail-enabled"
   source {
     owner = "AWS"
@@ -8,8 +8,8 @@ resource "aws_config_config_rule" "config_rule_cloudtrail" {
   maximum_execution_frequency = "TwentyFour_Hours"
 }
 
-resource "aws_config_config_rule" "config_rule_ec2_instance" {
-  provider = "aws.member"
+resource "aws_config_config_rule" "config_rule_ec2_instance_alt" {
+  provider = "aws.member.config"
   name = "ec2-instances-in-vpc"
   source {
     owner = "AWS"
@@ -17,8 +17,8 @@ resource "aws_config_config_rule" "config_rule_ec2_instance" {
   }
 }
 
-resource "aws_config_config_rule" "config_rule_lambda_public_prohibited" {
-  provider = "aws.member"
+resource "aws_config_config_rule" "config_rule_lambda_public_prohibited_alt" {
+  provider = "aws.member.config"
   name = "lambda-fucntion-public-access-prohibited"
   source {
     owner = "AWS"
@@ -26,8 +26,8 @@ resource "aws_config_config_rule" "config_rule_lambda_public_prohibited" {
   }
 }
 
-resource "aws_config_config_rule" "config_rule_db_backup_enabled" {
-  provider = "aws.member"
+resource "aws_config_config_rule" "config_rule_db_backup_enabled_alt" {
+  provider = "aws.member.config"
   name = "db-instance-backup-enabled"
   source {
     owner = "AWS"
@@ -35,8 +35,8 @@ resource "aws_config_config_rule" "config_rule_db_backup_enabled" {
   }
 }
 
-resource "aws_config_config_rule" "config_rule_root_mfa" {
-  provider = "aws.member"
+resource "aws_config_config_rule" "config_rule_root_mfa_alt" {
+  provider = "aws.member.config"
   name = "root-account-mfa-enabled"
   source {
     owner = "AWS"
@@ -45,8 +45,8 @@ resource "aws_config_config_rule" "config_rule_root_mfa" {
   maximum_execution_frequency = "TwentyFour_Hours"
 }
 
-resource "aws_config_config_rule" "config_rule_s3_public_read_prohibit" {
-  provider = "aws.member"
+resource "aws_config_config_rule" "config_rule_s3_public_read_prohibit_alt" {
+  provider = "aws.member.config"
   name = "s3-bucket-public-read-prohibited"
   source {
     owner = "AWS"
@@ -54,8 +54,8 @@ resource "aws_config_config_rule" "config_rule_s3_public_read_prohibit" {
   }
 }
 
-resource "aws_config_config_rule" "config_rule_s3_public_write_prohibit" {
-  provider = "aws.member"
+resource "aws_config_config_rule" "config_rule_s3_public_write_prohibit_alt" {
+  provider = "aws.member.config"
   name = "s3-bucket-public-write-prohibited"
   source {
     owner = "AWS"
@@ -63,8 +63,8 @@ resource "aws_config_config_rule" "config_rule_s3_public_write_prohibit" {
   }
 }
 
-resource "aws_config_config_rule" "config_rule_s3_sse" {
-  provider = "aws.member"
+resource "aws_config_config_rule" "config_rule_s3_sse_alt" {
+  provider = "aws.member.config"
   name = "s3-bucket-server-side-encryption-enabled"
   source {
     owner = "AWS"
@@ -72,8 +72,8 @@ resource "aws_config_config_rule" "config_rule_s3_sse" {
   }
 }
 
-resource "aws_config_config_rule" "config_rule_s3_ssl" {
-  provider = "aws.member"
+resource "aws_config_config_rule" "config_rule_s3_ssl_alt" {
+  provider = "aws.member.config"
   name = "s3-bucket-ssl-requests-only"
   source {
     owner = "AWS"
@@ -81,8 +81,8 @@ resource "aws_config_config_rule" "config_rule_s3_ssl" {
   }
 }
 
-resource "aws_config_config_rule" "config_rule_acm_expiration" {
-  provider = "aws.member"
+resource "aws_config_config_rule" "config_rule_acm_expiration_alt" {
+  provider = "aws.member.config"
   name = "acm-certificate-expiration-check"
   source {
     owner = "AWS"
@@ -96,8 +96,8 @@ resource "aws_config_config_rule" "config_rule_acm_expiration" {
   maximum_execution_frequency = "TwentyFour_Hours"
 }
 
-resource "aws_config_config_rule" "config_rule_iam_password_policy" {
-  provider = "aws.member"
+resource "aws_config_config_rule" "config_rule_iam_password_policy_alt" {
+  provider = "aws.member.config"
   name = "iam-password-policy"
   source {
     owner = "AWS"

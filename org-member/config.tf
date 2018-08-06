@@ -1,5 +1,5 @@
 resource "aws_config_configuration_recorder" "config" {
-  provider = "aws.member.config"
+  provider = "aws.member"
   name = "config-${data.aws_caller_identity.member.account_id}"
   role_arn = "${aws_iam_role.config_role.arn}"
   recording_group {
@@ -60,20 +60,14 @@ resource "aws_iam_role_policy" "config_s3_policy" {
 }
 
 resource "aws_config_configuration_recorder_status" "config" {
-  provider = "aws.member.config"
+  provider = "aws.member"
   name = "${aws_config_configuration_recorder.config.name}"
   is_enabled = true
   depends_on = ["aws_config_delivery_channel.member"]
 }
 
-resource "aws_config_aggregate_authorization" "member" {
-  provider = "aws.master.config"
-  account_id = "${data.aws_caller_identity.member.account_id}"
-  region = "${data.aws_region.master_config.name}"
-}
-
 resource "aws_config_delivery_channel" "member" {
-  provider = "aws.member.config"
+  provider = "aws.member"
   name = "aws-config-${data.aws_caller_identity.member.account_id}"
   s3_bucket_name = "${aws_s3_bucket.config_bucket.id}"
   snapshot_delivery_properties {
