@@ -159,3 +159,74 @@ resource "aws_cloudwatch_event_rule" "config_alt" {
     }
   INPUT
 }
+
+resource "aws_cloudwatch_event_target" "config_acm" {
+  provider = "aws.master.config_acm"
+  arn = "${aws_sns_topic.config_sns_acm.arn}"
+  rule = "${aws_cloudwatch_event_rule.config_acm.name}"
+  target_id = "org-config-${data.aws_caller_identity.master.account_id}"
+  input_transformer {
+    input_paths = {
+      source = "$.source"
+      complianceType = "$.detail.newEvaluationResult.complianceType"
+      configRuleName = "$.detail.configRuleName"
+      awsAccountId = "$.detail.awsAccountId"
+      awsRegion = "$.detail.awsRegion"
+      resourceType = "$.detail.resourceType"
+      resourceId = "$.detail.resourceId"
+      time = "$.time"
+    }
+    input_template = <<INPUT
+      [{
+        "title": "<resourceType> <resourceId> <complianceType>",
+        "author_name": "<source>",
+        "fields": [{
+            "title": "Account ID",
+            "value": "<awsAccountId>",
+            "short": true
+          },{
+            "title": "Region",
+            "value": "<awsRegion>",
+            "short": true
+          },{
+            "title": "Resource Type",
+            "value": "<resourceType>",
+            "short": true
+          },{
+            "title": "Resource ID",
+            "value": "<resourceId>",
+            "short": true
+          },{
+            "title": "Config Rule",
+            "value": "<configRuleName>",
+            "short": true
+          },{
+            "title": "Compliance Status",
+            "value": "<complianceType>",
+            "short": true
+          },{
+            "title": "Timestamp",
+            "value": "<time>",
+            "short": true
+          }
+        ],
+        "fallback": "<resourceType> <resourceId> <complianceType>"
+      }]
+    INPUT
+  }
+}
+
+resource "aws_cloudwatch_event_rule" "config_acm" {
+  provider = "aws.master.config_acm"
+  name = "rule-config-${data.aws_caller_identity.master.account_id}"
+  event_pattern = <<INPUT
+    {
+      "source": [
+        "aws.config"
+      ],
+      "detail-type": [
+        "Config Rules Compliance Change"
+      ]
+    }
+  INPUT
+}

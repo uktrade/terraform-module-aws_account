@@ -22,12 +22,23 @@ provider "aws" {
   region = "${var.org["aws_config_region"]}"
 }
 
+provider "aws" {
+  alias = "master.config_acm"
+  shared_credentials_file = "${var.org["aws_shared_credentials_file"]}"
+  profile = "${var.org["aws_profile"]}"
+  region = "us-east-1"
+}
+
 data "aws_caller_identity" "master_config" {
   provider = "aws.master.config"
 }
 
 data "aws_region" "master_config" {
   provider = "aws.master.config"
+}
+
+data "aws_region" "master_config_acm" {
+  provider = "aws.master.config_acm"
 }
 
 provider "aws" {
@@ -41,12 +52,19 @@ provider "aws" {
   region = "${var.org["aws_config_region"]}"
 }
 
-data "aws_caller_identity" "member_config" {
-  provider = "aws.member.config"
+provider "aws" {
+  alias = "member.config_acm"
+  shared_credentials_file = "${var.member["aws_shared_credentials_file"]}"
+  profile = "${var.member["aws_profile"]}"
+  region = "us-east-1"
 }
 
 data "aws_region" "member_config" {
   provider = "aws.member.config"
+}
+
+data "aws_region" "member_config_acm" {
+  provider = "aws.member.config_acm"
 }
 
 data "aws_region" "master" {
