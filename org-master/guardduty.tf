@@ -59,8 +59,8 @@ resource "aws_cloudwatch_event_target" "guardduty" {
   input_transformer {
       input_paths = {
       source = "$.source"
-      awsAccountId = "$.detail.awsAccountId"
-      awsRegion = "$.detail.awsRegion"
+      awsAccountId = "$.detail.accountId"
+      awsRegion = "$.detail.region"
       type = "$.detail.type"
       resourceType = "$.detail.resource.resourceType"
       actionType = "$.detail.service.action.actionType"
