@@ -23,6 +23,17 @@
           "s3:x-amz-acl": "bucket-owner-full-control"
         }
       }
+    },
+    {
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "*",
+      "Resource": "arn:aws:s3:::${cloudtrail_s3}/*",
+      "Condition": {
+        "Bool": {
+          "aws:SecureTransport": "false"
+        }
+      }
     }
   ]
 }
