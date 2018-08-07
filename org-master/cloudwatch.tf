@@ -22,7 +22,6 @@ resource "aws_cloudwatch_event_target" "config" {
   provider = "aws.master"
   arn = "${aws_sns_topic.config_sns.arn}"
   rule = "${aws_cloudwatch_event_rule.config.name}"
-  target_id = "org-config-${data.aws_caller_identity.master.account_id}"
   input_transformer {
     input_paths = {
       source = "$.source"
@@ -76,7 +75,7 @@ resource "aws_cloudwatch_event_target" "config" {
 
 resource "aws_cloudwatch_event_rule" "config" {
   provider = "aws.master"
-  name = "rule-config-${data.aws_caller_identity.master.account_id}"
+  name = "org-rule-config"
   event_pattern = <<INPUT
     {
       "source": [
@@ -93,7 +92,6 @@ resource "aws_cloudwatch_event_target" "config_alt" {
   provider = "aws.master.config"
   arn = "${aws_sns_topic.config_sns_alt.arn}"
   rule = "${aws_cloudwatch_event_rule.config_alt.name}"
-  target_id = "org-config-${data.aws_caller_identity.master.account_id}"
   input_transformer {
     input_paths = {
       source = "$.source"
@@ -147,7 +145,7 @@ resource "aws_cloudwatch_event_target" "config_alt" {
 
 resource "aws_cloudwatch_event_rule" "config_alt" {
   provider = "aws.master.config"
-  name = "rule-config-${data.aws_caller_identity.master.account_id}"
+  name = "org-rule-config"
   event_pattern = <<INPUT
     {
       "source": [
@@ -164,7 +162,6 @@ resource "aws_cloudwatch_event_target" "config_acm" {
   provider = "aws.master.config_acm"
   arn = "${aws_sns_topic.config_sns_acm.arn}"
   rule = "${aws_cloudwatch_event_rule.config_acm.name}"
-  target_id = "org-config-${data.aws_caller_identity.master.account_id}"
   input_transformer {
     input_paths = {
       source = "$.source"
@@ -218,7 +215,7 @@ resource "aws_cloudwatch_event_target" "config_acm" {
 
 resource "aws_cloudwatch_event_rule" "config_acm" {
   provider = "aws.master.config_acm"
-  name = "rule-config-${data.aws_caller_identity.master.account_id}"
+  name = "org-rule-config"
   event_pattern = <<INPUT
     {
       "source": [
