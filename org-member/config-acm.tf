@@ -29,3 +29,31 @@ resource "aws_config_aggregate_authorization" "member_acm" {
   account_id = "${data.aws_caller_identity.member.account_id}"
   region = "${data.aws_region.master_config_acm.name}"
 }
+
+resource "aws_cloudwatch_event_permission" "master-config_acm" {
+  provider = "aws.master.config_acm"
+  principal = "${data.aws_caller_identity.member.account_id}"
+  statement_id = "account-${data.aws_caller_identity.member.account_id}"
+}
+
+resource "aws_cloudwatch_event_target" "config_acm" {
+  provider = "aws.member.config_acm"
+  arn = "arn:aws:events:${data.aws_region.master_config_acm.name}:${data.aws_caller_identity.master.account_id}:event-bus/default"
+  rule = "${aws_cloudwatch_event_rule.config_acm.name}"
+  target_id = "org-config-${data.aws_caller_identity.member.account_id}"
+}
+
+resource "aws_cloudwatch_event_rule" "config_acm" {
+  provider = "aws.member.config_acm"
+  name = "rule-config-${data.aws_caller_identity.member.account_id}"
+  event_pattern = <<INPUT
+    {
+      "source": [
+        "aws.config"
+      ],
+      "detail-type": [
+        "Config Rules Compliance Change"
+      ]
+    }
+  INPUT
+}

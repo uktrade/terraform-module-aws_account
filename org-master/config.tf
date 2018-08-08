@@ -167,3 +167,73 @@ data "aws_iam_policy_document" "config_sns" {
     resources = ["${aws_sns_topic.config_sns.id}"]
   }
 }
+
+resource "aws_cloudwatch_event_target" "config" {
+  provider = "aws.master"
+  arn = "${aws_sns_topic.config_sns.arn}"
+  rule = "${aws_cloudwatch_event_rule.config.name}"
+  input_transformer {
+    input_paths = {
+      source = "$.source"
+      complianceType = "$.detail.newEvaluationResult.complianceType"
+      configRuleName = "$.detail.configRuleName"
+      awsAccountId = "$.detail.awsAccountId"
+      awsRegion = "$.detail.awsRegion"
+      resourceType = "$.detail.resourceType"
+      resourceId = "$.detail.resourceId"
+      time = "$.time"
+    }
+    input_template = <<INPUT
+      [{
+        "title": "<resourceType> <resourceId> <complianceType>",
+        "author_name": "<source>",
+        "fields": [{
+            "title": "Account ID",
+            "value": "<awsAccountId>",
+            "short": true
+          },{
+            "title": "Region",
+            "value": "<awsRegion>",
+            "short": true
+          },{
+            "title": "Resource Type",
+            "value": "<resourceType>",
+            "short": true
+          },{
+            "title": "Resource ID",
+            "value": "<resourceId>",
+            "short": true
+          },{
+            "title": "Config Rule",
+            "value": "<configRuleName>",
+            "short": true
+          },{
+            "title": "Compliance Status",
+            "value": "<complianceType>",
+            "short": true
+          },{
+            "title": "Timestamp",
+            "value": "<time>",
+            "short": true
+          }
+        ],
+        "fallback": "<resourceType> <resourceId> <complianceType>"
+      }]
+    INPUT
+  }
+}
+
+resource "aws_cloudwatch_event_rule" "config" {
+  provider = "aws.master"
+  name = "org-rule-config"
+  event_pattern = <<INPUT
+    {
+      "source": [
+        "aws.config"
+      ],
+      "detail-type": [
+        "Config Rules Compliance Change"
+      ]
+    }
+  INPUT
+}
