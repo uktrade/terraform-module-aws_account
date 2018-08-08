@@ -75,31 +75,31 @@ resource "aws_cloudwatch_event_target" "guardduty" {
         "fields": [{
             "title": "Account ID",
             "value": "<awsAccountId>",
-            "short": true
+            "short": "true"
           },{
             "title": "Region",
             "value": "<awsRegion>",
-            "short": true
+            "short": "true"
           },{
             "title": "Type",
             "value": "<type>/<resourceType>",
-            "short": true
+            "short": "true"
           },{
             "title": "Action",
             "value": "<actionType>",
-            "short": true
+            "short": "true"
           },{
             "title": "Severity",
             "value": "<severity>",
-            "short": true
+            "short": "true"
           },{
             "title": "ARN",
             "value": "<arn>",
-            "short": true
+            "short": "true"
           },{
             "title": "Timestamp",
             "value": "<time>",
-            "short": true
+            "short": "true"
           }
         ],
         "fallback": "Severity <severity> - <type>/<resourceType> <actionType>"

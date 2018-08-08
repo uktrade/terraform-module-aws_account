@@ -132,31 +132,31 @@ resource "aws_cloudwatch_event_target" "config_alt" {
         "fields": [{
             "title": "Account ID",
             "value": "<awsAccountId>",
-            "short": true
+            "short": "true"
           },{
             "title": "Region",
             "value": "<awsRegion>",
-            "short": true
+            "short": "true"
           },{
             "title": "Resource Type",
             "value": "<resourceType>",
-            "short": true
+            "short": "true"
           },{
             "title": "Resource ID",
             "value": "<resourceId>",
-            "short": true
+            "short": "true"
           },{
             "title": "Config Rule",
             "value": "<configRuleName>",
-            "short": true
+            "short": "true"
           },{
             "title": "Compliance Status",
             "value": "<complianceType>",
-            "short": true
+            "short": "true"
           },{
             "title": "Timestamp",
             "value": "<time>",
-            "short": true
+            "short": "true"
           }
         ],
         "fallback": "<resourceType> <resourceId> <complianceType>"
