@@ -100,8 +100,7 @@ resource "aws_cloudwatch_event_target" "guardduty" {
             "title": "Timestamp",
             "value": "<time>",
             "short": "true"
-          }
-        ],
+          }],
         "fallback": "Severity <severity> - <type>/<resourceType> <actionType>"
       }]
     INPUT

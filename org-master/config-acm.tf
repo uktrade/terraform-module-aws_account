@@ -157,8 +157,7 @@ resource "aws_cloudwatch_event_target" "config_acm" {
             "title": "Timestamp",
             "value": "<time>",
             "short": "true"
-          }
-        ],
+          }],
         "fallback": "<resourceType> <resourceId> <complianceType>"
       }]
     INPUT
