@@ -126,40 +126,40 @@ resource "aws_cloudwatch_event_target" "config_alt" {
       time = "$.time"
     }
     input_template = <<INPUT
-      [{
-        "title": "<resourceType> <resourceId> <complianceType>",
-        "author_name": "<source>",
-        "fields": [{
-            "title": "Account ID",
-            "value": "<awsAccountId>",
-            "short": "true"
-          },{
-            "title": "Region",
-            "value": "<awsRegion>",
-            "short": "true"
-          },{
-            "title": "Resource Type",
-            "value": "<resourceType>",
-            "short": "true"
-          },{
-            "title": "Resource ID",
-            "value": "<resourceId>",
-            "short": "true"
-          },{
-            "title": "Config Rule",
-            "value": "<configRuleName>",
-            "short": "true"
-          },{
-            "title": "Compliance Status",
-            "value": "<complianceType>",
-            "short": "true"
-          },{
-            "title": "Timestamp",
-            "value": "<time>",
-            "short": "true"
-          }],
-        "fallback": "<resourceType> <resourceId> <complianceType>"
-      }]
+    [{
+      "title": "<resourceType> <resourceId> <complianceType>",
+      "author_name": "<source>",
+      "fields": [{
+          "title": "Account ID",
+          "value": "<awsAccountId>",
+          "short": "true"
+        },{
+          "title": "Region",
+          "value": "<awsRegion>",
+          "short": "true"
+        },{
+          "title": "Resource Type",
+          "value": "<resourceType>",
+          "short": "true"
+        },{
+          "title": "Resource ID",
+          "value": "<resourceId>",
+          "short": "true"
+        },{
+          "title": "Config Rule",
+          "value": "<configRuleName>",
+          "short": "true"
+        },{
+          "title": "Compliance Status",
+          "value": "<complianceType>",
+          "short": "true"
+        },{
+          "title": "Timestamp",
+          "value": "<time>",
+          "short": "true"
+        }],
+      "fallback": "<resourceType> <resourceId> <complianceType>"
+    }]
     INPUT
   }
 }
