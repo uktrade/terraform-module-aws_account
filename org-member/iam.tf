@@ -22,4 +22,17 @@ data "aws_iam_policy_document" "default_admin" {
       values = ["${aws_iam_policy.default_policy.arn}"]
     }
   }
+  statement {
+    sid = "EnableServiceForUSRegion"
+    actions = [
+      "acm:*",
+      "config:*"
+    ]
+    resources = ["*"]
+    condition {
+      test = "StringEquals"
+      variable = "iam:PermissionsBoundary"
+      values = ["${aws_iam_policy.default_policy.arn}"]
+    }
+  }
 }
