@@ -48,12 +48,15 @@
       }
     },
     {
-      "Sid": "EnableACMForUSRegion",
+      "Sid": "EnableServicesForUSRegion",
       "Effect": "Allow",
       "Action": [
         "acm:Describe*",
         "acm:Get*",
-        "acm:List*"
+        "acm:List*",
+        "config:Describe*",
+        "config:Get*",
+        "config:List*"
       ],
       "Resource": [
         "*"
