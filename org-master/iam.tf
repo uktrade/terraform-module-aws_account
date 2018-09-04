@@ -31,8 +31,8 @@ data "aws_iam_policy_document" "default_admin" {
     resources = ["*"]
     condition {
       test = "StringEquals"
-      variable = "iam:PermissionsBoundary"
-      values = ["${aws_iam_policy.default_policy.arn}"]
+      variable = "aws:RequestedRegion"
+      values = ["us-east-1"]
     }
   }
 }
