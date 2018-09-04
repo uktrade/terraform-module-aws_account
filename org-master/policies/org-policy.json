@@ -2,55 +2,10 @@
   "Version": "2012-10-17",
   "Statement": [
     {
+      "Sid": "FullAWSAccess",
       "Effect": "Allow",
       "Action": "*",
       "Resource": "*"
-    },
-    {
-      "Sid": "AllowIndividualUserToSeeAndManageOnlyTheirOwnAccountInformation",
-      "Effect": "Allow",
-      "Action": [
-        "iam:ChangePassword",
-        "iam:CreateAccessKey",
-        "iam:CreateLoginProfile",
-        "iam:DeleteAccessKey",
-        "iam:DeleteLoginProfile",
-        "iam:GetAccessKeyLastUsed",
-        "iam:GetLoginProfile",
-        "iam:GetUser",
-        "iam:GetUserPolicy",
-        "iam:ListAccessKeys",
-        "iam:ListAttachedUserPolicies",
-        "iam:ListGroupsForUser",
-        "iam:ListUserPolicies",
-        "iam:UpdateAccessKey",
-        "iam:UpdateLoginProfile",
-        "iam:DeactivateMFADevice",
-        "iam:EnableMFADevice",
-        "iam:ListMFADevices",
-        "iam:ResyncMFADevice",
-        "iam:ListSigningCertificates",
-        "iam:DeleteSigningCertificate",
-        "iam:UpdateSigningCertificate",
-        "iam:UploadSigningCertificate",
-        "iam:ListSSHPublicKeys",
-        "iam:GetSSHPublicKey",
-        "iam:DeleteSSHPublicKey",
-        "iam:UpdateSSHPublicKey",
-        "iam:UploadSSHPublicKey"
-      ],
-      "Resource": "arn:aws:iam::*:user/${aws:username}"
-    },
-    {
-      "Sid": "DenyUserWithoutMFA",
-      "Effect": "Deny",
-      "NotAction": "iam:*",
-      "Resource": "*",
-      "Condition": {
-        "BoolIfExists": {
-          "aws:MultiFactorAuthPresent": "false"
-        }
-      }
     },
     {
       "Sid": "DisableMarketplace",
@@ -61,45 +16,6 @@
       "Resource": [
         "*"
       ]
-    },
-    {
-      "Sid": "EnableACMForuUSRegion",
-      "Effect": "Allow",
-      "Action": [
-        "acm:Describe*",
-        "acm:Get*",
-        "acm:List*"
-      ],
-      "Resource": [
-        "*"
-      ],
-      "Condition": {
-        "StringEquals": {
-          "aws:RequestedRegion": "us-east-1"
-        }
-      }
-    },
-    {
-      "Sid": "DisableOtherRegions",
-      "Effect": "Deny",
-      "NotAction": [
-        "aws-portal:*",
-        "iam:*",
-        "organizations:*",
-        "support:*",
-        "sts:*"
-      ],
-      "Resource": [
-        "*"
-      ],
-      "Condition": {
-        "StringNotEquals": {
-          "aws:RequestedRegion": [
-            "eu-west-1",
-            "eu-west-2"
-          ]
-        }
-      }
     }
   ]
 }
