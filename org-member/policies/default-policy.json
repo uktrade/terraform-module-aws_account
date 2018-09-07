@@ -32,40 +32,25 @@
         "iam:GetSSHPublicKey",
         "iam:DeleteSSHPublicKey",
         "iam:UpdateSSHPublicKey",
-        "iam:UploadSSHPublicKey"
+        "iam:UploadSSHPublicKey",
+        "iam:ListServiceSpecificCredentials"
       ],
       "Resource": "arn:aws:iam::*:user/${aws:username}"
     },
     {
-      "Sid": "DenyUserWithoutMFA",
-      "Effect": "Deny",
-      "NotAction": "iam:*",
-      "Resource": "*",
-      "Condition": {
-        "BoolIfExists": {
-          "aws:MultiFactorAuthPresent": "false"
-        }
-      }
-    },
-    {
-      "Sid": "EnableServicesForUSRegion",
+      "Sid": "BasicIAM",
       "Effect": "Allow",
       "Action": [
-        "acm:Describe*",
-        "acm:Get*",
-        "acm:List*",
-        "config:Describe*",
-        "config:Get*",
-        "config:List*"
+        "iam:ListRoles",
+        "iam:ListUsers",
+        "iam:ListUserPolicies",
+        "iam:ListGroups"
       ],
       "Resource": [
-        "*"
-      ],
-      "Condition": {
-        "StringEquals": {
-          "aws:RequestedRegion": "us-east-1"
-        }
-      }
+        "arn:aws:iam::*:user/",
+        "arn:aws:iam::*:group/",
+        "arn:aws:iam::*:role/"
+      ]
     },
     {
       "Sid": "DisableOtherRegions",

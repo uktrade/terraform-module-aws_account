@@ -32,25 +32,20 @@
         "iam:GetSSHPublicKey",
         "iam:DeleteSSHPublicKey",
         "iam:UpdateSSHPublicKey",
-        "iam:UploadSSHPublicKey",
-        "iam:ListServiceSpecificCredentials"
+        "iam:UploadSSHPublicKey"
       ],
       "Resource": "arn:aws:iam::*:user/${aws:username}"
     },
     {
-      "Sid": "BasicIAM",
-      "Effect": "Allow",
-      "Action": [
-        "iam:ListRoles",
-        "iam:ListUsers",
-        "iam:ListUserPolicies",
-        "iam:ListGroups"
-      ],
-      "Resource": [
-        "arn:aws:iam::*:user/",
-        "arn:aws:iam::*:group/",
-        "arn:aws:iam::*:role/"
-      ]
+      "Sid": "DenyUserWithoutMFA",
+      "Effect": "Deny",
+      "NotAction": "iam:*",
+      "Resource": "*",
+      "Condition": {
+        "BoolIfExists": {
+          "aws:MultiFactorAuthPresent": "false"
+        }
+      }
     },
     {
       "Sid": "DisableOtherRegions",
