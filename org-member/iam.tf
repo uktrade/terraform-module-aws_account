@@ -60,7 +60,6 @@ data "aws_iam_policy_document" "default_dev" {
   statement {
     sid = "DevAccess"
     actions = [
-      "rds:*",
       "s3:*",
       "es:*",
       "sqs:*",
@@ -74,6 +73,21 @@ data "aws_iam_policy_document" "default_dev" {
       "config:DeliverConfigSnapshot"
     ]
     resources = ["*"]
+  }
+  statement {
+    sid = "DevRDS"
+    actions = ["rds:*"]
+    resources = ["*"]
+    condition {
+      test = "StringEquals"
+      variable = "rds:DatabaseClass"
+      values = ["db.t2.small"]
+    }
+    condition {
+      test = "Bool"
+      variable = "rds:MultiAz"
+      values = ["false"]
+    }
   }
 }
 
@@ -311,7 +325,6 @@ data "aws_iam_policy_document" "default_dev_policy" {
   statement {
     sid = "DevAccess"
     actions = [
-      "rds:*",
       "s3:*",
       "es:*",
       "sqs:*",
@@ -325,5 +338,20 @@ data "aws_iam_policy_document" "default_dev_policy" {
       "config:DeliverConfigSnapshot"
     ]
     resources = ["*"]
+  }
+  statement {
+    sid = "DevRDS"
+    actions = ["rds:*"]
+    resources = ["*"]
+    condition {
+      test = "StringEquals"
+      variable = "rds:DatabaseClass"
+      values = ["db.t2.small"]
+    }
+    condition {
+      test = "Bool"
+      variable = "rds:MultiAz"
+      values = ["false"]
+    }
   }
 }
