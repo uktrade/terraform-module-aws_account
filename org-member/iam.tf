@@ -60,24 +60,12 @@ data "aws_iam_policy_document" "default_dev" {
   statement {
     sid = "DevAccess"
     actions = [
-      "ec2:*",
       "rds:*",
       "s3:*",
-      "ecs:*",
-      "elasticache:*",
       "es:*",
-      "lambda:*",
-      "ses:*",
-      "sns:*",
       "sqs:*",
-      "route53:*",
-      "servicediscovery:*",
       "kms:*",
       "cloudwatch:*",
-      "cloudfront:*",
-      "acm:*",
-      "autoscaling:*",
-      "elasticloadbalancing:*",
       "logs:*",
       "config:List*",
       "config:Get*",
@@ -99,6 +87,22 @@ resource "aws_iam_group_policy" "bastion_readonly" {
   name = "readonly-group"
   group = "${aws_iam_group.bastion_readonly.name}"
   policy = "${file("${path.module}/policies/default-policy.json")}"
+}
+
+resource "aws_iam_group_policy" "bastion_readonly_jump" {
+  provider = "aws.member"
+  name = "dit-readonly-group"
+  group = "${aws_iam_group.bastion_readonly.name}"
+  policy = "${data.aws_iam_policy_document.bastion_readonly_jump.json}"
+}
+
+data "aws_iam_policy_document" "bastion_readonly_jump" {
+  provider = "aws.member"
+  statement {
+    sid = "TrustBastionAccount"
+    actions = ["sts:AssumeRole"]
+    resources = ["arn:aws:iam::*:role/${aws_iam_role.bastion_readonly.name}"]
+  }
 }
 
 resource "aws_iam_role" "bastion_readonly" {
@@ -307,24 +311,12 @@ data "aws_iam_policy_document" "default_dev_policy" {
   statement {
     sid = "DevAccess"
     actions = [
-      "ec2:*",
       "rds:*",
       "s3:*",
-      "ecs:*",
-      "elasticache:*",
       "es:*",
-      "lambda:*",
-      "ses:*",
-      "sns:*",
       "sqs:*",
-      "route53:*",
-      "servicediscovery:*",
       "kms:*",
       "cloudwatch:*",
-      "cloudfront:*",
-      "acm:*",
-      "autoscaling:*",
-      "elasticloadbalancing:*",
       "logs:*",
       "config:List*",
       "config:Get*",
