@@ -32,8 +32,7 @@
         "iam:GetSSHPublicKey",
         "iam:DeleteSSHPublicKey",
         "iam:UpdateSSHPublicKey",
-        "iam:UploadSSHPublicKey",
-        "iam:ListServiceSpecificCredentials"
+        "iam:UploadSSHPublicKey"
       ],
       "Resource": "arn:aws:iam::*:user/${aws:username}"
     },
@@ -41,16 +40,35 @@
       "Sid": "BasicIAM",
       "Effect": "Allow",
       "Action": [
-        "iam:ListRoles",
-        "iam:ListUsers",
-        "iam:ListUserPolicies",
-        "iam:ListGroups"
+        "iam:List*",
+        "iam:GetAccountSummary",
+        "iam:GetLoginProfile"
       ],
-      "Resource": [
-        "arn:aws:iam::*:user/",
-        "arn:aws:iam::*:group/",
-        "arn:aws:iam::*:role/"
-      ]
+      "Resource": ["*"]
+    },
+    {
+      "Sid": "EnableServicesForUSRegion",
+      "Effect": "Allow",
+      "Action": [
+        "config:List*",
+        "config:Get*",
+        "config:Describe*",
+        "config:BatchGetResourceConfig",
+        "config:DeliverConfigSnapshot",
+        "acm:List*",
+        "acm:Get*",
+        "acm:Describe*"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": [
+            "us-east-1",
+            "eu-west-1",
+            "eu-west-2"
+          ]
+        }
+      }
     },
     {
       "Sid": "DisableOtherRegions",

@@ -12,10 +12,8 @@ resource "aws_iam_policy" "default_admin" {
 
 data "aws_iam_policy_document" "default_admin" {
   provider = "aws.member"
-  override_json = "${aws_iam_policy.default_policy.policy}"
   statement {
-    sid = "EnableIAMforAdmin"
-    actions = ["iam:*"]
+    actions = ["*"]
     resources = ["*"]
   }
   statement {
@@ -28,7 +26,24 @@ data "aws_iam_policy_document" "default_admin" {
     condition {
       test = "StringEquals"
       variable = "aws:RequestedRegion"
-      values = ["us-east-1"]
+      values = ["eu-west-1", "eu-west-2", "us-east-1"]
+    }
+  }
+  statement {
+    sid = "DisableOtherRegions"
+    effect = "Deny"
+    not_actions = [
+      "aws-portal:*",
+      "iam:*",
+      "organizations:*",
+      "support:*",
+      "sts:*"
+    ]
+    resources = ["*"]
+    condition {
+      test = "StringNotEquals"
+      variable = "aws:RequestedRegion"
+      values = ["eu-west-1", "eu-west-2"]
     }
   }
 }
@@ -43,21 +58,34 @@ data "aws_iam_policy_document" "default_dev" {
   provider = "aws.member"
   override_json = "${aws_iam_policy.default_policy.policy}"
   statement {
-    sid = "EnableServicesForUSRegion"
+    sid = "DevAccess"
     actions = [
-      "acm:Describe*",
-      "acm:Get*",
-      "acm:List*",
-      "config:Describe*",
+      "ec2:*",
+      "rds:*",
+      "s3:*",
+      "ecs:*",
+      "elasticache:*",
+      "es:*",
+      "lambda:*",
+      "ses:*",
+      "sns:*",
+      "sqs:*",
+      "route53:*",
+      "servicediscovery:*",
+      "kms:*",
+      "cloudwatch:*",
+      "cloudfront:*",
+      "acm:*",
+      "autoscaling:*",
+      "elasticloadbalancing:*",
+      "logs:*",
+      "config:List*",
       "config:Get*",
-      "config:List*"
+      "config:Describe*",
+      "config:BatchGetResourceConfig",
+      "config:DeliverConfigSnapshot"
     ]
     resources = ["*"]
-    condition {
-      test = "StringEquals"
-      variable = "aws:RequestedRegion"
-      values = ["us-east-1"]
-    }
   }
 }
 
@@ -93,7 +121,7 @@ data "aws_iam_policy_document" "bastion_sts_readonly" {
     condition {
       test = "StringEquals"
       variable = "aws:PrincipalOrgID"
-      values = ["${var.org["organization_id"]}"]
+      values = ["${element(split("/", var.org["organization_arn"]), 1)}"]
     }
     condition {
       test = "Bool"
@@ -101,9 +129,14 @@ data "aws_iam_policy_document" "bastion_sts_readonly" {
       values = ["true"]
     }
     condition {
-      test = "StringEquals"
-      variable = "iam:PermissionsBoundary"
-      values = ["arn:aws:iam::${var.org["bastion_account"]}:policy/dit-readonly"]
+      test = "Null"
+      variable = "aws:TokenIssueTime"
+      values = ["false"]
+    }
+    condition {
+      test = "Bool"
+      variable = "aws:SecureTransport"
+      values = ["true"]
     }
   }
 }
@@ -145,7 +178,7 @@ data "aws_iam_policy_document" "bastion_sts_admin" {
     condition {
       test = "StringEquals"
       variable = "aws:PrincipalOrgID"
-      values = ["${var.org["organization_id"]}"]
+      values = ["${element(split("/", var.org["organization_arn"]), 1)}"]
     }
     condition {
       test = "Bool"
@@ -153,9 +186,14 @@ data "aws_iam_policy_document" "bastion_sts_admin" {
       values = ["true"]
     }
     condition {
-      test = "StringEquals"
-      variable = "iam:PermissionsBoundary"
-      values = ["arn:aws:iam::${var.org["bastion_account"]}:policy/dit-default-admin"]
+      test = "Null"
+      variable = "aws:TokenIssueTime"
+      values = ["false"]
+    }
+    condition {
+      test = "Bool"
+      variable = "aws:SecureTransport"
+      values = ["true"]
     }
   }
 }
@@ -168,18 +206,47 @@ resource "aws_iam_role_policy_attachment" "bastion_admin" {
 
 resource "aws_iam_group" "bastion_dev" {
   provider = "aws.member"
+  count = "${var.member["dev_access"] == "true" || data.aws_caller_identity.member.account_id == var.org["bastion_account"] ? 1 : 0}"
   name = "dev"
 }
 
 resource "aws_iam_group_policy" "bastion_dev" {
   provider = "aws.member"
+  count = "${var.member["dev_access"] == "true" || data.aws_caller_identity.member.account_id == var.org["bastion_account"] ? 1 : 0}"
   name = "dev-group"
   group = "${aws_iam_group.bastion_dev.name}"
   policy = "${file("${path.module}/policies/default-policy.json")}"
 }
 
+resource "aws_iam_group_policy" "role_dev_policy_jump" {
+  provider = "aws.member"
+  count = "${data.aws_caller_identity.member.account_id == var.org["bastion_account"] ? 1 : 0}"
+  name = "dit-dev-policy"
+  group = "${aws_iam_group.bastion_dev.name}"
+  policy = "${file("${path.root}/.terraform/.cache/dev_sts_policy.json")}"
+  depends_on = ["local_file.default_dev_policy_jump"]
+}
+
+data "aws_iam_policy_document" "default_dev_policy_jump" {
+  provider = "aws.member"
+  count = "${var.member["dev_access"] == "true" ? 1 : 0}"
+  source_json = "${file("${path.root}/.terraform/.cache/dev_sts_policy.json")}"
+  statement {
+    sid = "${data.aws_caller_identity.member.account_id}DevAccess"
+    actions = ["sts:AssumeRole"]
+    resources = ["arn:aws:iam::${data.aws_caller_identity.member.account_id}:role/${aws_iam_role.bastion_dev.name}"]
+  }
+}
+
+resource "local_file" "default_dev_policy_jump" {
+  count = "${var.member["dev_access"] == "true" ? 1 : 0}"
+  content = "${data.aws_iam_policy_document.default_dev_policy_jump.json}"
+  filename = "${path.root}/.terraform/.cache/dev_sts_policy.json"
+}
+
 resource "aws_iam_role" "bastion_dev" {
   provider = "aws.member"
+  count = "${var.member["dev_access"] == "true" ? 1 : 0}"
   name = "dit-dev"
   assume_role_policy = "${data.aws_iam_policy_document.bastion_sts_dev.json}"
   max_session_duration = 43200
@@ -188,6 +255,7 @@ resource "aws_iam_role" "bastion_dev" {
 
 data "aws_iam_policy_document" "bastion_sts_dev" {
   provider = "aws.member"
+  count = "${var.member["dev_access"] == "true" ? 1 : 0}"
   statement {
     sid = "TrustBastionAccount"
     actions = ["sts:AssumeRole"]
@@ -198,7 +266,7 @@ data "aws_iam_policy_document" "bastion_sts_dev" {
     condition {
       test = "StringEquals"
       variable = "aws:PrincipalOrgID"
-      values = ["${var.org["organization_id"]}"]
+      values = ["${element(split("/", var.org["organization_arn"]), 1)}"]
     }
     condition {
       test = "Bool"
@@ -206,21 +274,28 @@ data "aws_iam_policy_document" "bastion_sts_dev" {
       values = ["true"]
     }
     condition {
-      test = "StringEquals"
-      variable = "iam:PermissionsBoundary"
-      values = ["arn:aws:iam::${var.org["bastion_account"]}:policy/dit-default-dev"]
+      test = "Null"
+      variable = "aws:TokenIssueTime"
+      values = ["false"]
+    }
+    condition {
+      test = "Bool"
+      variable = "aws:SecureTransport"
+      values = ["true"]
     }
   }
 }
 
 resource "aws_iam_role_policy_attachment" "bastion_dev" {
   provider = "aws.member"
+  count = "${var.member["dev_access"] == "true" ? 1 : 0}"
   role = "${aws_iam_role.bastion_dev.name}"
   policy_arn = "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
 }
 
 resource "aws_iam_role_policy" "role_dev_policy" {
   provider = "aws.member"
+  count = "${var.member["dev_access"] == "true" ? 1 : 0}"
   name = "dit-dev-policy"
   role = "${aws_iam_role.bastion_dev.name}"
   policy = "${data.aws_iam_policy_document.default_dev_policy.json}"
@@ -228,6 +303,7 @@ resource "aws_iam_role_policy" "role_dev_policy" {
 
 data "aws_iam_policy_document" "default_dev_policy" {
   provider = "aws.member"
+  count = "${var.member["dev_access"] == "true" ? 1 : 0}"
   statement {
     sid = "DevAccess"
     actions = [
@@ -238,13 +314,23 @@ data "aws_iam_policy_document" "default_dev_policy" {
       "elasticache:*",
       "es:*",
       "lambda:*",
-      "kms:List*",
-      "kms:Get*",
-      "kms:Describe*",
-      "kms:Generate*",
-      "kms:Create*",
-      "kms:Encrypt*",
-      "kms:Decrypt*"
+      "ses:*",
+      "sns:*",
+      "sqs:*",
+      "route53:*",
+      "servicediscovery:*",
+      "kms:*",
+      "cloudwatch:*",
+      "cloudfront:*",
+      "acm:*",
+      "autoscaling:*",
+      "elasticloadbalancing:*",
+      "logs:*",
+      "config:List*",
+      "config:Get*",
+      "config:Describe*",
+      "config:BatchGetResourceConfig",
+      "config:DeliverConfigSnapshot"
     ]
     resources = ["*"]
   }

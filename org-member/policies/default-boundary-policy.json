@@ -37,13 +37,42 @@
       "Resource": "arn:aws:iam::*:user/${aws:username}"
     },
     {
-      "Sid": "DenyUserWithoutMFA",
-      "Effect": "Deny",
-      "NotAction": "iam:*",
+      "Sid": "BasicIAM",
+      "Effect": "Allow",
+      "Action": [
+        "iam:List*",
+        "iam:GetAccountSummary",
+        "iam:GetLoginProfile"
+      ],
+      "Resource": ["*"]
+    },
+    {
+      "Sid": "AllowSwitchRoles",
+      "Effect": "Allow",
+      "Action": "sts:*",
+      "Resource": "*"
+    },
+    {
+      "Sid": "EnableServicesForUSRegion",
+      "Effect": "Allow",
+      "Action": [
+        "config:List*",
+        "config:Get*",
+        "config:Describe*",
+        "config:BatchGetResourceConfig",
+        "config:DeliverConfigSnapshot",
+        "acm:List*",
+        "acm:Get*",
+        "acm:Describe*"
+      ],
       "Resource": "*",
       "Condition": {
-        "BoolIfExists": {
-          "aws:MultiFactorAuthPresent": "false"
+        "StringEquals": {
+          "aws:RequestedRegion": [
+            "us-east-1",
+            "eu-west-1",
+            "eu-west-2"
+          ]
         }
       }
     },

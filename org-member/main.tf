@@ -8,6 +8,7 @@ variable "member" {
   default = {
     "aws_shared_credentials_file" = "~/.aws/credentials"
     "aws_profile" = "default"
+    "dev_access" = "false"
   }
 }
 
