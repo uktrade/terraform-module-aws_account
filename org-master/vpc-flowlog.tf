@@ -11,7 +11,7 @@ resource "aws_cloudwatch_log_group" "vpc_log" {
 resource "aws_flow_log" "vpc_log" {
   provider = "aws.master"
   count = "${length(data.aws_vpcs.vpcs.ids)}"
-  log_group_name = "${element(aws_cloudwatch_log_group.vpc_log.*.name, count.index)}"
+  log_destination = "${element(aws_cloudwatch_log_group.vpc_log.*.arn, count.index)}"
   iam_role_arn = "${aws_iam_role.vpc_log.arn}"
   vpc_id = "${element(data.aws_vpcs.vpcs.ids, count.index)}"
   traffic_type = "ALL"
