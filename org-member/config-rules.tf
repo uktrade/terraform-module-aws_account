@@ -52,6 +52,10 @@ resource "aws_config_config_rule" "config_rule_s3_public_read_prohibit" {
     owner = "AWS"
     source_identifier = "S3_BUCKET_PUBLIC_READ_PROHIBITED"
   }
+  scope {
+    tag_key = "website"
+    tag_value = "false"
+  }
 }
 
 resource "aws_config_config_rule" "config_rule_s3_public_write_prohibit" {
@@ -70,6 +74,10 @@ resource "aws_config_config_rule" "config_rule_s3_sse" {
     owner = "AWS"
     source_identifier = "S3_BUCKET_SERVER_SIDE_ENCRYPTION_ENABLED"
   }
+  scope {
+    tag_key = "website"
+    tag_value = "false"
+  }
 }
 
 resource "aws_config_config_rule" "config_rule_s3_ssl" {
@@ -78,6 +86,10 @@ resource "aws_config_config_rule" "config_rule_s3_ssl" {
   source {
     owner = "AWS"
     source_identifier = "S3_BUCKET_SSL_REQUESTS_ONLY"
+  }
+  scope {
+    tag_key = "website"
+    tag_value = "false"
   }
 }
 
