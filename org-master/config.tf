@@ -70,6 +70,9 @@ resource "aws_s3_bucket" "master_config_bucket" {
       }
     }
   }
+  tags = {
+    "website" = "false"
+  }
 }
 
 data "template_file" "config_s3_policy" {

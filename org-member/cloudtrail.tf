@@ -60,6 +60,9 @@ resource "aws_s3_bucket" "cloudtrail-s3" {
       }
     }
   }
+  tags = {
+    "website" = "false"
+  }
   policy = "${data.template_file.cloudtrail-s3.rendered}"
 }
 
