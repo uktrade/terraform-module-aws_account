@@ -1,13 +1,3 @@
-resource "aws_config_configuration_recorder" "config" {
-  provider = "aws.member"
-  name = "config-${data.aws_caller_identity.member.account_id}"
-  role_arn = "${aws_iam_role.config_role.arn}"
-  recording_group {
-    all_supported = true
-    include_global_resource_types = true
-  }
-}
-
 resource "aws_iam_role" "config_role" {
   provider = "aws.member"
   name = "config-role"
@@ -59,11 +49,27 @@ resource "aws_iam_role_policy" "config_s3_policy" {
   policy = "${data.template_file.config_s3_policy.rendered}"
 }
 
+resource "aws_config_configuration_recorder" "config" {
+  provider = "aws.member"
+  name = "config-${data.aws_caller_identity.member.account_id}"
+  role_arn = "${aws_iam_role.config_role.arn}"
+  recording_group {
+    all_supported = true
+    include_global_resource_types = true
+  }
+}
+
 resource "aws_config_configuration_recorder_status" "config" {
   provider = "aws.member"
   name = "${aws_config_configuration_recorder.config.name}"
   is_enabled = true
   depends_on = ["aws_config_delivery_channel.member"]
+}
+
+resource "aws_config_aggregate_authorization" "member_alt" {
+  provider = "aws.member"
+  account_id = "${data.aws_caller_identity.member.account_id}"
+  region = "${data.aws_region.master_config.name}"
 }
 
 resource "aws_config_delivery_channel" "member" {
