@@ -1,21 +1,21 @@
-resource "aws_securityhub_account" "master" {
-  provider = "aws.master"
+resource "aws_securityhub_account" "member" {
+  provider = "aws.member"
 }
 
 resource "aws_securityhub_product_subscription" "securityhub-guardduty" {
-  provider = "aws.master"
-  depends_on  = ["aws_securityhub_account.master"]
-  product_arn = "arn:aws:securityhub:${data.aws_region.master.name}::product/aws/guardduty"
+  provider = "aws.member"
+  depends_on  = ["aws_securityhub_account.member"]
+  product_arn = "arn:aws:securityhub:${data.aws_region.member.name}::product/aws/guardduty"
 }
 
 resource "aws_securityhub_product_subscription" "securityhub-inspector" {
-  provider = "aws.master"
-  depends_on  = ["aws_securityhub_account.master"]
-  product_arn = "arn:aws:securityhub:${data.aws_region.master.name}::product/aws/inspector"
+  provider = "aws.member"
+  depends_on  = ["aws_securityhub_account.member"]
+  product_arn = "arn:aws:securityhub:${data.aws_region.member.name}::product/aws/inspector"
 }
 
 resource "aws_securityhub_product_subscription" "securityhub-macie" {
-  provider = "aws.master"
-  depends_on  = ["aws_securityhub_account.master"]
-  product_arn = "arn:aws:securityhub:${data.aws_region.master.name}::product/aws/macie"
+  provider = "aws.member"
+  depends_on  = ["aws_securityhub_account.member"]
+  product_arn = "arn:aws:securityhub:${data.aws_region.member.name}::product/aws/macie"
 }
