@@ -24,12 +24,6 @@ resource "aws_config_delivery_channel" "member_alt" {
   }
 }
 
-resource "aws_config_aggregate_authorization" "member_alt" {
-  provider = "aws.master.config"
-  account_id = "${data.aws_caller_identity.member.account_id}"
-  region = "${data.aws_region.master_config.name}"
-}
-
 resource "aws_cloudwatch_event_permission" "master-config_alt" {
   provider = "aws.master.config"
   principal = "${data.aws_caller_identity.member.account_id}"

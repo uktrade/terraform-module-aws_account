@@ -66,7 +66,7 @@ resource "aws_config_configuration_recorder_status" "config" {
   depends_on = ["aws_config_delivery_channel.member"]
 }
 
-resource "aws_config_aggregate_authorization" "member_alt" {
+resource "aws_config_aggregate_authorization" "member" {
   provider = "aws.member"
   account_id = "${data.aws_caller_identity.member.account_id}"
   region = "${data.aws_region.master_config.name}"

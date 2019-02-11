@@ -1,13 +1,3 @@
-resource "aws_config_configuration_aggregator" "master_alt" {
-  provider = "aws.master.config"
-  name = "aws-org-config"
-  organization_aggregation_source {
-    all_regions = true
-    role_arn = "${aws_iam_role.master_config_role.arn}"
-  }
-  depends_on = ["aws_iam_role_policy_attachment.config_organization"]
-}
-
 resource "aws_config_configuration_recorder" "master_config_alt" {
   provider = "aws.master.config"
   name = "config-${data.aws_caller_identity.master.account_id}"
