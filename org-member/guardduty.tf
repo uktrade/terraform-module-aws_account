@@ -11,11 +11,6 @@ resource "aws_guardduty_member" "org" {
   invite = true
 }
 
-resource "aws_iam_role_policy_attachment" "guardduty_role" {
-  role = "AWSServiceRoleForAmazonGuardDuty"
-  policy_arn = "arn:aws:iam::aws:policy/AmazonGuardDutyFullAccess"
-}
-
 resource "aws_cloudwatch_event_target" "guardduty" {
   provider = "aws.member"
   arn = "${var.org["cloudwatch_eventbus_arn"]}"
