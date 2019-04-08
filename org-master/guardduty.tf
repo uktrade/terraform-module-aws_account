@@ -3,6 +3,11 @@ resource "aws_guardduty_detector" "master" {
   enable = true
 }
 
+resource "aws_iam_role_policy_attachment" "guardduty_role" {
+  role = "AWSServiceRoleForAmazonGuardDuty"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonGuardDutyFullAccess"
+}
+
 resource "aws_sns_topic" "guardduty_sns" {
   provider = "aws.master"
   name = "org-guardduty-sns"
