@@ -95,13 +95,13 @@ resource "aws_cloudwatch_event_rule" "config" {
   provider = "aws.member"
   name = "rule-config-${data.aws_caller_identity.member.account_id}"
   event_pattern = <<INPUT
-    {
-      "source": [
-        "aws.config"
-      ],
-      "detail-type": [
-        "Config Rules Compliance Change"
-      ]
-    }
-  INPUT
+{
+  "source": [
+    "aws.config"
+  ],
+  "detail-type": [
+    "Config Rules Compliance Change"
+  ]
+}
+INPUT
 }
