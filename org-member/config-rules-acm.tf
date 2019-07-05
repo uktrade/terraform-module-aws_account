@@ -101,10 +101,10 @@ resource "aws_config_config_rule" "config_rule_acm_expiration_acm" {
     source_identifier = "ACM_CERTIFICATE_EXPIRATION_CHECK"
   }
   input_parameters = <<INPUT
-    {
-      "daysToExpiration": "14"
-    }
-  INPUT
+{
+  "daysToExpiration": "14"
+}
+INPUT
   maximum_execution_frequency = "TwentyFour_Hours"
 }
 
@@ -116,15 +116,15 @@ resource "aws_config_config_rule" "config_rule_iam_password_policy_acm" {
     source_identifier = "IAM_PASSWORD_POLICY"
   }
   input_parameters = <<INPUT
-    {
-      "RequireUppercaseCharacters": "true",
-      "RequireLowercaseCharacters": "true",
-      "RequireSymbols": "true",
-      "RequireNumbers": "true",
-      "MinimumPasswordLength": "14",
-      "PasswordReusePrevention": "24",
-      "MaxPasswordAge": "90"
-    }
-  INPUT
+{
+  "RequireUppercaseCharacters": "true",
+  "RequireLowercaseCharacters": "true",
+  "RequireSymbols": "true",
+  "RequireNumbers": "true",
+  "MinimumPasswordLength": "14",
+  "PasswordReusePrevention": "24",
+  "MaxPasswordAge": "90"
+}
+INPUT
   maximum_execution_frequency = "TwentyFour_Hours"
 }
