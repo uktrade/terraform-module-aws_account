@@ -6,7 +6,7 @@ resource "aws_config_config_rule" "config_rule_cloudtrail_acm" {
     source_identifier = "CLOUD_TRAIL_ENABLED"
   }
   maximum_execution_frequency = "TwentyFour_Hours"
-  depends_on = ["aws_config_configuration_recorder.master_config_alt"]
+  depends_on = ["aws_config_configuration_recorder.master_config"]
 }
 
 resource "aws_config_config_rule" "config_rule_ec2_instance_acm" {
@@ -16,7 +16,7 @@ resource "aws_config_config_rule" "config_rule_ec2_instance_acm" {
     owner = "AWS"
     source_identifier = "INSTANCES_IN_VPC"
   }
-  depends_on = ["aws_config_configuration_recorder.master_config_alt"]
+  depends_on = ["aws_config_configuration_recorder.master_config"]
 }
 
 resource "aws_config_config_rule" "config_rule_lambda_public_prohibited_acm" {
@@ -26,7 +26,7 @@ resource "aws_config_config_rule" "config_rule_lambda_public_prohibited_acm" {
     owner = "AWS"
     source_identifier = "LAMBDA_FUNCTION_PUBLIC_ACCESS_PROHIBITED"
   }
-  depends_on = ["aws_config_configuration_recorder.master_config_alt"]
+  depends_on = ["aws_config_configuration_recorder.master_config"]
 }
 
 resource "aws_config_config_rule" "config_rule_db_backup_enabled_acm" {
@@ -36,7 +36,7 @@ resource "aws_config_config_rule" "config_rule_db_backup_enabled_acm" {
     owner = "AWS"
     source_identifier = "DB_INSTANCE_BACKUP_ENABLED"
   }
-  depends_on = ["aws_config_configuration_recorder.master_config_alt"]
+  depends_on = ["aws_config_configuration_recorder.master_config"]
 }
 
 resource "aws_config_config_rule" "config_rule_root_mfa_acm" {
@@ -47,7 +47,7 @@ resource "aws_config_config_rule" "config_rule_root_mfa_acm" {
     source_identifier = "ROOT_ACCOUNT_MFA_ENABLED"
   }
   maximum_execution_frequency = "TwentyFour_Hours"
-  depends_on = ["aws_config_configuration_recorder.master_config_alt"]
+  depends_on = ["aws_config_configuration_recorder.master_config"]
 }
 
 resource "aws_config_config_rule" "config_rule_s3_public_read_prohibit_acm" {
@@ -61,7 +61,7 @@ resource "aws_config_config_rule" "config_rule_s3_public_read_prohibit_acm" {
     tag_key = "website"
     tag_value = "false"
   }
-  depends_on = ["aws_config_configuration_recorder.master_config_alt"]
+  depends_on = ["aws_config_configuration_recorder.master_config"]
 }
 
 resource "aws_config_config_rule" "config_rule_s3_public_write_prohibit_acm" {
@@ -71,7 +71,7 @@ resource "aws_config_config_rule" "config_rule_s3_public_write_prohibit_acm" {
     owner = "AWS"
     source_identifier = "S3_BUCKET_PUBLIC_WRITE_PROHIBITED"
   }
-  depends_on = ["aws_config_configuration_recorder.master_config_alt"]
+  depends_on = ["aws_config_configuration_recorder.master_config"]
 }
 
 resource "aws_config_config_rule" "config_rule_s3_sse_acm" {
@@ -85,7 +85,7 @@ resource "aws_config_config_rule" "config_rule_s3_sse_acm" {
     tag_key = "website"
     tag_value = "false"
   }
-  depends_on = ["aws_config_configuration_recorder.master_config_alt"]
+  depends_on = ["aws_config_configuration_recorder.master_config"]
 }
 
 resource "aws_config_config_rule" "config_rule_s3_ssl_acm" {
@@ -99,7 +99,7 @@ resource "aws_config_config_rule" "config_rule_s3_ssl_acm" {
     tag_key = "website"
     tag_value = "false"
   }
-  depends_on = ["aws_config_configuration_recorder.master_config_alt"]
+  depends_on = ["aws_config_configuration_recorder.master_config"]
 }
 
 resource "aws_config_config_rule" "config_rule_acm_expiration_acm" {
@@ -115,7 +115,7 @@ resource "aws_config_config_rule" "config_rule_acm_expiration_acm" {
 }
 INPUT
   maximum_execution_frequency = "TwentyFour_Hours"
-  depends_on = ["aws_config_configuration_recorder.master_config_alt"]
+  depends_on = ["aws_config_configuration_recorder.master_config"]
 }
 
 resource "aws_config_config_rule" "config_rule_iam_password_policy_acm" {
@@ -137,5 +137,5 @@ resource "aws_config_config_rule" "config_rule_iam_password_policy_acm" {
 }
 INPUT
   maximum_execution_frequency = "TwentyFour_Hours"
-  depends_on = ["aws_config_configuration_recorder.master_config_alt"]
+  depends_on = ["aws_config_configuration_recorder.master_config"]
 }
