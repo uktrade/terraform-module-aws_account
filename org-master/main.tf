@@ -25,6 +25,7 @@ data "aws_caller_identity" "master" {
 variable "aws_regions" {
   type = "list"
   default = [
+    "eu-north-1",
     "ap-south-1",
     "eu-west-3",
     "eu-west-2",
