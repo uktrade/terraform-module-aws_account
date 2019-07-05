@@ -10,31 +10,6 @@ provider "aws" {
   alias = "master"
 }
 
-provider "aws" {
-  alias = "master.config"
-  shared_credentials_file = "${var.org["aws_shared_credentials_file"]}"
-  profile = "${var.org["aws_profile"]}"
-  region = "${var.org["aws_config_region"]}"
-}
-
-provider "aws" {
-  alias = "master.config_acm"
-  shared_credentials_file = "${var.org["aws_shared_credentials_file"]}"
-  profile = "${var.org["aws_profile"]}"
-  region = "us-east-1"
-}
-
-data "aws_region" "master_config" {
-  provider = "aws.master.config"
-}
-
-# output "aws_config_debug" {
-#   value = "${map(
-#             "aws_config_account_id", "${data.aws_caller_identity.master_config.account_id}",
-#             "aws_config_region", "${data.aws_region.master_config.name}"
-#           )}"
-# }
-
 data "aws_region" "master" {
   provider = "aws.master"
 }
