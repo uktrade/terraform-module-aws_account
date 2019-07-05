@@ -72,7 +72,7 @@ resource "aws_config_configuration_recorder_status" "config" {
 resource "aws_config_aggregate_authorization" "member" {
   provider = "aws.member"
   account_id = "${data.aws_caller_identity.member.account_id}"
-  region = "${data.aws_region.master_config.name}"
+  region = "${data.aws_region.master.name}"
 }
 
 resource "aws_config_delivery_channel" "member" {
