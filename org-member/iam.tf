@@ -232,7 +232,7 @@ resource "aws_iam_group_policy" "bastion_dev" {
   provider = aws.member
   count = var.member["dev_access"] == "true" || data.aws_caller_identity.member.account_id == var.org["bastion_account"] ? 1 : 0
   name = "dev-group"
-  group = aws_iam_group.bastion_dev.name
+  group = "${aws_iam_group.bastion_dev.name}"
   policy = file("${path.module}/policies/default-policy.json")
 }
 
@@ -266,7 +266,7 @@ resource "aws_iam_role" "bastion_dev" {
   provider = aws.member
   count = var.member["dev_access"] == "true" ? 1 : 0
   name = "dit-dev"
-  assume_role_policy = data.aws_iam_policy_document.bastion_sts_dev.json
+  assume_role_policy = "${data.aws_iam_policy_document.bastion_sts_dev.json}"
   max_session_duration = 43200
   permissions_boundary = aws_iam_policy.default_dev.arn
 }

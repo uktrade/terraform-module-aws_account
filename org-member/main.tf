@@ -33,7 +33,7 @@ data "aws_region" "all_regions" {
 }
 
 data "aws_caller_identity" "master" {
-  provider = "aws.master"
+  provider = aws.master
 }
 
 data "aws_caller_identity" "member" {

@@ -40,7 +40,7 @@ resource "aws_s3_bucket" "config_bucket" {
 
 data "template_file" "config_s3_policy" {
   template = "${file("${path.module}/policies/config-s3.json")}"
-  vars {
+  vars = {
     config_s3_arn = "${aws_s3_bucket.config_bucket.arn}"
   }
 }
