@@ -34,7 +34,7 @@ resource "aws_config_configuration_aggregator" "master" {
 resource "aws_config_configuration_recorder" "master_config" {
   provider = aws.master
   name = "config-${data.aws_caller_identity.master.account_id}"
-  role_arn = {aws_iam_role.master_config_role.arn
+  role_arn = aws_iam_role.master_config_role.arn
   recording_group {
     all_supported = true
     include_global_resource_types = true
