@@ -1,5 +1,5 @@
 variable "org" {
-  type = "map"
+  type = map(string)
   default = {
     "aws_shared_credentials_file" = "~/.aws/credentials"
     "aws_profile" = "default"
@@ -11,19 +11,19 @@ provider "aws" {
 }
 
 data "aws_region" "master" {
-  provider = "aws.master"
+  provider = aws.master
 }
 
 data "aws_region" "all_regions" {
-  provider = "aws.master"
+  provider = aws.master
 }
 
 data "aws_caller_identity" "master" {
-  provider = "aws.master"
+  provider = aws.master
 }
 
 variable "aws_regions" {
-  type = "list"
+  type = list(string)
   default = [
     "eu-north-1",
     "ap-south-1",

@@ -1,5 +1,5 @@
 resource "aws_organizations_organization" "org" {
-  provider = "aws.master"
+  provider = aws.master
   feature_set = "ALL"
   aws_service_access_principals = [
     "aws-artifact-account-sync.amazonaws.com",
@@ -15,7 +15,7 @@ resource "aws_organizations_organization" "org" {
 }
 
 resource "aws_organizations_policy" "org_policy" {
-  provider = "aws.master"
+  provider = aws.master
   name = "default-pollicy"
-  content = "${file("${path.module}/policies/org-policy.json")}"
+  content = file("${path.module}/policies/org-policy.json")
 }

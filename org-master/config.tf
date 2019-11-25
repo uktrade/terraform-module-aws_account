@@ -1,7 +1,7 @@
 resource "aws_iam_role" "master_config_role" {
-  provider = "aws.master"
+  provider = aws.master
   name = "config-role"
-  assume_role_policy = "${data.aws_iam_policy_document.master_config_sts.json}"
+  assume_role_policy = data.aws_iam_policy_document.master_config_sts.json
 }
 
 data "aws_iam_policy_document" "master_config_sts" {
@@ -16,25 +16,25 @@ data "aws_iam_policy_document" "master_config_sts" {
 }
 
 resource "aws_iam_role_policy_attachment" "config_organization" {
-  provider = "aws.master"
-  role = "${aws_iam_role.master_config_role.name}"
+  provider = aws.master
+  role = aws_iam_role.master_config_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRoleForOrganizations"
 }
 
 resource "aws_config_configuration_aggregator" "master" {
-  provider = "aws.master"
+  provider = aws.master
   name = "aws-org-config"
   organization_aggregation_source {
     all_regions = true
     role_arn = "${aws_iam_role.master_config_role.arn}"
   }
-  depends_on = ["aws_iam_role_policy_attachment.config_organization"]
+  depends_on = [aws_iam_role_policy_attachment.config_organization]
 }
 
 resource "aws_config_configuration_recorder" "master_config" {
-  provider = "aws.master"
+  provider = aws.master
   name = "config-${data.aws_caller_identity.master.account_id}"
-  role_arn = "${aws_iam_role.master_config_role.arn}"
+  role_arn = {aws_iam_role.master_config_role.arn
   recording_group {
     all_supported = true
     include_global_resource_types = true
@@ -42,25 +42,25 @@ resource "aws_config_configuration_recorder" "master_config" {
 }
 
 resource "aws_iam_role_policy_attachment" "master_config_policy" {
-  provider = "aws.master"
-  role = "${aws_iam_role.master_config_role.name}"
+  provider = aws.master
+  role = aws_iam_role.master_config_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRole"
 }
 
 resource "aws_iam_policy" "master_config_service_policy" {
-  provider = "aws.master"
+  provider = aws.master
   name = "master_config_service_policy"
-  policy = "${file("${path.module}/policies/config-svc.json")}"
+  policy = file("${path.module}/policies/config-svc.json")
 }
 
 resource "aws_iam_role_policy_attachment" "master_config_service_policy" {
-  provider = "aws.master"
-  role = "${aws_iam_role.master_config_role.name}"
-  policy_arn = "${aws_iam_policy.master_config_service_policy.id}"
+  provider = aws.master
+  role = aws_iam_role.master_config_role.name
+  policy_arn = aws_iam_policy.master_config_service_policy.id
 }
 
 resource "aws_s3_bucket" "master_config_bucket" {
-  provider = "aws.master"
+  provider = aws.master
   bucket = "aws-config-${data.aws_caller_identity.master.account_id}"
   acl = "private"
   server_side_encryption_configuration {
@@ -76,49 +76,49 @@ resource "aws_s3_bucket" "master_config_bucket" {
 }
 
 data "template_file" "config_s3_policy" {
-  template = "${file("${path.module}/policies/config-s3.json")}"
-  vars {
-    config_s3_arn = "${aws_s3_bucket.master_config_bucket.arn}"
+  template = file("${path.module}/policies/config-s3.json")
+  vars = {
+    config_s3_arn = aws_s3_bucket.master_config_bucket.arn
   }
 }
 
 resource "aws_iam_role_policy" "config_s3_policy" {
-  provider = "aws.master"
+  provider = aws.master
   name = "config_s3_policy"
-  role = "${aws_iam_role.master_config_role.name}"
-  policy = "${data.template_file.config_s3_policy.rendered}"
+  role = aws_iam_role.master_config_role.name
+  policy = data.template_file.config_s3_policy.rendered
 }
 
 resource "aws_config_configuration_recorder_status" "master_config" {
-  provider = "aws.master"
-  name = "${aws_config_configuration_recorder.master_config.name}"
+  provider = aws.master
+  name = aws_config_configuration_recorder.master_config.name
   is_enabled = true
-  depends_on = ["aws_config_delivery_channel.master"]
+  depends_on = [aws_config_delivery_channel.master]
 }
 
 resource "aws_config_delivery_channel" "master" {
-  provider = "aws.master"
+  provider = aws.master
   name = "aws-config-${data.aws_caller_identity.master.account_id}"
-  s3_bucket_name = "${aws_s3_bucket.master_config_bucket.id}"
+  s3_bucket_name = aws_s3_bucket.master_config_bucket.id
   snapshot_delivery_properties {
     delivery_frequency = "One_Hour"
   }
-  depends_on = ["aws_config_configuration_recorder.master_config"]
+  depends_on = [aws_config_configuration_recorder.master_config]
 }
 
 resource "aws_sns_topic" "config_sns" {
-  provider = "aws.master"
+  provider = aws.master
   name = "org-config-sns"
 }
 
 resource "aws_sns_topic_policy" "config_sns" {
-  provider = "aws.master"
-  arn = "${aws_sns_topic.config_sns.id}"
-  policy = "${data.aws_iam_policy_document.config_sns_policy.json}"
+  provider = aws.master
+  arn = aws_sns_topic.config_sns.id
+  policy = data.aws_iam_policy_document.config_sns_policy.json
 }
 
 data "aws_iam_policy_document" "config_sns_policy" {
-  provider = "aws.master"
+  provider = aws.master
   statement {
     sid = "Default SNS policy"
     actions = [
@@ -166,14 +166,14 @@ data "aws_iam_policy_document" "config_sns_policy" {
 }
 
 resource "aws_iam_role_policy" "config_sns_policy" {
-  provider = "aws.master"
+  provider = aws.master
   name = "config_sns_policy"
-  role = "${aws_iam_role.master_config_role.name}"
-  policy = "${data.aws_iam_policy_document.config_sns.json}"
+  role = aws_iam_role.master_config_role.name
+  policy = data.aws_iam_policy_document.config_sns.json
 }
 
 data "aws_iam_policy_document" "config_sns" {
-  provider = "aws.master"
+  provider = aws.master
   statement {
     sid = "DefaultPolicyForAWSConfig"
     actions = ["SNS:Publish"]
@@ -182,9 +182,9 @@ data "aws_iam_policy_document" "config_sns" {
 }
 
 resource "aws_cloudwatch_event_target" "config" {
-  provider = "aws.master"
-  arn = "${aws_sns_topic.config_sns.arn}"
-  rule = "${aws_cloudwatch_event_rule.config.name}"
+  provider = aws.master
+  arn = aws_sns_topic.config_sns.arn
+  rule = aws_cloudwatch_event_rule.config.name
   input_transformer {
     input_paths = {
       source = "$.source"
@@ -236,7 +236,7 @@ INPUT
 }
 
 resource "aws_cloudwatch_event_rule" "config" {
-  provider = "aws.master"
+  provider = aws.master
   name = "org-rule-config"
   event_pattern = <<INPUT
     {
@@ -247,5 +247,5 @@ resource "aws_cloudwatch_event_rule" "config" {
         "Config Rules Compliance Change"
       ]
     }
-  INPUT
+INPUT
 }

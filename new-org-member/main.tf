@@ -1,10 +1,10 @@
 variable "org" {
-  type = "map"
+  type = map(string)
   default = {}
 }
 
 variable "member" {
-  type = "map"
+  type = map(string)
   default = {}
 }
 
@@ -13,15 +13,15 @@ provider "aws" {
 }
 
 data "aws_region" "master" {
-  provider = "aws.master"
+  provider = aws.master
 }
 
 data "aws_caller_identity" "master" {
-  provider = "aws.master"
+  provider = aws.master
 }
 
 variable "aws_regions" {
-  type = "list"
+  type = list(string)
   default = [
     "ap-south-1",
     "eu-west-3",

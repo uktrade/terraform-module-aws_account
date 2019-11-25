@@ -1,21 +1,21 @@
 resource "aws_guardduty_detector" "master" {
-  provider = "aws.master"
+  provider = aws.master
   enable = true
 }
 
 resource "aws_sns_topic" "guardduty_sns" {
-  provider = "aws.master"
+  provider = aws.master
   name = "org-guardduty-sns"
 }
 
 resource "aws_sns_topic_policy" "guardduty_sns" {
-  provider = "aws.master"
-  arn = "${aws_sns_topic.guardduty_sns.id}"
-  policy = "${data.aws_iam_policy_document.guardduty_sns.json}"
+  provider = aws.master
+  arn = aws_sns_topic.guardduty_sns.id
+  policy = data.aws_iam_policy_document.guardduty_sns.json
 }
 
 data "aws_iam_policy_document" "guardduty_sns" {
-  provider = "aws.master"
+  provider = aws.master
   statement {
     sid = "Default SNS policy"
     actions = [
@@ -53,9 +53,9 @@ data "aws_iam_policy_document" "guardduty_sns" {
 }
 
 resource "aws_cloudwatch_event_target" "guardduty" {
-  provider = "aws.master"
-  arn = "${aws_sns_topic.guardduty_sns.arn}"
-  rule = "${aws_cloudwatch_event_rule.guardduty.name}"
+  provider = aws.master
+  arn = aws_sns_topic.guardduty_sns.arn
+  rule = aws_cloudwatch_event_rule.guardduty.name
   input_transformer {
       input_paths = {
       source = "$.source"
@@ -103,17 +103,17 @@ resource "aws_cloudwatch_event_target" "guardduty" {
         }],
       "fallback": "Severity <severity> - <type>/<resourceType> <actionType>"
     }]
-    INPUT
+INPUT
   }
 }
 
 resource "aws_cloudwatch_event_rule" "guardduty" {
-  provider = "aws.master"
+  provider = aws.master
   name = "org-rule-guardduty"
   event_pattern = <<INPUT
     {
       "source": ["aws.guardduty"],
       "detail-type": ["GuardDuty Finding"]
     }
-  INPUT
+INPUT
 }

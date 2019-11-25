@@ -1,17 +1,17 @@
 resource "aws_iam_policy" "default_policy" {
-  provider = "aws.master"
+  provider = aws.master
   name = "dit-default"
-  policy = "${file("${path.module}/policies/default-boundary-policy.json")}"
+  policy = file("${path.module}/policies/default-boundary-policy.json")
 }
 
 resource "aws_iam_policy" "default_admin" {
-  provider = "aws.master"
+  provider = aws.master
   name = "dit-default-admin"
-  policy = "${data.aws_iam_policy_document.default_admin.json}"
+  policy = data.aws_iam_policy_document.default_admin.json
 }
 
 data "aws_iam_policy_document" "default_admin" {
-  provider = "aws.master"
+  provider = aws.master
   statement {
     actions = ["*"]
     resources = ["*"]
@@ -49,27 +49,27 @@ data "aws_iam_policy_document" "default_admin" {
 }
 
 resource "aws_iam_group" "bastion_readonly" {
-  provider = "aws.master"
+  provider = aws.master
   name = "readonly"
 }
 
 resource "aws_iam_group_policy" "bastion_readonly" {
-  provider = "aws.master"
+  provider = aws.master
   name = "readonly-group"
-  group = "${aws_iam_group.bastion_readonly.name}"
-  policy = "${file("${path.module}/policies/default-policy.json")}"
+  group = aws_iam_group.bastion_readonly.name
+  policy = file("${path.module}/policies/default-policy.json")
 }
 
 resource "aws_iam_role" "bastion_readonly" {
-  provider = "aws.master"
+  provider = aws.master
   name = "dit-readonly"
-  assume_role_policy = "${data.aws_iam_policy_document.bastion_sts_readonly.json}"
+  assume_role_policy = data.aws_iam_policy_document.bastion_sts_readonly.json
   max_session_duration = 43200
-  permissions_boundary = "${aws_iam_policy.default_policy.arn}"
+  permissions_boundary = aws_iam_policy.default_policy.arn
 }
 
 data "aws_iam_policy_document" "bastion_sts_readonly" {
-  provider = "aws.master"
+  provider = aws.master
   statement {
     sid = "TrustBastionAccount"
     actions = ["sts:AssumeRole"]
@@ -101,32 +101,32 @@ data "aws_iam_policy_document" "bastion_sts_readonly" {
 }
 
 resource "aws_iam_role_policy_attachment" "bastion_readonly" {
-  provider = "aws.master"
-  role = "${aws_iam_role.bastion_readonly.name}"
+  provider = aws.master
+  role = aws_iam_role.bastion_readonly.name
   policy_arn = "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
 }
 
 resource "aws_iam_group" "bastion_admin" {
-  provider = "aws.master"
+  provider = aws.master
   name = "admin"
 }
 
 resource "aws_iam_group_policy_attachment" "bastion_admin" {
-  provider = "aws.master"
-  group = "${aws_iam_group.bastion_admin.name}"
+  provider = aws.master
+  group = aws_iam_group.bastion_admin.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
 resource "aws_iam_role" "bastion_admin" {
-  provider = "aws.master"
+  provider = aws.master
   name = "dit-admin"
-  assume_role_policy = "${data.aws_iam_policy_document.bastion_sts_admin.json}"
+  assume_role_policy = data.aws_iam_policy_document.bastion_sts_admin.json
   max_session_duration = 43200
-  permissions_boundary = "${aws_iam_policy.default_admin.arn}"
+  permissions_boundary = aws_iam_policy.default_admin.arn
 }
 
 data "aws_iam_policy_document" "bastion_sts_admin" {
-  provider = "aws.master"
+  provider = aws.master
   statement {
     sid = "TrustBastionAccount"
     actions = ["sts:AssumeRole"]
@@ -158,7 +158,7 @@ data "aws_iam_policy_document" "bastion_sts_admin" {
 }
 
 resource "aws_iam_role_policy_attachment" "bastion_admin" {
-  provider = "aws.master"
-  role = "${aws_iam_role.bastion_admin.name}"
+  provider = aws.master
+  role = aws_iam_role.bastion_admin.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
