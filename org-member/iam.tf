@@ -222,58 +222,64 @@ resource "aws_iam_role_policy_attachment" "bastion_admin" {
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
+locals {
+  dev = var.member["dev_access"] == "true" ? 1 : 0
+  bastion = data.aws_caller_identity.member.account_id == var.org["bastion_account"] ? 1 : 0
+  bastion_dev = (var.member["dev_access"] == "true" || data.aws_caller_identity.member.account_id == var.org["bastion_account"]) ? 1 : 0
+}
+
 resource "aws_iam_group" "bastion_dev" {
   provider = aws.member
-  count = var.member["dev_access"] == "true" || data.aws_caller_identity.member.account_id == var.org["bastion_account"] ? 1 : 0
+  count = local.bastion_dev
   name = "dev"
 }
 
 resource "aws_iam_group_policy" "bastion_dev" {
   provider = aws.member
-  count = var.member["dev_access"] == "true" || data.aws_caller_identity.member.account_id == var.org["bastion_account"] ? 1 : 0
+  count = local.bastion_dev
   name = "dev-group"
-  group = "${aws_iam_group.bastion_dev.name}"
+  group = aws_iam_group.bastion_dev[0].name
   policy = file("${path.module}/policies/default-policy.json")
 }
 
 resource "aws_iam_group_policy" "role_dev_policy_jump" {
   provider = aws.member
-  count = data.aws_caller_identity.member.account_id == var.org["bastion_account"] ? 1 : 0
+  count = local.bastion
   name = "dit-dev-policy"
-  group = aws_iam_group.bastion_dev.name
+  group = aws_iam_group.bastion_dev[0].name
   policy = file("${path.root}/.terraform/.cache/dev_sts_policy.json")
   depends_on = [local_file.default_dev_policy_jump]
 }
 
 data "aws_iam_policy_document" "default_dev_policy_jump" {
   provider = aws.member
-  count = var.member["dev_access"] == "true" ? 1 : 0
+  count = local.dev
   source_json = file("${path.root}/.terraform/.cache/dev_sts_policy.json")
   statement {
     sid = "${data.aws_caller_identity.member.account_id}DevAccess"
     actions = ["sts:AssumeRole"]
-    resources = ["arn:aws:iam::${data.aws_caller_identity.member.account_id}:role/${aws_iam_role.bastion_dev.name}"]
+    resources = ["arn:aws:iam::${data.aws_caller_identity.member.account_id}:role/${aws_iam_role.bastion_dev[0].name}"]
   }
 }
 
 resource "local_file" "default_dev_policy_jump" {
-  count = var.member["dev_access"] == "true" ? 1 : 0
-  content = data.aws_iam_policy_document.default_dev_policy_jump.json
+  count = local.dev
+  content = data.aws_iam_policy_document.default_dev_policy_jump[0].json
   filename = "${path.root}/.terraform/.cache/dev_sts_policy.json"
 }
 
 resource "aws_iam_role" "bastion_dev" {
   provider = aws.member
-  count = var.member["dev_access"] == "true" ? 1 : 0
+  count = local.dev
   name = "dit-dev"
-  assume_role_policy = "${data.aws_iam_policy_document.bastion_sts_dev.json}"
+  assume_role_policy = data.aws_iam_policy_document.bastion_sts_dev[0].json
   max_session_duration = 43200
   permissions_boundary = aws_iam_policy.default_dev.arn
 }
 
 data "aws_iam_policy_document" "bastion_sts_dev" {
   provider = aws.member
-  count = var.member["dev_access"] == "true" ? 1 : 0
+  count = local.dev
   statement {
     sid = "TrustBastionAccount"
     actions = ["sts:AssumeRole"]
@@ -306,22 +312,22 @@ data "aws_iam_policy_document" "bastion_sts_dev" {
 
 resource "aws_iam_role_policy_attachment" "bastion_dev" {
   provider = aws.member
-  count = var.member["dev_access"] == "true" ? 1 : 0
-  role = aws_iam_role.bastion_dev.name
+  count = local.dev
+  role = aws_iam_role.bastion_dev[0].name
   policy_arn = "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
 }
 
 resource "aws_iam_role_policy" "role_dev_policy" {
   provider = aws.member
-  count = var.member["dev_access"] == "true" ? 1 : 0
+  count = local.dev
   name = "dit-dev-policy"
-  role = aws_iam_role.bastion_dev.name
-  policy = data.aws_iam_policy_document.default_dev_policy.json
+  role = aws_iam_role.bastion_dev[0].name
+  policy = data.aws_iam_policy_document.default_dev_policy[0].json
 }
 
 data "aws_iam_policy_document" "default_dev_policy" {
   provider = aws.member
-  count = var.member["dev_access"] == "true" ? 1 : 0
+  count = local.dev
   statement {
     sid = "DevAccess"
     actions = [
