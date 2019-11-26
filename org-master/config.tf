@@ -26,7 +26,7 @@ resource "aws_config_configuration_aggregator" "master" {
   name = "aws-org-config"
   organization_aggregation_source {
     all_regions = true
-    role_arn = "${aws_iam_role.master_config_role.arn}"
+    role_arn = aws_iam_role.master_config_role.arn
   }
   depends_on = [aws_iam_role_policy_attachment.config_organization]
 }
