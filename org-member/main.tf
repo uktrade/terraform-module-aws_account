@@ -1,6 +1,10 @@
 variable "org" {
   type = map(string)
-  default = {}
+  default = {
+    "aws_shared_credentials_file" = "~/.aws/credentials"
+    "aws_profile" = "default"
+    "bastion_account" = "0"
+  }
 }
 
 variable "member" {
