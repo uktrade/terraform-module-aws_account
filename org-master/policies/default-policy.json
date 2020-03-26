@@ -106,6 +106,19 @@
       "Resource": "arn:aws:iam::*:user/${aws:username}"
     },
     {
+      "Sid": "ManageOwnAccessKeys",
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateAccessKey",
+        "iam:DeleteAccessKey",
+        "iam:GetAccessKeyLastUsed",
+        "iam:GetUser",
+        "iam:ListAccessKeys",
+        "iam:UpdateAccessKey"
+      ],
+      "Resource": "arn:aws:iam::*:user/${aws:username}"
+    },
+    {
       "Sid": "BasicIAM",
       "Effect": "Allow",
       "Action": [
