@@ -27,6 +27,7 @@ resource "aws_cloudtrail" "trail" {
 resource "aws_cloudwatch_log_group" "cloudtrail" {
   provider = aws.member
   name = "cloudtrail-${data.aws_caller_identity.member.account_id}"
+  retention_in_days = 7
 }
 
 resource "aws_iam_role" "cloudtrail_log" {

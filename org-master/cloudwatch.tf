@@ -2,6 +2,7 @@ resource "aws_cloudwatch_log_group" "master" {
   provider = aws.master
   name = "org"
   kms_key_id = aws_kms_key.cloudwatch.arn
+  retention_in_days = 7
 }
 
 resource "aws_kms_key" "cloudwatch" {

@@ -6,6 +6,7 @@ resource "aws_cloudwatch_log_group" "vpc_log" {
   provider = aws.member
   count = length(data.aws_vpcs.vpcs.ids)
   name = tolist(data.aws_vpcs.vpcs.ids)[count.index]
+  retention_in_days = 7
 }
 
 resource "aws_flow_log" "vpc_log" {
