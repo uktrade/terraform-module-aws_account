@@ -3,6 +3,7 @@ resource "aws_cloudtrail" "trail" {
   name = "cloudtrail-${data.aws_caller_identity.master.account_id}"
   enable_logging = true
   is_multi_region_trail = true
+  is_organization_trail = true
   enable_log_file_validation = true
   kms_key_id = aws_kms_key.cloudtrail-kms.arn
   s3_bucket_name = aws_s3_bucket.cloudtrail-s3.id
