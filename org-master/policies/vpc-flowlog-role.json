@@ -5,9 +5,6 @@
       "s3:*"
     ],
     "Effect": "Allow",
-    "Resource": [
-      "${flowlog-s3-bucket}",
-      "${flowlog-s3-bucket}/*"
-    ]
+    "Resource": "${flowlog_s3_buckets}"
   }]
 }
