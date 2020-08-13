@@ -6,7 +6,7 @@ resource "aws_s3_bucket" "vpc_log" {
   provider = aws.master
   count = length(data.aws_vpcs.vpcs.ids)
   bucket = tolist(data.aws_vpcs.vpcs.ids)[count.index]
-  acl = private
+  acl = "private"
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
