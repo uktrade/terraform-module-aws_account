@@ -39,7 +39,7 @@ resource "aws_iam_role" "vpc_log" {
 }
 
 data "template_file" "vpc_log_policy" {
-  template = "${path.module}/policies/vpc-flowlog-role.json"
+  template = file("${path.module}/policies/vpc-flowlog-role.json")
   vars = {
     flowlog_s3_buckets = jsonencode(tolist(aws_s3_bucket.vpc_log.*.arn))
   }
