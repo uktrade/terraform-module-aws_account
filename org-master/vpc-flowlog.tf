@@ -27,7 +27,6 @@ resource "aws_flow_log" "vpc_log" {
   count = length(data.aws_vpcs.vpcs.ids)
   log_destination_type = "s3"
   log_destination = sort(tolist(aws_s3_bucket.vpc_log.*.arn))[count.index]
-  iam_role_arn = aws_iam_role.vpc_log.arn
   vpc_id = sort(tolist(data.aws_vpcs.vpcs.ids))[count.index]
   traffic_type = "ALL"
 }
