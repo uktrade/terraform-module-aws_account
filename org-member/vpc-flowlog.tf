@@ -40,6 +40,7 @@ resource "aws_iam_role" "vpc_log" {
 
 resource "aws_iam_role_policy" "vpc_log_policy" {
   provider = aws.member
+  count = length(data.aws_vpcs.vpcs.ids)
   name = "vpc_log_policy"
   role = aws_iam_role.vpc_log.id
   policy = templatefile("${path.module}/policies/vpc-flowlog-role.json", { flowlog-s3-bucket = tolist(aws_s3_bucket.vpc_log.*.arn)[count.index] })
