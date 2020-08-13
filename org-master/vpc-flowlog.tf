@@ -38,10 +38,16 @@ resource "aws_iam_role" "vpc_log" {
   assume_role_policy = file("${path.module}/policies/vpc-flowlog-sts.json")
 }
 
-resource "aws_iam_role_policy" "vpc_log_policy" {
+resource "aws_iam_policy" "vpc_log_policy" {
   provider = aws.master
   count = length(data.aws_vpcs.vpcs.ids)
   name = "vpc_log_policy-${tolist(data.aws_vpcs.vpcs.ids)[count.index]}"
-  role = aws_iam_role.vpc_log.id
   policy = templatefile("${path.module}/policies/vpc-flowlog-role.json", { flowlog-s3-bucket = tolist(aws_s3_bucket.vpc_log.*.arn)[count.index] })
+}
+
+resource "aws_iam_role_policy_attachment" "vpc_log_policy" {
+  provider = aws.master
+  count = length(data.aws_vpcs.vpcs.ids)
+  role = aws_iam_role.vpc_log.id
+  policy_arn = tolist(aws_iam_policy.vpc_log_policy.*.arn)[count.index]
 }
