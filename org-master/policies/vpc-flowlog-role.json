@@ -2,13 +2,12 @@
   "Version": "2012-10-17",
   "Statement": [{
     "Action": [
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-      "logs:DescribeLogGroups",
-      "logs:DescribeLogStreams"
+      "s3:*"
     ],
     "Effect": "Allow",
-    "Resource": "*"
+    "Resource": [
+      "${flowlog-s3-bucket}",
+      "${flowlog-s3-bucket}/*"
+    ]
   }]
 }
