@@ -30,23 +30,3 @@ resource "aws_flow_log" "vpc_log" {
   vpc_id = sort(tolist(data.aws_vpcs.vpcs.ids))[count.index]
   traffic_type = "ALL"
 }
-
-resource "aws_iam_role" "vpc_log" {
-  provider = aws.master
-  name = "vpc_log"
-  assume_role_policy = file("${path.module}/policies/vpc-flowlog-sts.json")
-}
-
-data "template_file" "vpc_log_policy" {
-  template = file("${path.module}/policies/vpc-flowlog-role.json")
-  vars = {
-    flowlog_s3_buckets = jsonencode(tolist(aws_s3_bucket.vpc_log.*.arn))
-  }
-}
-
-resource "aws_iam_role_policy" "vpc_log_policy" {
-  provider = aws.master
-  name = "vpc_log_policy"
-  role = aws_iam_role.vpc_log.id
-  policy = data.template_file.vpc_log_policy.rendered
-}
