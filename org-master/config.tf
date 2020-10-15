@@ -139,9 +139,9 @@ data "aws_iam_policy_document" "config_sns_policy" {
     condition {
       test = "StringEquals"
       variable = "AWS:SourceOwner"
-      values = ["${data.aws_caller_identity.master.account_id}"]
+      values = [data.aws_caller_identity.master.account_id]
     }
-    resources = ["${aws_sns_topic.config_sns.id}"]
+    resources = [aws_sns_topic.config_sns.id]
   }
 
   statement {
@@ -149,9 +149,9 @@ data "aws_iam_policy_document" "config_sns_policy" {
     actions = ["SNS:Publish"]
     principals {
       type = "AWS"
-      identifiers = ["${aws_iam_role.master_config_role.arn}"]
+      identifiers = [aws_iam_role.master_config_role.arn]
     }
-    resources = ["${aws_sns_topic.config_sns.id}"]
+    resources = [aws_sns_topic.config_sns.id]
   }
 
   statement {
@@ -161,7 +161,7 @@ data "aws_iam_policy_document" "config_sns_policy" {
       type = "Service"
       identifiers = ["events.amazonaws.com"]
     }
-    resources = ["${aws_sns_topic.config_sns.id}"]
+    resources = [aws_sns_topic.config_sns.id]
   }
 }
 
@@ -177,7 +177,7 @@ data "aws_iam_policy_document" "config_sns" {
   statement {
     sid = "DefaultPolicyForAWSConfig"
     actions = ["SNS:Publish"]
-    resources = ["${aws_sns_topic.config_sns.id}"]
+    resources = [aws_sns_topic.config_sns.id]
   }
 }
 

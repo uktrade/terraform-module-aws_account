@@ -36,9 +36,9 @@ data "aws_iam_policy_document" "guardduty_sns" {
     condition {
       test = "StringEquals"
       variable = "AWS:SourceOwner"
-      values = ["${data.aws_caller_identity.master.account_id}"]
+      values = [data.aws_caller_identity.master.account_id]
     }
-    resources = ["${aws_sns_topic.guardduty_sns.id}"]
+    resources = [aws_sns_topic.guardduty_sns.id]
   }
 
   statement {
@@ -48,7 +48,7 @@ data "aws_iam_policy_document" "guardduty_sns" {
       type = "Service"
       identifiers = ["events.amazonaws.com"]
     }
-    resources = ["${aws_sns_topic.guardduty_sns.id}"]
+    resources = [aws_sns_topic.guardduty_sns.id]
   }
 }
 

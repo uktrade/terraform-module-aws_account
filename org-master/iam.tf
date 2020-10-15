@@ -80,7 +80,7 @@ data "aws_iam_policy_document" "bastion_sts_readonly" {
     condition {
       test = "StringEquals"
       variable = "aws:PrincipalOrgID"
-      values = ["${element(split("/", aws_organizations_organization.org.id), 1)}"]
+      values = [element(split("/", aws_organizations_organization.org.id), 1)]
     }
     condition {
       test = "Bool"
@@ -137,7 +137,7 @@ data "aws_iam_policy_document" "bastion_sts_admin" {
     condition {
       test = "StringEquals"
       variable = "aws:PrincipalOrgID"
-      values = ["${element(split("/", aws_organizations_organization.org.id), 1)}"]
+      values = [element(split("/", aws_organizations_organization.org.id), 1)]
     }
     condition {
       test = "Bool"
