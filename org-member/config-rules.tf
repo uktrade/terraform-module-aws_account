@@ -1,3 +1,4 @@
+# Setup default Config ruleset on AWS Org member account
 resource "aws_config_config_rule" "config_rule_cloudtrail" {
   provider = aws.member
   name = "cloudtrail-enabled"

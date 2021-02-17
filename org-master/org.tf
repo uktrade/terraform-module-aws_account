@@ -1,3 +1,4 @@
+# Setup Org default settings on AWS Org account
 resource "aws_organizations_organization" "org" {
   provider = aws.master
   feature_set = "ALL"

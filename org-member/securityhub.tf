@@ -1,3 +1,4 @@
+# Setup SecurityHub on AWS Org member account
 resource "aws_securityhub_account" "member" {
   provider = aws.member
 }

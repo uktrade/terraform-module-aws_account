@@ -1,3 +1,4 @@
+# Setup IAM roles and policies on AWS Org member account
 resource "aws_iam_policy" "default_policy" {
   provider = aws.member
   name = "dit-default"

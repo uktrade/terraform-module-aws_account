@@ -1,3 +1,4 @@
+# Setup CloudTrail on AWS Org account
 resource "aws_cloudtrail" "trail" {
   provider = aws.master
   name = "cloudtrail-${data.aws_caller_identity.master.account_id}"

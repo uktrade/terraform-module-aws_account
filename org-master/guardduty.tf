@@ -1,3 +1,4 @@
+# Setup GuardDuty on AWS Org account
 resource "aws_guardduty_detector" "master" {
   provider = aws.master
   enable = true

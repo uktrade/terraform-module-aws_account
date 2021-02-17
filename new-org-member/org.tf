@@ -1,3 +1,4 @@
+# Add account to AWS Organization
 resource "aws_organizations_account" "member" {
   provider = aws.master
   name  = var.member["name"]

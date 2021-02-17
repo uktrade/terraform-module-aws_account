@@ -1,3 +1,4 @@
+# Setup CloudWatch on AWS Org member account
 resource "aws_cloudwatch_event_permission" "master" {
   provider = aws.master
   principal = data.aws_caller_identity.member.account_id

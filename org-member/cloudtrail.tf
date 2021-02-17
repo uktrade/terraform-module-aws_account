@@ -1,3 +1,4 @@
+# Setup CloudTrail on AWS Org member account
 resource "aws_cloudtrail" "trail" {
   provider = aws.member
   name = "cloudtrail-${data.aws_caller_identity.member.account_id}"

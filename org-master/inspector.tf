@@ -1,3 +1,4 @@
+# Setup Inspector on AWS Org account
 data "aws_inspector_rules_packages" "rules" {
   provider = aws.master
 }

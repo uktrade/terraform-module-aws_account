@@ -1,3 +1,4 @@
+# Setup Config on AWS Org account
 resource "aws_iam_role" "master_config_role" {
   provider = aws.master
   name = "config-role"

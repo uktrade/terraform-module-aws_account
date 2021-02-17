@@ -1,3 +1,4 @@
+# Setup CloudWatch on AWS Org account
 resource "aws_cloudwatch_log_group" "master" {
   provider = aws.master
   name = "org"
