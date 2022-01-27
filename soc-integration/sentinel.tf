@@ -15,7 +15,7 @@ resource "aws_iam_role" "azure_sentinel" {
     "Action": "sts:AssumeRole",
     "Condition": {
       "StringEquals": {
-        "sts:ExternalId": "${var.config["sentinel_workspace_id"]}"
+        "sts:ExternalId": var.config["sentinel_workspace_id"]
       }
     }
   }
