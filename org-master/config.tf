@@ -76,18 +76,15 @@ resource "aws_s3_bucket" "master_config_bucket" {
   }
 }
 
-data "template_file" "config_s3_policy" {
-  template = file("${path.module}/policies/config-s3.json")
-  vars = {
-    config_s3_arn = aws_s3_bucket.master_config_bucket.arn
-  }
-}
-
 resource "aws_iam_role_policy" "config_s3_policy" {
   provider = aws.master
   name = "config_s3_policy"
   role = aws_iam_role.master_config_role.name
-  policy = data.template_file.config_s3_policy.rendered
+  policy = templatefile("${path.module}/policies/config-s3.json",
+    {
+      config_s3_arn = aws_s3_bucket.master_config_bucket.arn
+    }
+  )
 }
 
 resource "aws_config_configuration_recorder_status" "master_config" {
