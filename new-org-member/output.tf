@@ -8,10 +8,10 @@ data "null_data_source" "org_member" {
 }
 
 output "org_master" {
-  value = map(
-            "account_id", aws_organizations_account.member.id,
-            "account_arn", aws_organizations_account.member.arn,
-            "account_email", var.member["email"],
-            "account_alias", var.member["name"]
-          )
+  value = tomap({
+            "account_id" = aws_organizations_account.member.id,
+            "account_arn" = aws_organizations_account.member.arn,
+            "account_email" = var.member["email"],
+            "account_alias" = var.member["name"]
+          })
 }
