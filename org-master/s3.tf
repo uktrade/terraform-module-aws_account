@@ -106,15 +106,27 @@ resource "aws_s3_bucket_notification" "sentinel_logs" {
   queue {
     queue_arn     = aws_sqs_queue.sentinel_flowlog_queue.arn
     events        = ["s3:ObjectCreated:*"]
-    filter_prefix = "VPC-Flow-Log/" 
+    filter_prefix = aws_s3_bucket_object.sentinel_vpc_flow_log_folder.id
     filter_suffix = ".gz"
   }
 
   queue {
     queue_arn     = aws_sqs_queue.sentinel_guardduty_queue.arn
     events        = ["s3:ObjectCreated:*"]
-    filter_prefix = "GuardDuty/"
+    filter_prefix = aws_s3_bucket_object.sentinel_guardduty_folder.id
     filter_suffix = ".gz"
   }
 
+}
+
+resource "aws_s3_bucket_object" "sentinel_vpc_flow_log_folder" {
+    bucket = aws_s3_bucket.sentinel_logs.id
+    content_type = "application/x-directory"
+    key = "${local.sentinel_vpc_flow_log_folder}/"
+}
+
+resource "aws_s3_bucket_object" "sentinel_guardduty_folder" {
+    bucket = aws_s3_bucket.sentinel_logs.id
+    content_type = "application/x-directory"
+    key = "${local.sentinel_guardduty_folder}/"
 }
