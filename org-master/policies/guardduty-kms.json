@@ -1,0 +1,38 @@
+{
+  "Version": "2008-10-17",
+  "Statement": [
+        {
+            "Sid": "Enable IAM User Permissions",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::${master_account_id}:root"
+            },
+            "Action": "kms:*",
+            "Resource": "*"
+        },
+        {
+            "Sid": "Allow GuardDuty to use the key",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "guardduty.amazonaws.com"
+            },
+            "Action": "kms:GenerateDataKey",
+            "Resource": "*"
+        },
+        {
+            "Sid": "Allow Sentinel to use the key",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "${sentinel_role_arn}"
+            },
+            "Action": [
+                "kms:Encrypt",
+                "kms:Decrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+                "kms:DescribeKey"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
