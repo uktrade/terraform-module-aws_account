@@ -1,5 +1,6 @@
 data "null_data_source" "org_master" {
   inputs = {
+    account_id = data.aws_caller_identity.master.account_id
     aws_shared_credentials_file = var.org["aws_shared_credentials_file"]
     aws_profile = var.org["aws_profile"]
     organization_arn = aws_organizations_organization.org.arn
@@ -17,6 +18,7 @@ data "null_data_source" "org_master" {
 
 output "org_master" {
   value = tomap({
+            "account_id" = data.aws_caller_identity.master.account_id
             "aws_shared_credentials_file" = var.org["aws_shared_credentials_file"],
             "aws_profile" = var.org["aws_profile"],
             "organization_arn" = aws_organizations_organization.org.arn,
