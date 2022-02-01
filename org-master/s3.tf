@@ -98,3 +98,23 @@ data "aws_iam_policy_document" "sentinel_logs" {
   }
   
 }
+
+resource "aws_s3_bucket_notification" "sentinel_logs" {
+  provider = aws.master
+  bucket   = aws_s3_bucket.sentinel_logs.id
+
+  queue {
+    queue_arn     = aws_sqs_queue.sentinel_flowlog_queue.arn
+    events        = ["s3:ObjectCreated:*"]
+    filter_prefix = "VPC-Flow-Log/" 
+    filter_suffix = ".gz"
+  }
+
+  queue {
+    queue_arn     = aws_sqs_queue.sentinel_guardduty_queue.arn
+    events        = ["s3:ObjectCreated:*"]
+    filter_prefix = "GuardDuty/"
+    filter_suffix = ".gz"
+  }
+
+}
