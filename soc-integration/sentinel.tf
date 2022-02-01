@@ -3,7 +3,7 @@
 resource "aws_iam_role" "azure_sentinel" {
   provider = aws.member
   name = "AzureSentinelRole"
-
+  description = "Role used by the Sentinel legacy CloudTrail connector (https://docs.microsoft.com/en-us/azure/sentinel/connect-aws?tabs=ct)"
   assume_role_policy = jsonencode({
   Version = "2012-10-17"
   Statement = [
