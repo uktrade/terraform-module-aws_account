@@ -2,6 +2,7 @@
 resource "aws_guardduty_detector" "master" {
   provider = aws.master
   enable = true
+  finding_publishing_frequency = "FIFTEEN_MINUTES"
 }
 
 resource "aws_sns_topic" "guardduty_sns" {
