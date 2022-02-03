@@ -2,6 +2,7 @@
 resource "aws_guardduty_detector" "master" {
   provider = aws.master
   enable = true
+  finding_publishing_frequency = "FIFTEEN_MINUTES"
 }
 
 resource "aws_sns_topic" "guardduty_sns" {
@@ -117,4 +118,14 @@ resource "aws_cloudwatch_event_rule" "guardduty" {
       "detail-type": ["GuardDuty Finding"]
     }
 INPUT
+}
+
+resource "aws_guardduty_publishing_destination" "master" {
+  provider = aws.master
+  detector_id = aws_guardduty_detector.master.id
+  destination_arn = "${aws_s3_bucket.sentinel_logs.arn}/${local.sentinel_guardduty_folder}"
+  kms_key_arn = aws_kms_key.sentinel_guard_duty.arn
+  depends_on = [
+    aws_s3_bucket_policy.sentinel_logs
+  ]
 }

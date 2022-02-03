@@ -6,6 +6,11 @@ variable "org" {
   }
 }
 
+variable "config" {
+  type    = map(string)
+  default = {}
+}
+
 provider "aws" {
   alias = "master"
 }

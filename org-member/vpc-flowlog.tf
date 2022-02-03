@@ -30,3 +30,15 @@ resource "aws_flow_log" "vpc_log" {
   vpc_id = tolist(data.aws_vpcs.vpcs.ids)[count.index]
   traffic_type = "ALL"
 }
+
+resource "aws_flow_log" "sentinel_vpc_log" {
+  provider = aws.member
+  for_each = data.aws_vpcs.vpcs.ids
+  log_destination_type = "s3"
+  log_destination = var.org["sentinel_vpc_s3_bucket"]
+  vpc_id = each.key
+  traffic_type = "ALL"
+  tags = {
+    "Name" = "sentinel-vpc-log"
+  }
+}

@@ -163,3 +163,33 @@ resource "aws_iam_role_policy_attachment" "bastion_admin" {
   role = aws_iam_role.bastion_admin.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
+
+resource "aws_iam_role" "sentinel_role" {
+  provider = aws.master
+  name = "MicrosoftSentinelRole"
+  description = "Role used by the Sentinel S3 connector (https://docs.microsoft.com/en-us/azure/sentinel/connect-aws?tabs=s3)"
+  assume_role_policy = data.aws_iam_policy_document.sentinel_role.json
+}
+
+data "aws_iam_policy_document" "sentinel_role" {
+  provider = aws.master
+  statement {
+    sid = "TrustMicrosoftSentinel"
+    actions = ["sts:AssumeRole"]
+    principals {
+      type = "AWS"
+      identifiers = ["arn:aws:iam::${var.config["sentinel_account_id"]}:root"]
+    }
+    condition {
+      test = "StringEquals"
+      variable = "sts:ExternalId"
+      values = [var.config["sentinel_workspace_id"]]
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "sentinel_s3_readonly" {
+  provider = aws.master
+  role = aws_iam_role.sentinel_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+}
