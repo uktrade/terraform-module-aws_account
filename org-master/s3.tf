@@ -97,6 +97,28 @@ data "aws_iam_policy_document" "sentinel_logs" {
     }
   }
   
+  statement {
+    sid = "AWSLogDeliveryWrite"
+    actions = ["s3:PutObject"]
+    effect = "Allow"
+    resources = ["${aws_s3_bucket.sentinel_logs.arn}/*"]
+    principals {
+        type = "Service"
+        identifiers = ["delivery.logs.amazonaws.com"]
+    }
+  }
+
+  statement {
+    sid = "AWSLogDeliveryCheck"
+    actions = ["s3:GetBucketAcl", "s3:ListBucket"]
+    effect = "Allow"
+    resources = ["${aws_s3_bucket.sentinel_logs.arn}"]
+    principals {
+        type = "Service"
+        identifiers = ["delivery.logs.amazonaws.com"]
+    }
+  }
+
 }
 
 resource "aws_s3_bucket_notification" "sentinel_logs" {
