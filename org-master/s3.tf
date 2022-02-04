@@ -2,9 +2,7 @@ resource "aws_s3_bucket" "sentinel_logs" {
   provider = aws.master
   bucket   = "sentinel-logs-${data.aws_caller_identity.master.account_id}"
   acl      = "private"
-  tags     = {
-    Operator = "Microsoft_Sentinel_Automation_Script"
-  }
+  tags     = tomap(local.sentinel_common_resource_tag)
 }
 
 resource "aws_s3_bucket_policy" "sentinel_logs" {

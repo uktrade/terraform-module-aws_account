@@ -6,9 +6,7 @@ resource "aws_kms_key" "sentinel_guard_duty" {
       sentinel_role_arn = aws_iam_role.sentinel_role.arn
     }
   )
-  tags = {
-    Operator = "Microsoft_Sentinel_Automation_Script"
-  }
+  tags = tomap(local.sentinel_common_resource_tag)
 }
 
 resource "aws_kms_alias" "sentinel_guard_duty" {

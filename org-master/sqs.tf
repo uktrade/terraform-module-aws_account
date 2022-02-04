@@ -1,17 +1,14 @@
 resource "aws_sqs_queue" "sentinel_flowlog_queue" {
   provider = aws.master
   name     = "microsoft-sentinel-s3-flowlog"
-  tags     = {
-    Operator = "Microsoft_Sentinel_Automation_Script"
-  }
+  tags     = tomap(local.sentinel_common_resource_tag)
 }
 
 resource "aws_sqs_queue" "sentinel_guardduty_queue" {
   provider = aws.master
   name     = "microsoft-sentinel-s3-guardduty"
-  tags     = {
-    Operator = "Microsoft_Sentinel_Automation_Script"
-  }
+  tags     = tomap(local.sentinel_common_resource_tag)
+}
 
 resource "aws_sqs_queue" "sentinel_cloudtrail_queue" {
   provider = aws.master
