@@ -11,8 +11,13 @@ variable "config" {
   default = {}
 }
 
-provider "aws" {
-  alias = "master"
+terraform {
+  required_providers {
+    aws = {
+      source                = "hashicorp/aws"
+      configuration_aliases = [ aws.master ]
+    }
+  }
 }
 
 data "aws_region" "master" {

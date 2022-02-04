@@ -16,12 +16,13 @@ variable "member" {
   }
 }
 
-provider "aws" {
-  alias = "master"
-}
-
-provider "aws" {
-  alias = "member"
+terraform {
+  required_providers {
+    aws = {
+      source                = "hashicorp/aws"
+      configuration_aliases = [ aws.master, aws.member ]
+    }
+  }
 }
 
 data "aws_region" "master" {
