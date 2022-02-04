@@ -166,6 +166,13 @@ resource "aws_s3_bucket_notification" "sentinel_logs" {
     filter_suffix = ".gz"
   }
 
+    queue {
+    queue_arn     = aws_sqs_queue.sentinel_cloudtrail_queue.arn
+    events        = ["s3:ObjectCreated:*"]
+    filter_prefix = aws_s3_bucket_object.sentinel_cloudtrail_folder.id
+    filter_suffix = ".gz"
+  }
+
 }
 
 resource "aws_s3_bucket_object" "sentinel_vpc_flow_log_folder" {
