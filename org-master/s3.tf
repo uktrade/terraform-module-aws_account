@@ -152,3 +152,9 @@ resource "aws_s3_bucket_object" "sentinel_guardduty_folder" {
     content_type = "application/x-directory"
     key = "${local.sentinel_guardduty_folder}/"
 }
+
+resource "aws_s3_bucket_object" "sentinel_cloudtrail_folder" {
+    bucket = aws_s3_bucket.sentinel_logs.id
+    content_type = "application/x-directory"
+    key = "${local.sentinel_cloudtrail_folder}/"
+}
