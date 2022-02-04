@@ -119,6 +119,33 @@ data "aws_iam_policy_document" "sentinel_logs" {
     }
   }
 
+  statement {
+    sid = "AWSCloudTrailWrite"
+    actions = ["s3:PutObject"]
+    effect = "Allow"
+    resources = ["${aws_s3_bucket.sentinel_logs.arn}/${local.sentinel_cloudtrail_folder}/*"]
+    principals {
+        type = "Service"
+        identifiers = ["cloudtrail.amazonaws.com"]
+    }
+    condition {
+      test = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values = ["bucket-owner-full-control"]
+    }
+  }
+
+  statement {
+    sid = "AWSCloudTrailAclCheck"
+    actions = ["s3:GetBucketAcl"]
+    effect = "Allow"
+    resources = [aws_s3_bucket.sentinel_logs.arn]
+    principals {
+        type = "Service"
+        identifiers = ["cloudtrail.amazonaws.com"]
+    }
+  }
+
 }
 
 resource "aws_s3_bucket_notification" "sentinel_logs" {
