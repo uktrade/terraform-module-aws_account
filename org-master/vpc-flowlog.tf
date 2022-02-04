@@ -38,7 +38,10 @@ resource "aws_flow_log" "sentinel_vpc_log" {
   log_destination = "${aws_s3_bucket.sentinel_logs.arn}/${local.sentinel_vpc_flow_log_folder}"
   vpc_id = each.key
   traffic_type = "ALL"
-  tags = {
-    "Name" = "sentinel-vpc-log"
-  }
+  tags = merge(
+    tomap(local.sentinel_common_resource_tag),
+    {
+      "Name" = "sentinel-vpc-log"
+    }
+  )
 }
