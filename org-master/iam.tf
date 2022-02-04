@@ -169,6 +169,7 @@ resource "aws_iam_role" "sentinel_role" {
   name = "MicrosoftSentinelRole"
   description = "Role used by the Sentinel S3 connector (https://docs.microsoft.com/en-us/azure/sentinel/connect-aws?tabs=s3)"
   assume_role_policy = data.aws_iam_policy_document.sentinel_role.json
+  tags = tomap(local.sentinel_common_resource_tag)
 }
 
 data "aws_iam_policy_document" "sentinel_role" {
