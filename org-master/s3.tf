@@ -13,6 +13,7 @@ resource "aws_s3_bucket_policy" "sentinel_logs" {
 
 data "aws_iam_policy_document" "sentinel_logs" {
   provider = aws.master
+  version = "2012-10-17"
 
   statement {
     sid = "Allow Sentinel role read access to S3 log bucket"
