@@ -3,6 +3,15 @@ resource "aws_s3_bucket" "sentinel_logs" {
   bucket   = "${var.config["sentinel_s3_bucket_name"]}-${data.aws_caller_identity.master.account_id}"
   acl      = "private"
   tags     = tomap(local.sentinel_common_resource_tag)
+
+  lifecycle_rule {
+    id      = "sentinel_log_expiry"
+    enabled = true
+    expiration {
+      days = local.sentinel_log_expiry_days
+    }
+  }
+
 }
 
 resource "aws_s3_bucket_policy" "sentinel_logs" {
