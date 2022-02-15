@@ -79,3 +79,30 @@ resource "aws_kms_key" "cloudtrail-kms" {
     }
   )
 }
+
+resource "aws_cloudtrail" "sentinel-trail" {
+  provider = aws.master
+  name = "sentinel-cloudtrail-${data.aws_caller_identity.master.account_id}"
+  enable_logging = true
+  is_multi_region_trail = true
+  is_organization_trail = true
+  enable_log_file_validation = true
+  kms_key_id = aws_kms_key.sentinel_guard_duty.arn
+  s3_bucket_name = aws_s3_bucket.sentinel_logs.id
+  s3_key_prefix = local.sentinel_cloudtrail_folder
+  event_selector {
+    read_write_type = "All"
+    include_management_events = true
+
+   data_resource {
+     type = "AWS::S3::Object"
+     values = ["arn:aws:s3"]
+   }
+
+   data_resource {
+     type = "AWS::Lambda::Function"
+     values = ["arn:aws:lambda"]
+   }
+
+  }
+}

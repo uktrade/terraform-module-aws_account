@@ -1,10 +1,17 @@
 resource "aws_s3_bucket" "sentinel_logs" {
   provider = aws.master
-  bucket   = "sentinel-logs-${data.aws_caller_identity.master.account_id}"
+  bucket   = "${var.config["sentinel_s3_bucket_name"]}-${data.aws_caller_identity.master.account_id}"
   acl      = "private"
-  tags     = {
-    Operator = "Microsoft_Sentinel_Automation_Script"
+  tags     = tomap(local.sentinel_common_resource_tag)
+
+  lifecycle_rule {
+    id      = "sentinel_log_expiry"
+    enabled = true
+    expiration {
+      days = local.sentinel_log_expiry_days
+    }
   }
+
 }
 
 resource "aws_s3_bucket_policy" "sentinel_logs" {
@@ -15,6 +22,7 @@ resource "aws_s3_bucket_policy" "sentinel_logs" {
 
 data "aws_iam_policy_document" "sentinel_logs" {
   provider = aws.master
+  version = "2012-10-17"
 
   statement {
     sid = "Allow Sentinel role read access to S3 log bucket"
@@ -119,6 +127,33 @@ data "aws_iam_policy_document" "sentinel_logs" {
     }
   }
 
+  statement {
+    sid = "AWSCloudTrailWrite"
+    actions = ["s3:PutObject"]
+    effect = "Allow"
+    resources = ["${aws_s3_bucket.sentinel_logs.arn}/${local.sentinel_cloudtrail_folder}/*"]
+    principals {
+        type = "Service"
+        identifiers = ["cloudtrail.amazonaws.com"]
+    }
+    condition {
+      test = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values = ["bucket-owner-full-control"]
+    }
+  }
+
+  statement {
+    sid = "AWSCloudTrailAclCheck"
+    actions = ["s3:GetBucketAcl"]
+    effect = "Allow"
+    resources = [aws_s3_bucket.sentinel_logs.arn]
+    principals {
+        type = "Service"
+        identifiers = ["cloudtrail.amazonaws.com"]
+    }
+  }
+
 }
 
 resource "aws_s3_bucket_notification" "sentinel_logs" {
@@ -139,6 +174,13 @@ resource "aws_s3_bucket_notification" "sentinel_logs" {
     filter_suffix = ".gz"
   }
 
+    queue {
+    queue_arn     = aws_sqs_queue.sentinel_cloudtrail_queue.arn
+    events        = ["s3:ObjectCreated:*"]
+    filter_prefix = aws_s3_bucket_object.sentinel_cloudtrail_folder.id
+    filter_suffix = ".gz"
+  }
+
 }
 
 resource "aws_s3_bucket_object" "sentinel_vpc_flow_log_folder" {
@@ -151,4 +193,10 @@ resource "aws_s3_bucket_object" "sentinel_guardduty_folder" {
     bucket = aws_s3_bucket.sentinel_logs.id
     content_type = "application/x-directory"
     key = "${local.sentinel_guardduty_folder}/"
+}
+
+resource "aws_s3_bucket_object" "sentinel_cloudtrail_folder" {
+    bucket = aws_s3_bucket.sentinel_logs.id
+    content_type = "application/x-directory"
+    key = "${local.sentinel_cloudtrail_folder}/"
 }

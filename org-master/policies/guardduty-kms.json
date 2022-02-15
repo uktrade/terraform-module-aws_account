@@ -35,6 +35,17 @@
             "Resource": "*"
         },
         {
+            "Sid": "Allow CloudTrail to encrypt logs",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "cloudtrail.amazonaws.com"
+            },
+           "Action": [
+               "kms:GenerateDataKey*"
+            ],
+            "Resource": "*"
+        },
+        {
             "Sid": "Allow Sentinel to use the key",
             "Effect": "Allow",
             "Principal": {
