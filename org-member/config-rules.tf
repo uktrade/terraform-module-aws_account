@@ -7,6 +7,7 @@ resource "aws_config_config_rule" "config_rule_cloudtrail" {
     source_identifier = "CLOUD_TRAIL_ENABLED"
   }
   maximum_execution_frequency = "TwentyFour_Hours"
+  depends_on = [aws_config_configuration_recorder.config]
 }
 
 resource "aws_config_config_rule" "config_rule_ec2_instance" {
@@ -16,6 +17,7 @@ resource "aws_config_config_rule" "config_rule_ec2_instance" {
     owner = "AWS"
     source_identifier = "INSTANCES_IN_VPC"
   }
+  depends_on = [aws_config_configuration_recorder.config]
 }
 
 resource "aws_config_config_rule" "config_rule_lambda_public_prohibited" {
@@ -25,6 +27,7 @@ resource "aws_config_config_rule" "config_rule_lambda_public_prohibited" {
     owner = "AWS"
     source_identifier = "LAMBDA_FUNCTION_PUBLIC_ACCESS_PROHIBITED"
   }
+  depends_on = [aws_config_configuration_recorder.config]
 }
 
 resource "aws_config_config_rule" "config_rule_db_backup_enabled" {
@@ -34,6 +37,7 @@ resource "aws_config_config_rule" "config_rule_db_backup_enabled" {
     owner = "AWS"
     source_identifier = "DB_INSTANCE_BACKUP_ENABLED"
   }
+  depends_on = [aws_config_configuration_recorder.config]
 }
 
 resource "aws_config_config_rule" "config_rule_root_mfa" {
@@ -44,6 +48,7 @@ resource "aws_config_config_rule" "config_rule_root_mfa" {
     source_identifier = "ROOT_ACCOUNT_MFA_ENABLED"
   }
   maximum_execution_frequency = "TwentyFour_Hours"
+  depends_on = [aws_config_configuration_recorder.config]
 }
 
 resource "aws_config_config_rule" "config_rule_s3_public_read_prohibit" {
@@ -57,6 +62,7 @@ resource "aws_config_config_rule" "config_rule_s3_public_read_prohibit" {
     tag_key = "website"
     tag_value = "false"
   }
+  depends_on = [aws_config_configuration_recorder.config]
 }
 
 resource "aws_config_config_rule" "config_rule_s3_public_write_prohibit" {
@@ -66,6 +72,7 @@ resource "aws_config_config_rule" "config_rule_s3_public_write_prohibit" {
     owner = "AWS"
     source_identifier = "S3_BUCKET_PUBLIC_WRITE_PROHIBITED"
   }
+  depends_on = [aws_config_configuration_recorder.config]
 }
 
 resource "aws_config_config_rule" "config_rule_s3_sse" {
@@ -79,6 +86,7 @@ resource "aws_config_config_rule" "config_rule_s3_sse" {
     tag_key = "website"
     tag_value = "false"
   }
+  depends_on = [aws_config_configuration_recorder.config]
 }
 
 resource "aws_config_config_rule" "config_rule_s3_ssl" {
@@ -92,6 +100,7 @@ resource "aws_config_config_rule" "config_rule_s3_ssl" {
     tag_key = "website"
     tag_value = "false"
   }
+  depends_on = [aws_config_configuration_recorder.config]
 }
 
 resource "aws_config_config_rule" "config_rule_acm_expiration" {
@@ -107,6 +116,7 @@ resource "aws_config_config_rule" "config_rule_acm_expiration" {
     }
 INPUT
   maximum_execution_frequency = "TwentyFour_Hours"
+  depends_on = [aws_config_configuration_recorder.config]
 }
 
 resource "aws_config_config_rule" "config_rule_iam_password_policy" {
@@ -128,4 +138,5 @@ resource "aws_config_config_rule" "config_rule_iam_password_policy" {
     }
 INPUT
   maximum_execution_frequency = "TwentyFour_Hours"
+  depends_on = [aws_config_configuration_recorder.config]
 }
