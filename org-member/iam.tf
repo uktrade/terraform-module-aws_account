@@ -163,7 +163,7 @@ data "aws_iam_policy_document" "bastion_sts_readonly" {
 resource "aws_iam_role_policy_attachment" "bastion_readonly" {
   provider = aws.member
   role = aws_iam_role.bastion_readonly.name
-  policy_arn = "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
+  policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
 }
 
 resource "aws_iam_group" "bastion_admin" {
