@@ -217,6 +217,11 @@
         "route53domains:List*",
         "route53resolver:Get*",
         "route53resolver:List*",
+        "route53-recovery-cluster:Get*",
+        "route53-recovery-readiness:List*",
+        "route53-recovery-readiness:Get*",
+        "route53-recovery-control-config:Describe*",
+        "route53-recovery-control-config:List*",
         "s3:Describe*",
         "s3:Get*",
         "s3:List*",
@@ -265,6 +270,7 @@
         "StringEquals": {
           "aws:RequestedRegion": [
             "us-east-1",
+            "us-west-2",
             "eu-west-1",
             "eu-west-2"
           ]
@@ -287,6 +293,8 @@
       "Condition": {
         "StringNotEquals": {
           "aws:RequestedRegion": [
+            "us-east-1",
+            "us-west-2",
             "eu-west-1",
             "eu-west-2"
           ]
