@@ -61,6 +61,8 @@
         "acm:List*",
         "athena:Get*",
         "athena:List*",
+        "athena:Start*",
+        "athena:Stop*",
         "autoscaling:Describe*",
         "autoscaling:Get*",
         "batch:Describe*",
@@ -163,6 +165,12 @@
         "glacier:Describe*",
         "glacier:Get*",
         "glacier:List*",
+        "glue:BatchGet*",
+        "glue:Check*",
+        "glue:Get*",
+        "glue:List*",
+        "glue:Query*",
+        "glue:SearchTables",
         "greengrass:Get*",
         "greengrass:List*",
         "importexport:Get*",
@@ -296,6 +304,25 @@
             "us-east-1",
             "us-west-2",
             "eu-west-1",
+            "eu-west-2"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "AthenaS3BucketWrite",
+      "Effect": "Allow",
+      "Action": [
+          "s3:AbortMultipartUpload",
+          "s3:CreateBucket",
+          "s3:PutObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::aws-athena-query-results-*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": [
             "eu-west-2"
           ]
         }

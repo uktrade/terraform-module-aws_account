@@ -70,8 +70,8 @@ data "aws_iam_policy_document" "default_dev" {
       "config:List*",
       "config:Get*",
       "config:Describe*",
-      "config:BatchGetResourceConfig",
-      "config:DeliverConfigSnapshot"
+      "config:BatchGet*",
+      "config:DeliverConfigSnap*"
     ]
     resources = ["*"]
   }
@@ -164,6 +164,42 @@ resource "aws_iam_role_policy_attachment" "bastion_readonly" {
   provider = aws.member
   role = aws_iam_role.bastion_readonly.name
   policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
+}
+
+resource "aws_iam_role_policy" "bastion_readonly_athena_read" {
+  provider = aws.member
+  name = "dit-athena-readonly"
+  role = aws_iam_role.bastion_readonly.name
+  policy = data.aws_iam_policy_document.athena_read_policy.json
+}
+
+data "aws_iam_policy_document" "athena_read_policy" {
+  provider = aws.member
+  statement {
+    sid = "AthenaReadOnly"
+    actions = [
+      "athena:Get*",
+      "athena:List*",
+      "athena:StartQueryExecution",
+      "athena:StopQueryExecution",
+      "glue:BatchGet*",
+      "glue:CheckSchemaVersionValidity",
+      "glue:Get*",
+      "glue:List*",
+      "glue:QuerySchemaVersionMetadata",
+      "glue:SearchTables"
+    ]
+    resources = ["*"]
+  }
+  statement {
+    sid = "AthenaS3BucketWrite"
+    actions = [
+        "s3:AbortMultipartUpload",
+        "s3:CreateBucket",
+        "s3:PutObject"
+    ]
+    resources = ["arn:aws:s3:::aws-athena-query-results-*"]
+  }
 }
 
 resource "aws_iam_group" "bastion_admin" {
