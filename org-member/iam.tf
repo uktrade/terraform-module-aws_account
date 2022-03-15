@@ -70,8 +70,8 @@ data "aws_iam_policy_document" "default_dev" {
       "config:List*",
       "config:Get*",
       "config:Describe*",
-      "config:BatchGetResourceConfig",
-      "config:DeliverConfigSnapshot"
+      "config:BatchGet*",
+      "config:DeliverConfigSnap*"
     ]
     resources = ["*"]
   }
