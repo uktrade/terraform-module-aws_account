@@ -308,6 +308,25 @@
           ]
         }
       }
+    },
+    {
+      "Sid": "AthenaS3BucketWrite",
+      "Effect": "Allow",
+      "Action": [
+          "s3:AbortMultipartUpload",
+          "s3:CreateBucket",
+          "s3:PutObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::aws-athena-query-results-*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": [
+            "eu-west-2"
+          ]
+        }
+      }
     }
   ]
 }
