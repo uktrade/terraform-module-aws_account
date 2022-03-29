@@ -11,7 +11,11 @@ resource "aws_organizations_organization" "org" {
     "fms.amazonaws.com",
     "cloudtrail.amazonaws.com",
     "config.amazonaws.com",
-    "sso.amazonaws.com"
+    "sso.amazonaws.com",
+    "backup.amazonaws.com"
+  ]
+  enabled_policy_types = [
+    "BACKUP_POLICY"
   ]
 }
 
