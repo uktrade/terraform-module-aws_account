@@ -5,6 +5,7 @@ output "org_master" {
             "aws_profile" = var.org["aws_profile"],
             "organization_arn" = aws_organizations_organization.org.arn,
             "organization_id" = aws_organizations_organization.org.id,
+            "organization_policy_backup_d8w5m14" = aws_organizations_policy.backup_daily8_weekly5_monthly14.id,
             "cloudtrail_arn" = aws_cloudtrail.trail.arn,
             "cloudwatch_eventbus_arn" = "arn:aws:events:${data.aws_region.master.name}:${data.aws_caller_identity.master.account_id}:event-bus/default",
             "config_id" = aws_config_configuration_recorder.master_config.id,
