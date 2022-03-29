@@ -1,0 +1,144 @@
+{
+    "plans": {
+        "test-plan": {
+            "regions": {
+                "@@assign": [
+                    "${aws_region}"
+                ]
+            },
+            "rules": {
+                "daily": {
+                    "schedule_expression": {
+                        "@@assign": "cron(${daily_job_cron})"
+                    },
+                    "start_backup_window_minutes": {
+                        "@@assign": "60"
+                    },
+                    "complete_backup_window_minutes": {
+                        "@@assign": "360"
+                    },
+                    "lifecycle": {
+                        "delete_after_days": {
+                            "@@assign": "${daily_job_retention_days}"
+                        }
+                    },
+                    "target_backup_vault_name": {
+                        "@@assign": "${backup_policy_label}"
+                    },
+                    "recovery_point_tags": {
+                        "backup-policy-name": {
+                            "tag_key": {
+                                "@@assign": "backup-policy-name"
+                            },
+                            "tag_value": {
+                                "@@assign": "${backup_policy_label}"
+                            }
+                        },
+                        "backup-policy-rule": {
+                            "tag_key": {
+                                "@@assign": "backup-policy-rule"
+                            },
+                            "tag_value": {
+                                "@@assign": "daily"
+                            }
+                        }
+                    }
+                },
+                "weekly": {
+                    "schedule_expression": {
+                        "@@assign": "cron(${weekly_job_cron})"
+                    },
+                    "start_backup_window_minutes": {
+                        "@@assign": "120"
+                    },
+                    "complete_backup_window_minutes": {
+                        "@@assign": "1440"
+                    },
+                    "lifecycle": {
+                        "delete_after_days": {
+                            "@@assign": "${weekly_job_retention_days}"
+                        }
+                    },
+                    "target_backup_vault_name": {
+                        "@@assign": "${backup_policy_label}"
+                    },
+                    "recovery_point_tags": {
+                        "backup-policy-name": {
+                            "tag_key": {
+                                "@@assign": "backup-policy-name"
+                            },
+                            "tag_value": {
+                                "@@assign": "${backup_policy_label}"
+                            }
+                        },
+                        "backup-policy-rule": {
+                            "tag_key": {
+                                "@@assign": "backup-policy-rule"
+                            },
+                            "tag_value": {
+                                "@@assign": "weekly"
+                            }
+                        }
+                    }
+                },
+                "monthly": {
+                    "schedule_expression": {
+                        "@@assign": "cron(${monthly_job_cron})"
+                    },
+                    "start_backup_window_minutes": {
+                        "@@assign": "60"
+                    },
+                    "complete_backup_window_minutes": {
+                        "@@assign": "360"
+                    },
+                    "lifecycle": {
+                        "move_to_cold_storage_after_days": {
+                            "@@assign": "${monthly_job_cold_storage_days}"
+                        },
+                        "delete_after_days": {
+                            "@@assign": "${monthly_job_retention_days}"
+                        }
+                    },
+                    "target_backup_vault_name": {
+                        "@@assign": "${backup_policy_label}"
+                    },
+                    "recovery_point_tags": {
+                        "backup-policy-name": {
+                            "tag_key": {
+                                "@@assign": "backup-policy-name"
+                            },
+                            "tag_value": {
+                                "@@assign": "${backup_policy_label}"
+                            }
+                        },
+                        "backup-policy-rule": {
+                            "tag_key": {
+                                "@@assign": "backup-policy-rule"
+                            },
+                            "tag_value": {
+                                "@@assign": "monthly"
+                            }
+                        }
+                    }
+                }
+            },
+            "selections": {
+                "tags": {
+                    "dit-central-backup": {
+                        "iam_role_arn": {
+                            "@@assign": "arn:aws:iam::$account:role/AWSServiceRoleForBackup"
+                        },
+                        "tag_key": {
+                            "@@assign": "dit-central-backup"
+                        },
+                        "tag_value": {
+                            "@@assign": [
+                                "${backup_policy_label}"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
