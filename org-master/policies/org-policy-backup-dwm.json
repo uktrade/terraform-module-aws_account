@@ -1,6 +1,6 @@
 {
     "plans": {
-        "test-plan": {
+        "${backup_policy_label}": {
             "regions": {
                 "@@assign": [
                     "${aws_region}"
