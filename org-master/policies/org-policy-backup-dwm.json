@@ -49,7 +49,7 @@
                         "@@assign": "cron(${weekly_job_cron})"
                     },
                     "start_backup_window_minutes": {
-                        "@@assign": "120"
+                        "@@assign": "60"
                     },
                     "complete_backup_window_minutes": {
                         "@@assign": "1440"

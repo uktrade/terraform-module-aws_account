@@ -35,11 +35,11 @@ resource "aws_organizations_policy" "backup_daily8_weekly5_monthly14" {
       aws_account_id = data.aws_caller_identity.master.account_id
       aws_region = data.aws_region.master.name
       backup_policy_label = "daily8-weekly5-monthly14"
-      daily_job_cron = "25 22 ? * 2,3,4,5,6 *"
+      daily_job_cron = "15 22 ? * 2,3,4,5,6 *"
       daily_job_retention_days = 8
-      weekly_job_cron = "35 21 ? * 7 *"
+      weekly_job_cron = "25 22 ? * 7 *"
       weekly_job_retention_days = 35
-      monthly_job_cron = "45 22 1 * ? *"    
+      monthly_job_cron = "35 22 1 * ? *"    
       monthly_job_retention_days = 420
       monthly_job_cold_storage_days = 5
     }
