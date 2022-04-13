@@ -57,7 +57,6 @@ resource "aws_iam_policy" "default_dev" {
 
 data "aws_iam_policy_document" "default_dev" {
   provider = aws.member
-  override_json = aws_iam_policy.default_policy.policy
   statement {
     sid = "DevAccess"
     actions = [
