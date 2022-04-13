@@ -60,17 +60,30 @@ data "aws_iam_policy_document" "default_dev" {
   statement {
     sid = "DevAccessBoundary"
     actions = [
-      "s3:*",
-      "es:*",
-      "sqs:*",
-      "kms:*",
+      "acm:*",
+      "athena:*",
+      "cloudfront:*",
+      "cloudtrail:*",
       "cloudwatch:*",
+      "config:*",
+      "datapipeline:*",
+      "dlm:*",
+      "dynamodb:*",
+      "ec2:*",
+      "elasticloadbalancing:*",
+      "elasticfilesystem:*",
+      "es:*",
+      "events:*",
+      "glue:*",
+      "iam:*",
+      "kms:*",
+      "kinesis:*",
+      "lambda:*",
       "logs:*",
-      "config:List*",
-      "config:Get*",
-      "config:Describe*",
-      "config:BatchGet*",
-      "config:DeliverConfigSnap*"
+      "route53:*",
+      "s3:*",
+      "sns:*",
+      "sqs:*"
     ]
     resources = ["*"]
   }
