@@ -57,26 +57,38 @@ resource "aws_iam_policy" "default_dev" {
 
 data "aws_iam_policy_document" "default_dev" {
   provider = aws.member
-  override_json = aws_iam_policy.default_policy.policy
   statement {
-    sid = "DevAccess"
+    sid = "DevAccessBoundary"
     actions = [
-      "s3:*",
-      "es:*",
-      "sqs:*",
-      "kms:*",
+      "acm:*",
+      "athena:*",
+      "cloudfront:*",
+      "cloudtrail:*",
       "cloudwatch:*",
+      "config:*",
+      "datapipeline:*",
+      "dlm:*",
+      "dynamodb:*",
+      "ec2:*",
+      "elasticloadbalancing:*",
+      "elasticfilesystem:*",
+      "es:*",
+      "events:*",
+      "glue:*",
+      "iam:*",
+      "kms:*",
+      "kinesis:*",
+      "lambda:*",
       "logs:*",
-      "config:List*",
-      "config:Get*",
-      "config:Describe*",
-      "config:BatchGet*",
-      "config:DeliverConfigSnap*"
+      "route53:*",
+      "s3:*",
+      "sns:*",
+      "sqs:*"
     ]
     resources = ["*"]
   }
   statement {
-    sid = "DevRDS"
+    sid = "DevRDSBoundary"
     actions = ["rds:*"]
     resources = ["*"]
     condition {
