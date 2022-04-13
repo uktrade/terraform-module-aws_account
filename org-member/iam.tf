@@ -58,7 +58,7 @@ resource "aws_iam_policy" "default_dev" {
 data "aws_iam_policy_document" "default_dev" {
   provider = aws.member
   statement {
-    sid = "DevAccess"
+    sid = "DevAccessBoundary"
     actions = [
       "s3:*",
       "es:*",
@@ -75,7 +75,7 @@ data "aws_iam_policy_document" "default_dev" {
     resources = ["*"]
   }
   statement {
-    sid = "DevRDS"
+    sid = "DevRDSBoundary"
     actions = ["rds:*"]
     resources = ["*"]
     condition {
