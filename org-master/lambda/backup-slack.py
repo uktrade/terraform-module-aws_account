@@ -19,10 +19,9 @@ logger.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
     logger.info("Event: " + str(event))
-    logger.info("Raw Message: " + str(event['Records'][0]['Sns']['Message'].strip()))
-    raw_msg = ast.literal_eval(event['Records'][0]['Sns']['Message'].strip())
-    logger.info("raw_msg: " + str(raw_msg))
-    message_json = json.loads(json.dumps(raw_msg))
+    logger.info("Raw Message: " + str(event['Records'][0]['Sns']))
+    message_json = event['Records'][0]['Sns']
+    logger.info("Message json: " + str(message_json))
     logger.info("Message text: " + str(message_json['Message']))
 
     message = {
