@@ -7,3 +7,6 @@
 
 # .tfvars files
 *.tfvars
+
+# Lambda code zip
+*.zip
