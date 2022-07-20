@@ -12,6 +12,13 @@ resource "aws_guardduty_member" "org" {
   invite = true
 }
 
+resource "aws_guardduty_invite_accepter" "member" {
+  provider = aws.member
+  detector_id = aws_guardduty_detector.member.id
+  master_account_id = data.aws_caller_identity.master.account_id
+  depends_on = [aws_guardduty_member.org]
+}
+
 resource "aws_cloudwatch_event_target" "guardduty" {
   provider = aws.member
   arn = var.org["cloudwatch_eventbus_arn"]
