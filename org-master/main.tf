@@ -6,11 +6,6 @@ variable "org" {
   }
 }
 
-variable "config" {
-  type    = map(string)
-  default = {}
-}
-
 variable "soc_config" {
    type    = map(string)
    default = {}

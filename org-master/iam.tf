@@ -166,7 +166,7 @@ resource "aws_iam_role_policy_attachment" "bastion_admin" {
 
 resource "aws_iam_role" "sentinel_role" {
   provider = aws.master
-  name = var.config["sentinel_role_name"]
+  name = var.soc_config["sentinel_role_name"]
   description = "Role used by the Sentinel S3 connector (https://docs.microsoft.com/en-us/azure/sentinel/connect-aws?tabs=s3)"
   assume_role_policy = data.aws_iam_policy_document.sentinel_role.json
   tags = tomap(local.sentinel_common_resource_tag)
@@ -179,12 +179,12 @@ data "aws_iam_policy_document" "sentinel_role" {
     actions = ["sts:AssumeRole"]
     principals {
       type = "AWS"
-      identifiers = ["arn:aws:iam::${var.config["sentinel_account_id"]}:root"]
+      identifiers = ["arn:aws:iam::${var.soc_config["sentinel_account_id"]}:root"]
     }
     condition {
       test = "StringEquals"
       variable = "sts:ExternalId"
-      values = [var.config["sentinel_workspace_id"]]
+      values = [var.soc_config["sentinel_workspace_id"]]
     }
   }
 }
