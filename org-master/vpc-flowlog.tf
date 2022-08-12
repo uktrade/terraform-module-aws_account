@@ -36,6 +36,7 @@ resource "aws_flow_log" "sentinel_vpc_log" {
   for_each = data.aws_vpcs.vpcs.ids
   log_destination_type = "s3"
   log_destination = "${aws_s3_bucket.sentinel_logs.arn}/${local.sentinel_vpc_flow_log_folder}"
+  log_format = var.soc_config["sentinel_vpc_log_format"]
   vpc_id = each.key
   traffic_type = "ALL"
   tags = merge(

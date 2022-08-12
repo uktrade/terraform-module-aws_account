@@ -1,6 +1,6 @@
 resource "aws_s3_bucket" "sentinel_logs" {
   provider = aws.master
-  bucket   = "${var.config["sentinel_s3_bucket_name"]}-${data.aws_caller_identity.master.account_id}"
+  bucket   = "${var.soc_config["sentinel_s3_bucket_name"]}-${data.aws_caller_identity.master.account_id}"
   acl      = "private"
   tags     = tomap(local.sentinel_common_resource_tag)
 

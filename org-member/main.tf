@@ -16,6 +16,11 @@ variable "member" {
   }
 }
 
+variable "soc_config" {
+  type    = map(string)
+  default = {}
+}
+
 terraform {
   required_providers {
     aws = {
