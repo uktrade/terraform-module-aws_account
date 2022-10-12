@@ -24,10 +24,10 @@ resource "aws_s3_bucket" "vpc_log" {
 
 resource "aws_flow_log" "vpc_log" {
   provider = aws.master
-  count = length(data.aws_vpcs.vpcs.ids)
+  for_each = data.aws_vpcs.vpcs.ids
   log_destination_type = "s3"
-  log_destination = "${aws_s3_bucket.vpc_log.arn}/${tolist(data.aws_vpcs.vpcs.ids)[count.index]}"
-  vpc_id = tolist(data.aws_vpcs.vpcs.ids)[count.index]
+  log_destination = "${aws_s3_bucket.vpc_log.arn}/${each.key}"
+  vpc_id = each.key
   traffic_type = "ALL"
 }
 
