@@ -232,14 +232,6 @@
         {
             "Effect": "Allow",
             "Action": [
-                "sysops-sap:GetOperation",
-                "ssm-sap:GetOperation"
-            ],
-            "Resource": "*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
                 "timestream:ListDatabases",
                 "timestream:ListTables",
                 "timestream:ListTagsForResource",
