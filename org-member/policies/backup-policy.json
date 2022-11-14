@@ -244,9 +244,7 @@
                 "timestream:ListTables",
                 "timestream:ListTagsForResource",
                 "timestream:DescribeDatabase",
-                "timestream:DescribeTable",
-                "timestream:GetAwsBackupStatus",
-                "timestream:GetAwsRestoreStatus"
+                "timestream:DescribeTable"
             ],
             "Resource": [
                 "arn:aws:timestream:*:*:database/*/table/*",
