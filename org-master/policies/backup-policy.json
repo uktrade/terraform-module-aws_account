@@ -274,6 +274,13 @@
             "Resource": [
                 "arn:aws:redshift:*:*:cluster:*"
             ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "rds:ListTagsForResource",
+            ],
+            "Resource": "arn:aws:rds:*:*:db:*"
         }
     ]
 }
