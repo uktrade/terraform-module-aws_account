@@ -18,6 +18,7 @@
                 "storagegateway:ListVolumes",
                 "ec2:DescribeVolumes",
                 "ec2:DescribeInstances",
+                "ec2:DescribeTags",
                 "rds:DescribeDBInstances",
                 "rds:DescribeDBClusters",
                 "fsx:DescribeFileSystems",
