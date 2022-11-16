@@ -62,6 +62,38 @@ resource "aws_lambda_permission" "aws_lambda_from_member_sns" {
 
 ## IAM
 
+resource "aws_iam_role" "dit_backup" {
+  provider = aws.member
+  name = "dit-aws-backup"
+  description = "Role used by AWS Backup for performing backups."
+  assume_role_policy = data.aws_iam_policy_document.dit_backup.json
+}
+
+data "aws_iam_policy_document" "dit_backup" {
+  provider = aws.member
+  statement {
+    effect = "Allow"
+    actions = ["sts:AssumeRole"]
+    principals {
+      type = "Service"
+      identifiers = ["backup.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_policy" "dit_backup" {
+  provider = aws.member
+  name = "dit-aws-backup"
+  description = "Policy used by AWS Backup role for performing backups."
+  policy = file("${path.module}/policies/backup-policy.json")
+}
+
+resource "aws_iam_role_policy_attachment" "dit_backup_aws_linked_role_policy" {
+  provider = aws.member
+  role = aws_iam_role.dit_backup.name
+  policy_arn = aws_iam_policy.dit_backup.arn
+}
+
 data "aws_iam_policy_document" "org_backup_sns" {
   provider = aws.member
   statement {
@@ -85,3 +117,37 @@ data "aws_iam_policy_document" "org_backup_sns" {
     resources = [aws_sns_topic.org_backup_sns.id]
   }
 }
+
+# resource "aws_iam_service_linked_role" "aws_backup_service_role" {
+#   aws_service_name = "backup.amazonaws.com"
+# }
+
+# # resource "aws_iam_role" "aws_backup_service_role" {
+# #   provider = aws.member
+# #   name = "AWSBackupDefaultServiceRole"
+# #   assume_role_policy = data.aws_iam_policy_document.aws_backup_service_role.json
+# # }
+
+# # data "aws_iam_policy_document" "aws_backup_service_role" {
+# #   provider = aws.member
+# #   statement {
+# #     effect = "Allow"
+# #     actions = ["sts:AssumeRole"]
+# #     principals {
+# #       type = "Service"
+# #       identifiers = ["backup.amazonaws.com"]
+# #     }
+# #   }
+# # }
+
+# # resource "aws_iam_role_policy_attachment" "service_role_backup_policy" {
+# #   provider = aws.member
+# #   role = aws_iam_role.aws_backup_service_role.name
+# #   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForBackup"
+# # }
+
+# # resource "aws_iam_role_policy_attachment" "service_role_restore_policy" {
+# #   provider = aws.member
+# #   role = aws_iam_role.aws_backup_service_role.name
+# #   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSBackupServiceRolePolicyForRestores"
+# # }
