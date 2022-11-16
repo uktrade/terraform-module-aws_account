@@ -78,8 +78,16 @@
         },
         {
             "Effect": "Allow",
-            "Action": "ec2:CopySnapshot",
-            "Resource": "arn:aws:ec2:*::snapshot/*"
+            "Action": [
+                "ec2:CopySnapshot",
+                "ec2:CreateSnapshots",
+                "ec2:CreateSnapshot"
+            ],
+            "Resource": [
+                "arn:aws:ec2:*::snapshot/*",
+                "arn:aws:ec2:*:*:volume/*",
+                "arn:aws:ec2:*:*:instance/*"
+            ]
         },
         {
             "Effect": "Allow",
