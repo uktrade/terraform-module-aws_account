@@ -31,12 +31,7 @@
         {
             "Effect": "Allow",
             "Action": "ec2:CreateTags",
-            "Resource": "arn:aws:ec2:*::snapshot/*",
-            "Condition": {
-                "StringEquals": {
-                    "ec2:CreateAction": "CopySnapshot"
-                }
-            }
+            "Resource": "arn:aws:ec2:*::snapshot/*"
         },
         {
             "Effect": "Allow",
