@@ -279,8 +279,12 @@
             "Effect": "Allow",
             "Action": [
                 "rds:ListTagsForResource",
+                "rds:CreateDBSnapshot"
             ],
-            "Resource": "arn:aws:rds:*:*:db:*"
+            "Resource": [
+                "arn:aws:rds:*:*:snapshot:*",
+                "arn:aws:rds:*:*:db:*"
+            ]
         }
     ]
 }
