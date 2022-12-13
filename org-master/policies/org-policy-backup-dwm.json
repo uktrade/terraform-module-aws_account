@@ -126,7 +126,7 @@
                 "tags": {
                     "dit-central-backup": {
                         "iam_role_arn": {
-                            "@@assign": "arn:aws:iam::$account:role/service-role/AWSBackupDefaultServiceRole"
+                            "@@assign": "arn:aws:iam::$account:role/${iam_role}"
                         },
                         "tag_key": {
                             "@@assign": "dit-central-backup"
