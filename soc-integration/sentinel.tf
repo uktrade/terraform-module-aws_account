@@ -26,7 +26,7 @@ resource "aws_iam_role" "azure_sentinel" {
 resource "aws_iam_role_policy_attachment" "cloudtrail_readonly" {
   provider = aws.member
   role = aws_iam_role.azure_sentinel.name
-  policy_arn = "arn:aws:iam::aws:policy/AWSCloudTrailReadOnlyAccess"
+  policy_arn = "arn:aws:iam::aws:policy/AWSCloudTrail_ReadOnlyAccess"
 }
 
 output "azure-sentinel-role-arn" {
