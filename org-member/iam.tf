@@ -410,3 +410,42 @@ data "aws_iam_policy_document" "default_dev_policy" {
     }
   }
 }
+
+data "aws_iam_policy_document" "event_bus_assume_role" {
+  provider = aws.member
+  statement {
+    effect = "Allow"
+    actions = ["sts:AssumeRole"]
+    principals {
+      type = "Service"
+      identifiers = ["events.amazonaws.com"]
+    }
+  }  
+}
+
+resource "aws_iam_role" "event_bus_invoke_remote_event_bus" {
+  provider = aws.member
+  name = "dit-invoke-remote-event-bus-role"
+  assume_role_policy = data.aws_iam_policy_document.event_bus_assume_role.json
+}
+
+data "aws_iam_policy_document" "event_bus_invoke_remote_event_bus" {
+  provider = aws.member
+  statement {
+    effect = "Allow"
+    actions = ["events:PutEvents"]
+    resources = [var.org["cloudwatch_eventbus_arn"]]
+  }
+}
+
+resource "aws_iam_policy" "event_bus_invoke_remote_event_bus" {
+  provider = aws.member
+  name = "dit-invoke-remote-event-bus-policy"
+  policy = data.aws_iam_policy_document.event_bus_invoke_remote_event_bus.json
+}
+
+resource "aws_iam_role_policy_attachment" "event_bus_invoke_remote_event_bus" {
+  provider = aws.member
+  role = aws_iam_role.event_bus_invoke_remote_event_bus.name
+  policy_arn = aws_iam_policy.event_bus_invoke_remote_event_bus.arn
+}
