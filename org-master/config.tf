@@ -45,7 +45,7 @@ resource "aws_config_configuration_recorder" "master_config" {
 resource "aws_iam_role_policy_attachment" "master_config_policy" {
   provider = aws.master
   role = aws_iam_role.master_config_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRole"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWS_ConfigRole"
 }
 
 resource "aws_iam_policy" "master_config_service_policy" {
