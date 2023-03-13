@@ -87,6 +87,7 @@ resource "aws_cloudwatch_event_target" "config" {
   arn = "arn:aws:events:${data.aws_region.master.name}:${data.aws_caller_identity.master.account_id}:event-bus/default"
   rule = aws_cloudwatch_event_rule.config.name
   target_id = "org-config-${data.aws_caller_identity.member.account_id}"
+  role_arn = aws_iam_role.event_bus_invoke_remote_event_bus.arn
 }
 
 resource "aws_cloudwatch_event_rule" "config" {

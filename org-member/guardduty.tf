@@ -23,6 +23,7 @@ resource "aws_cloudwatch_event_target" "guardduty" {
   provider = aws.member
   arn = var.org["cloudwatch_eventbus_arn"]
   rule = aws_cloudwatch_event_rule.guardduty.name
+  role_arn = aws_iam_role.event_bus_invoke_remote_event_bus.arn
 }
 
 resource "aws_cloudwatch_event_rule" "guardduty" {

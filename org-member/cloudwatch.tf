@@ -15,4 +15,5 @@ resource "aws_cloudwatch_event_target" "member" {
   provider = aws.member
   arn = var.org["cloudwatch_eventbus_arn"]
   rule = aws_cloudwatch_event_rule.member.name
+  role_arn = aws_iam_role.event_bus_invoke_remote_event_bus.arn
 }
