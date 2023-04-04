@@ -5,10 +5,15 @@ resource "aws_iam_role" "config_role" {
   assume_role_policy = file("${path.module}/policies/config-sts.json")
 }
 
+data "aws_iam_policy" "aws_config_service_role" {
+  provider = aws.member
+  name = var.member["aws_config_service_role"]
+}
+
 resource "aws_iam_role_policy_attachment" "config_policy" {
   provider = aws.member
   role = aws_iam_role.config_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRole"
+  policy_arn = data.aws_iam_policy.aws_config_service_role.arn
 }
 
 resource "aws_iam_policy" "config_service_policy" {

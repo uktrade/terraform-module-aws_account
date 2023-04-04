@@ -3,6 +3,11 @@ variable "config" {
   default = {}
 }
 
+variable "member" {
+  type = map(string)
+  default = {}
+}
+
 terraform {
   required_providers {
     aws = {
