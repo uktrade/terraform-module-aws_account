@@ -24,7 +24,7 @@ resource "aws_s3_bucket" "vpc_log" {
 
 resource "aws_flow_log" "vpc_log" {
   provider = aws.member
-  for_each = data.aws_vpcs.vpcs.ids
+  for_each = toset(data.aws_vpcs.vpcs.ids)
   log_destination_type = "s3"
   log_destination = "${aws_s3_bucket.vpc_log.arn}/${each.key}"
   vpc_id = each.key
@@ -33,7 +33,7 @@ resource "aws_flow_log" "vpc_log" {
 
 resource "aws_flow_log" "sentinel_vpc_log" {
   provider = aws.member
-  for_each = data.aws_vpcs.vpcs.ids
+  for_each = toset(data.aws_vpcs.vpcs.ids)
   log_destination_type = "s3"
   log_destination = var.org["sentinel_vpc_s3_bucket"]
   log_format = var.soc_config["sentinel_vpc_log_format"]
