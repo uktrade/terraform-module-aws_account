@@ -1,0 +1,44 @@
+{
+    "Version": "2012-10-17",
+    "Id": "CustomKMSPolicy",
+    "Statement": [
+        {
+            "Sid": "Enable IAM User Permissions",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::${account_id}:root"
+            },
+            "Action": "kms:*",
+            "Resource": "*"
+        },
+        {
+            "Sid": "Allow Config to use KMS for encryption",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "config.amazonaws.com"
+            },
+            "Action": [
+                "kms:Decrypt",
+                "kms:GenerateDataKey"
+            ],
+            "Resource": "${kms_key_arn}"
+        },
+        {
+            "Sid": "Allow CloudTrail to use KMS for encryption",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "cloudtrail.amazonaws.com"
+            },
+            "Action": "kms:*",
+            "Resource": "${kms_key_arn}",
+            "Condition": {
+                "StringEquals": {
+                    "aws:SourceArn": "arn:aws:cloudtrail:eu-west-2:${account_id}:trail/aws-controltower-BaselineCloudTrail"
+                },
+                "StringLike": {
+                    "kms:EncryptionContext:aws:cloudtrail:arn": "arn:aws:cloudtrail:*:${account_id}:trail/*"
+                }
+            }
+        }
+    ]
+}
