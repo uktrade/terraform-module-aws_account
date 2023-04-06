@@ -411,6 +411,8 @@ data "aws_iam_policy_document" "default_dev_policy" {
   }
 }
 
+# Control Tower
+
 resource "aws_iam_role" "control_tower_execution" {
   provider = aws.member
   name = "AWSControlTowerExecution"

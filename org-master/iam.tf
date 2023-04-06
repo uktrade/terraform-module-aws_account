@@ -164,6 +164,8 @@ resource "aws_iam_role_policy_attachment" "bastion_admin" {
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
+# Sentinel
+
 resource "aws_iam_role" "sentinel_role" {
   provider = aws.master
   name = var.soc_config["sentinel_role_name"]
@@ -194,6 +196,8 @@ resource "aws_iam_role_policy_attachment" "sentinel_s3_readonly" {
   role = aws_iam_role.sentinel_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
 }
+
+# Control Tower
 
 resource "aws_iam_role" "control_tower_execution" {
   provider = aws.master
