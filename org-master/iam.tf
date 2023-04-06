@@ -196,29 +196,3 @@ resource "aws_iam_role_policy_attachment" "sentinel_s3_readonly" {
   role = aws_iam_role.sentinel_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
 }
-
-# Control Tower
-
-resource "aws_iam_role" "control_tower_execution" {
-  provider = aws.master
-  name = "AWSControlTowerExecution"
-  assume_role_policy = data.aws_iam_policy_document.control_tower_execution.json
-}
-
-data "aws_iam_policy_document" "control_tower_execution" {
-  provider = aws.master
-  statement {
-    effect = "Allow"
-    actions = ["sts:AssumeRole"]
-    principals {
-      type = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.master.account_id}:root"]
-    }
-  }  
-}
-
-resource "aws_iam_role_policy_attachment" "control_tower_execution_admin_access" {
-  provider = aws.master
-  role = aws_iam_role.control_tower_execution.name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
-}
