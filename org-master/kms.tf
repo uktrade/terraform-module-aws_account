@@ -1,3 +1,5 @@
+# Sentinel
+
 resource "aws_kms_key" "sentinel_guard_duty" {
   provider = aws.master
   description = "Sentinel GuardDuty KMS Key"
@@ -15,6 +17,8 @@ resource "aws_kms_alias" "sentinel_guard_duty" {
   name = "alias/sentinel-guardduty-key"
   target_key_id = aws_kms_key.sentinel_guard_duty.key_id
 }
+
+# Control Tower
 
 resource "aws_kms_key" "control_tower" {
   provider = aws.master

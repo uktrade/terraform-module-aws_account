@@ -164,6 +164,8 @@ resource "aws_iam_role_policy_attachment" "bastion_admin" {
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
+# Sentinel
+
 resource "aws_iam_role" "sentinel_role" {
   provider = aws.master
   name = var.soc_config["sentinel_role_name"]
