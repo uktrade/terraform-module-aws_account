@@ -43,7 +43,7 @@ resource "aws_sns_topic_subscription" "org_backup_sns_to_lambda" {
   provider = aws.master
   topic_arn = aws_sns_topic.org_backup_sns.arn
   protocol = "lambda"
-  endpoint = var.org["config_to_slack_lambda_arn"]
+  endpoint = var.org["backup_to_slack_lambda_arn"]
   depends_on = [
     aws_sns_topic_policy.org_backup_sns
   ]
@@ -56,7 +56,7 @@ resource "aws_lambda_permission" "aws_lambda_from_member_sns" {
   statement_id = "AllowExecutionFromMember_${data.aws_caller_identity.member.account_id}"
   principal = "sns.amazonaws.com"
   action = "lambda:InvokeFunction"
-  function_name = var.org["config_to_slack_lambda_arn"]
+  function_name = var.org["backup_to_slack_lambda_arn"]
   source_arn = aws_sns_topic.org_backup_sns.arn
 }
 
