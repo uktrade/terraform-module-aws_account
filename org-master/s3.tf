@@ -207,7 +207,7 @@ data "aws_iam_policy_document" "sentinel_logs" {
     actions = ["s3:PutObject"]
     effect = "Allow"
     resources = [
-      "${aws_s3_bucket.sentinel_logs.arn}/CloudTrail/AWSLogs/${aws_organizations_organization.org.id}/*"
+      "${aws_s3_bucket.sentinel_logs.arn}/CloudTrail/AWSLogs/${local.aws_organization_id}/*"
     ]
     principals {
         type = "Service"
