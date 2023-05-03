@@ -163,6 +163,68 @@ data "aws_iam_policy_document" "sentinel_logs" {
     }
   }
 
+  statement {
+    sid = "AWSCloudTrailAclCheck20150319"
+    actions = ["s3:GetBucketAcl"]
+    effect = "Allow"
+    resources = [aws_s3_bucket.sentinel_logs.arn]
+    principals {
+        type = "Service"
+        identifiers = ["cloudtrail.amazonaws.com"]
+    }
+    condition {
+      test = "StringEquals"
+      variable = "AWS:SourceArn"
+      values = [aws_cloudtrail.sentinel-trail.arn]
+    }
+  }
+
+  statement {
+    sid = "AWSCloudTrailWrite20150319-Account"
+    actions = ["s3:PutObject"]
+    effect = "Allow"
+    resources = [
+      "${aws_s3_bucket.sentinel_logs.arn}/CloudTrail/AWSLogs/${data.aws_caller_identity.master.account_id}/*"
+    ]
+    principals {
+        type = "Service"
+        identifiers = ["cloudtrail.amazonaws.com"]
+    }
+    condition {
+      test = "StringEquals"
+      variable = "AWS:SourceArn"
+      values = [aws_cloudtrail.sentinel-trail.arn]
+    }
+    condition {
+      test = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values = ["bucket-owner-full-control"]
+    }
+  }
+
+  statement {
+    sid = "AWSCloudTrailWrite20150319-Organization"
+    actions = ["s3:PutObject"]
+    effect = "Allow"
+    resources = [
+      "${aws_s3_bucket.sentinel_logs.arn}/CloudTrail/AWSLogs/${aws_organizations_organization.org.id}/*"
+    ]
+    principals {
+        type = "Service"
+        identifiers = ["cloudtrail.amazonaws.com"]
+    }
+    condition {
+      test = "StringEquals"
+      variable = "AWS:SourceArn"
+      values = [aws_cloudtrail.sentinel-trail.arn]
+    }
+    condition {
+      test = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values = ["bucket-owner-full-control"]
+    }
+  }
+
 }
 
 resource "aws_s3_bucket_notification" "sentinel_logs" {
