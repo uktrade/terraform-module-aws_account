@@ -7,4 +7,5 @@ locals {
   sentinel_guardduty_folder = "GuardDuty"
   sentinel_cloudtrail_folder = "CloudTrail"
   sentinel_log_expiry_days = 14
+  aws_organization_id = element(split("/", aws_organizations_organization.org.id), 1)
 }
