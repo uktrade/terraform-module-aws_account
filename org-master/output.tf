@@ -4,7 +4,6 @@ output "org_master" {
             "aws_shared_credentials_file" = var.org["aws_shared_credentials_file"],
             "aws_profile" = var.org["aws_profile"],
             "organization_arn" = aws_organizations_organization.org.arn,
-            "organization_id" = aws_organizations_organization.org.id,
             "organization_policy_backup_d8w5m14" = aws_organizations_policy.backup_daily8_weekly5_monthly14.id,
             "backup_to_slack_lambda_arn" = aws_lambda_function.aws_backup_to_slack.arn
             "cloudtrail_arn" = aws_cloudtrail.trail.arn,
