@@ -66,6 +66,8 @@ resource "aws_s3_bucket" "cloudtrail-s3" {
   policy = templatefile("${path.module}/policies/cloudtrail-s3.json",
     {
       cloudtrail_s3 = "cloudtrail-${data.aws_caller_identity.master.account_id}"
+      account_id = data.aws_caller_identity.master.account_id
+      organization_id = local.aws_organization_id
     }
   )
 }

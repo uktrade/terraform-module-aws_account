@@ -34,6 +34,50 @@
           "aws:SecureTransport": "false"
         }
       }
+    },
+    {
+      "Action": "s3:GetBucketAcl",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudtrail:eu-west-2:${account_id}:trail/${cloudtrail_s3}"
+        }
+      },
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "cloudtrail.amazonaws.com"
+      },
+      "Resource": "arn:aws:s3:::${cloudtrail_s3}",
+      "Sid": "AWSCloudTrailAclCheck20150319"
+    },
+    {
+      "Action": "s3:PutObject",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudtrail:eu-west-2:${account_id}:trail/${cloudtrail_s3}",
+          "s3:x-amz-acl": "bucket-owner-full-control"
+        }
+      },
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "cloudtrail.amazonaws.com"
+      },
+      "Resource": "arn:aws:s3:::${cloudtrail_s3}/AWSLogs/${account_id}/*",
+      "Sid": "AWSCloudTrailWrite20150319"
+    },
+    {
+      "Action": "s3:PutObject",
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudtrail:eu-west-2:${account_id}:trail/${cloudtrail_s3}",
+          "s3:x-amz-acl": "bucket-owner-full-control"
+          }
+        },
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "cloudtrail.amazonaws.com"
+      },
+      "Resource": "arn:aws:s3:::${cloudtrail_s3}/AWSLogs/${organization_id}/*",
+      "Sid": "AWSCloudTrailWrite20150319"
     }
   ]
 }
