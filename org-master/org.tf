@@ -16,7 +16,8 @@ resource "aws_organizations_organization" "org" {
     "controltower.amazonaws.com"
   ]
   enabled_policy_types = [
-    "BACKUP_POLICY"
+    "BACKUP_POLICY",
+    "SERVICE_CONTROL_POLICY"
   ]
 }
 
