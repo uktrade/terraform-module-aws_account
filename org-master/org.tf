@@ -52,3 +52,10 @@ resource "aws_organizations_policy" "backup_daily8_weekly5_monthly14" {
       "backup-policy-name" = "daily8-weekly5-monthly14"
   }
 }
+
+resource "aws_organizations_organizational_unit" "org_ou_structure" {
+  provider = aws.master
+  for_each = var.org_ou_structure
+  name = each.value["ou_name"]
+  parent_id = each.value["parent_id"]
+}

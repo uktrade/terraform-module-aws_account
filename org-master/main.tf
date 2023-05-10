@@ -53,3 +53,10 @@ variable "aws_regions" {
     "us-west-2"
   ]
 }
+
+variable "org_ou_structure" {
+  type = map(object({
+    ou_name   = string
+    parent_id = string
+  }))
+}
