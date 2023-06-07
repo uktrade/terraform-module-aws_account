@@ -19,7 +19,7 @@ resource "aws_inspector_assessment_template" "default" {
 # AWS Inspector V2
 
 resource "aws_inspector2_member_association" "member" {
-  count = var.member["aws_inspector_org_managed"] ? 1 : 0
+  count = var.member["aws_inspector2_org_managed"] ? 1 : 0
   provider = aws.master
   account_id = data.aws_caller_identity.member.account_id
 }
