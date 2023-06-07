@@ -13,7 +13,8 @@ resource "aws_organizations_organization" "org" {
     "config.amazonaws.com",
     "sso.amazonaws.com",
     "backup.amazonaws.com",
-    "controltower.amazonaws.com"
+    "controltower.amazonaws.com",
+    "inspector2.amazonaws.com"
   ]
   enabled_policy_types = [
     "BACKUP_POLICY",
