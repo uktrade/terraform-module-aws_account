@@ -113,7 +113,7 @@ data "aws_iam_policy_document" "sentinel_logs" {
       values = ["false"]
     }
   }
-  
+
   statement {
     sid = "AWSLogDeliveryWrite"
     actions = ["s3:PutObject"]
@@ -252,4 +252,10 @@ resource "aws_s3_bucket_notification" "sentinel_logs" {
     filter_suffix = ".gz"
   }
 
+}
+
+/* new aws vpc bucket  */
+data "aws_s3_bucket" "sentinel_vpc_flow_log"{
+  provider = aws.master
+  bucket = "sentinel-vpc-flowlog-${data.aws_caller_identity.master.account_id}"
 }
