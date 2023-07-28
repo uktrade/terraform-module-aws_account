@@ -15,7 +15,7 @@ terraform {
   required_providers {
     aws = {
       source                = "hashicorp/aws"
-      configuration_aliases = [ aws.master ]
+      configuration_aliases = [ aws.master, aws.elk ]
     }
   }
 }
@@ -59,4 +59,8 @@ variable "org_ou_structure" {
     ou_name   = string
     parent_id = string
   }))
+}
+
+variable "deployment_environment"{
+    type = string
 }
