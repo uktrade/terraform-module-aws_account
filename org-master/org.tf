@@ -14,7 +14,8 @@ resource "aws_organizations_organization" "org" {
     "sso.amazonaws.com",
     "backup.amazonaws.com",
     "controltower.amazonaws.com",
-    "inspector2.amazonaws.com"
+    "inspector2.amazonaws.com",
+    "member.org.stacksets.cloudformation.amazonaws.com"
   ]
   enabled_policy_types = [
     "BACKUP_POLICY",
@@ -43,7 +44,7 @@ resource "aws_organizations_policy" "backup_daily8_weekly5_monthly14" {
       daily_job_retention_days = 8
       weekly_job_cron = "25 22 ? * 7 *"
       weekly_job_retention_days = 35
-      monthly_job_cron = "35 22 1 * ? *"    
+      monthly_job_cron = "35 22 1 * ? *"
       monthly_job_retention_days = 420
       monthly_job_cold_storage_days = 5
     }

@@ -9,7 +9,7 @@ output "org_master" {
             "cloudtrail_arn" = aws_cloudtrail.trail.arn,
             "cloudwatch_eventbus_arn" = "arn:aws:events:${data.aws_region.master.name}:${data.aws_caller_identity.master.account_id}:event-bus/default",
             "guardduty_id"=  aws_guardduty_detector.master.id,
-            "sentinel_vpc_s3_bucket" = data.aws_s3_bucket.sentinel_vpc_flow_log.arn
+            "sentinel_vpc_s3_bucket" = aws_s3_bucket.sentinel_vpc_flowlog_bucket.arn
             "bastion_account" = var.org["bastion_account"]
           })
 }

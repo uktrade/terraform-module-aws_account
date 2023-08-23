@@ -255,7 +255,138 @@ resource "aws_s3_bucket_notification" "sentinel_logs" {
 }
 
 /* new aws vpc bucket  */
-data "aws_s3_bucket" "sentinel_vpc_flow_log"{
+locals {
+  vpc_flowlog_tags = {
+    "Terraform_source_repo" = "terraform-module-aws_account"
+    "Service"               = "sentinel-vpc-flowlog"
+    "Environment"           = var.deployment_environment
+  }
+}
+
+resource "aws_s3_bucket" "sentinel_vpc_flowlog_bucket" {
   provider = aws.master
-  bucket = "sentinel-vpc-flowlog-${data.aws_caller_identity.master.account_id}"
+  bucket   = "sentinel-vpc-flowlog-${data.aws_caller_identity.master.account_id}"
+  lifecycle {
+    ignore_changes = [grant]
+  }
+  tags = local.vpc_flowlog_tags
+}
+
+resource "aws_s3_object" "empty_bucket_readme" {
+  provider = aws.master
+  bucket   = aws_s3_bucket.sentinel_vpc_flowlog_bucket.bucket
+  key      = "_Empty Bucket? Do not delete! README.txt"
+  source   = "${path.module}/files/empty-bucket-readme.txt"
+  tags     = local.vpc_flowlog_tags
+}
+
+resource "aws_s3_bucket_ownership_controls" "sentinel_vpc_flowlog_bucket" {
+  provider = aws.master
+  bucket   = aws_s3_bucket.sentinel_vpc_flowlog_bucket.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_policy" "sentinel_vpc_flowlog_bucket_account_access" {
+  provider = aws.master
+  bucket   = aws_s3_bucket.sentinel_vpc_flowlog_bucket.id
+  policy   = data.aws_iam_policy_document.sentinel_vpc_flowlog_bucket_account_access.json
+}
+
+data "aws_organizations_organization" "master" {
+  provider = aws.master
+}
+
+data "aws_sqs_queue" "sqs_sentinel_s3_vpc_flowlog_incoming"{
+  provider = aws.elk
+  name = "microsoft-sentinel-s3-vpc_flowlog"
+}
+
+data "aws_iam_role" "ecsTaskRole" {
+  provider =  aws.elk
+  name = "sentinel-vpc-flowlog-ecs"
+
+}
+data "aws_iam_policy_document" "sentinel_vpc_flowlog_bucket_account_access" {
+  statement {
+    sid = "acl-access-from-accounts-for-vpc_flowlog-logging"
+    principals {
+      type = "AWS"
+      identifiers = [for id in data.aws_organizations_organization.master.non_master_accounts[*].id :
+        "arn:aws:iam::${id}:root"
+      ]
+    }
+    actions   = ["s3:GetBucketAcl", "s3:PutBucketAcl"]
+    effect    = "Allow"
+    resources = [aws_s3_bucket.sentinel_vpc_flowlog_bucket.arn]
+  }
+  statement {
+    sid = "elk-ecs-access-to-get-and-delete-s3-objects"
+    principals {
+      type        = "AWS"
+      identifiers = [data.aws_iam_role.ecsTaskRole.arn]
+    }
+
+    actions   = ["s3:GetObject", "s3:DeleteObject"]
+    effect    = "Allow"
+    resources = ["${aws_s3_bucket.sentinel_vpc_flowlog_bucket.arn}/*"]
+  }
+
+  /* Ploicy to give write access from vpc flow log service to sentinel bucket */
+   statement {
+    sid = "service-write-access-from-accounts-for-vpc_flowlog-logging"
+
+    actions = ["s3:PutObject"]
+
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["delivery.logs.amazonaws.com"]
+    }
+
+
+    condition {
+      test     = "StringEquals"
+      variable = "s3:x-amz-acl"
+      values   = ["bucket-owner-full-control"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceAccount"
+      values   = data.aws_organizations_organization.master.non_master_accounts[*].id
+    }
+
+    resources = [aws_s3_bucket.sentinel_vpc_flowlog_bucket.arn, "${aws_s3_bucket.sentinel_vpc_flowlog_bucket.arn}/*"]
+  }
+  statement {
+    sid = "service-acl-access-from-accounts-for-vpc_flowlog-logging"
+
+    actions = ["s3:GetBucketAcl", "s3:ListBucket"]
+
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["delivery.logs.amazonaws.com"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceAccount"
+      values   = data.aws_organizations_organization.master.non_master_accounts[*].id
+    }
+
+    resources = [aws_s3_bucket.sentinel_vpc_flowlog_bucket.arn, "${aws_s3_bucket.sentinel_vpc_flowlog_bucket.arn}/*"]
+  }
+}
+
+resource "aws_s3_bucket_notification" "sentinel_vpc_flowlog_bucket_notification" {
+  provider = aws.master
+  bucket   = aws_s3_bucket.sentinel_vpc_flowlog_bucket.id
+
+  queue {
+    id        = "${data.aws_sqs_queue.sqs_sentinel_s3_vpc_flowlog_incoming.name}-incoming"
+    queue_arn = data.aws_sqs_queue.sqs_sentinel_s3_vpc_flowlog_incoming.arn
+    events    = ["s3:ObjectCreated:*"]
+  }
 }
