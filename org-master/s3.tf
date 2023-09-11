@@ -305,7 +305,7 @@ data "aws_sqs_queue" "sqs_sentinel_s3_vpc_flowlog_incoming"{
 
 data "aws_iam_role" "ecsTaskRole" {
   provider =  aws.elk
-  name = "sentinel-vpc-flowlog-ecs"
+  name = "sentinel-vpc-flowlog-task-ecs"
 
 }
 data "aws_iam_policy_document" "sentinel_vpc_flowlog_bucket_account_access" {
