@@ -65,6 +65,7 @@ data "aws_iam_policy_document" "iam_user_manager" {
         "sso-directory:DescribeDirectory",
 				"sso-directory:DescribeUserByUniqueAttribute",
 				"sso-directory:DescribeUser",
+        "sso-directory:DescribeGroups",
 				"sso-directory:DisableUser",
 				"sso-directory:DeleteUser",
         "sso-directory:DeleteMfaDeviceForUser",
