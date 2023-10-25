@@ -55,7 +55,7 @@ data "aws_iam_policy_document" "iam_user_manager" {
       "iam:DeleteSSHPublicKey",
       "iam:DeleteSigningCertificate",
       "iam:DeleteServiceSpecificCredential",
-			]
+      ]
     resources = ["arn:aws:iam::${data.aws_caller_identity.common.account_id}:user/*"]
   }
   statement {
@@ -82,7 +82,7 @@ data "aws_iam_policy_document" "iam_user_manager" {
       "sso:GetSsoConfiguration",
       "sso:GetSSOStatus",
       "sso:DisassociateProfile"
-			]
+      ]
     resources = ["*"]
   }
 }
