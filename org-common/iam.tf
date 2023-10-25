@@ -36,21 +36,18 @@ resource "aws_iam_policy" "iam_user_manager" {
 data "aws_iam_policy_document" "iam_user_manager" {
   provider = aws.common
   statement {
+    sid = "UserManagerViewAndDeleteIAMResources"
     effect = "Allow"
     actions = [
-        "iam:ListAccountAliases",
-				"iam:ListUsers",
 				"iam:ListGroupsForUser",
         "iam:ListMFADevices",
 				"iam:ListAttachedUserPolicies",
 				"iam:ListUserTags",
         "iam:ListAccessKeys",
-        "iam:ListPolicies",
         "iam:ListServiceSpecificCredentials",
         "iam:ListUserPolicies",
         "iam:ListSigningCertificates",
         "iam:ListSSHPublicKeys",
-        "iam:GetAccountSummary",
 				"iam:GetUser",
 				"iam:GetUserPolicy",
         "iam:GetLoginProfile",
@@ -58,6 +55,17 @@ data "aws_iam_policy_document" "iam_user_manager" {
         "iam:DeleteSSHPublicKey",
         "iam:DeleteSigningCertificate",
         "iam:DeleteServiceSpecificCredential",
+			]
+    resources = ["arn:aws:iam::${data.aws_caller_identity.common.account_id}:user/*"]
+  }
+  statement {
+    sid = "UserManagerViewAndDeleteAllResources"
+    effect = "Allow"
+    actions = [
+        "iam:ListAccountAliases",
+				"iam:ListUsers",
+        "iam:ListPolicies",
+        "iam:GetAccountSummary",
 				"sso-directory:ListMfaDevicesForUser",
 				"sso-directory:ListGroupsForUser",
 				"sso-directory:SearchUsers",
@@ -76,5 +84,5 @@ data "aws_iam_policy_document" "iam_user_manager" {
         "sso:DisassociateProfile"
 			]
     resources = ["*"]
-  }  
+  }
 }
