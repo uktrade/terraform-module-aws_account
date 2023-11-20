@@ -84,6 +84,7 @@ data "aws_iam_policy_document" "iam_user_manager" {
       "sso:DisassociateProfile",
       "sso:DescribeRegisteredRegions",
       "sso:GetMfaDeviceManagementForDirectory",
+      "notifications:ListNotificationHubs"
       ]
     resources = ["*"]
   }
