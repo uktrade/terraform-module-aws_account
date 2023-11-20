@@ -81,7 +81,9 @@ data "aws_iam_policy_document" "iam_user_manager" {
       "sso:ListDirectoryAssociations",
       "sso:GetSsoConfiguration",
       "sso:GetSSOStatus",
-      "sso:DisassociateProfile"
+      "sso:DisassociateProfile",
+      "sso:DescribeRegisteredRegions",
+      "sso:GetMfaDeviceManagementForDirectory",
       ]
     resources = ["*"]
   }
