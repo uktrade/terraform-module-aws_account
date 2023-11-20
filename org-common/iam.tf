@@ -89,4 +89,16 @@ data "aws_iam_policy_document" "iam_user_manager" {
       ]
     resources = ["*"]
   }
+  statement {
+    sid = "UserManagerViewAndGetSSOResources"
+    effect = "Allow"
+    actions = [
+      "sso:DescribeInstance",
+      "sso:GetPermissionsBoundaryForPermissionSet"
+      ]
+    resources = [
+      "arn:aws:sso:::instance/*",
+      "arn:aws:sso:::permissionSet/*/*"
+    ]
+  }
 }
