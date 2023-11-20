@@ -81,8 +81,24 @@ data "aws_iam_policy_document" "iam_user_manager" {
       "sso:ListDirectoryAssociations",
       "sso:GetSsoConfiguration",
       "sso:GetSSOStatus",
-      "sso:DisassociateProfile"
+      "sso:DisassociateProfile",
+      "sso:DescribeRegisteredRegions",
+      "sso:GetMfaDeviceManagementForDirectory",
+      "ec2:DescribeRegions",
+      "notifications:ListNotificationHubs"
       ]
     resources = ["*"]
+  }
+  statement {
+    sid = "UserManagerViewAndGetSSOResources"
+    effect = "Allow"
+    actions = [
+      "sso:DescribeInstance",
+      "sso:GetPermissionsBoundaryForPermissionSet"
+      ]
+    resources = [
+      "arn:aws:sso:::instance/*",
+      "arn:aws:sso:::permissionSet/*/*"
+    ]
   }
 }
