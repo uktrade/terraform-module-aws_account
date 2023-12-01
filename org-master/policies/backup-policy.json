@@ -103,6 +103,19 @@
             }
         },
         {
+        "Action": [
+            "ec2:DeleteSnapshot",
+            "ec2:DeleteTags"
+        ],
+        "Resource": "arn:aws:ec2:*::snapshot/*",
+        "Effect": "Allow",
+        "Condition": {
+            "Null": {
+                "aws:ResourceTag/aws:backup:source-resource": "false"
+            }
+        }
+        },
+        {
             "Effect": "Allow",
             "Action": [
                 "rds:AddTagsToResource",
