@@ -312,14 +312,17 @@ resource "aws_iam_group_policy" "role_dev_policy_jump" {
   count = local.bastion
   name = "dit-dev-policy"
   group = aws_iam_group.bastion_dev[0].name
-  policy = file("${path.root}/.terraform/.cache/dev_sts_policy.json")
+  # policy = data.aws_iam_policy_document.default_dev_policy_jump.json
+  # depends_on = [ data.aws_iam_policy_document.data.aws_iam_policy_document.default_dev_policy_jump ]
+  policy = file("${path.root}/policies/dev_sts_policy.json")
   depends_on = [local_file.default_dev_policy_jump]
 }
 
 data "aws_iam_policy_document" "default_dev_policy_jump" {
   provider = aws.member
   count = local.dev
-  source_json = file("${path.root}/.terraform/.cache/dev_sts_policy.json")
+  source_policy_documents = [var.dev_iam_policy]
+  # source_json = file("${path.root}/.terraform/.cache/dev_sts_policy.json")
   statement {
     sid = "${data.aws_caller_identity.member.account_id}DevAccess"
     actions = ["sts:AssumeRole"]
@@ -330,7 +333,7 @@ data "aws_iam_policy_document" "default_dev_policy_jump" {
 resource "local_file" "default_dev_policy_jump" {
   count = local.dev
   content = data.aws_iam_policy_document.default_dev_policy_jump[0].json
-  filename = "${path.root}/.terraform/.cache/dev_sts_policy.json"
+  filename = "${path.root}/policies/dev_sts_policy.json"
 }
 
 resource "aws_iam_role" "bastion_dev" {

@@ -6,16 +6,23 @@ data "aws_vpcs" "vpcs" {
 resource "aws_s3_bucket" "vpc_log" {
   provider = aws.member
   bucket = "flowlog-${data.aws_caller_identity.member.account_id}"
-  acl = "private"
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
+}
+resource "aws_s3_bucket_server_side_encryption_configuration" "vpc_log_sse" {
+  provider = aws.member
+  bucket = aws_s3_bucket.vpc_log.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
     }
   }
-  lifecycle_rule {
-    enabled = true
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "vpc_log_lifecycle" {
+  provider = aws.member
+  bucket = aws_s3_bucket.vpc_log.id
+  rule {
+    status = "Enabled"
+    id = "expire-90-days"
     expiration {
       days = 90
     }
