@@ -1,26 +1,46 @@
 resource "aws_s3_bucket" "sentinel_logs" {
   provider = aws.master
   bucket   = "${var.soc_config["sentinel_s3_bucket_name"]}-${data.aws_caller_identity.master.account_id}"
-  acl      = "private"
+  # acl      = "private"
   tags     = tomap(local.sentinel_common_resource_tag)
 
-  lifecycle_rule {
+  # lifecycle_rule {
+  #   id      = "sentinel_log_expiry"
+  #   enabled = true
+  #   expiration {
+  #     days = local.sentinel_log_expiry_days
+  #   }
+  # }
+
+  # server_side_encryption_configuration {
+  #   rule {
+  #     bucket_key_enabled = false
+  #     apply_server_side_encryption_by_default {
+  #       sse_algorithm = "AES256"
+  #     }
+  #   }
+  # }
+
+}
+resource "aws_s3_bucket_server_side_encryption_configuration" "sentinel_logs_sse" {
+  provider = aws.master
+  bucket = aws_s3_bucket.sentinel_logs.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+resource "aws_s3_bucket_lifecycle_configuration" "sentinel_logs_lifecycle" {
+  provider = aws.master
+  bucket = aws_s3_bucket.sentinel_logs.id
+  rule {
     id      = "sentinel_log_expiry"
-    enabled = true
+    status = "Enabled"
     expiration {
       days = local.sentinel_log_expiry_days
     }
   }
-
-  server_side_encryption_configuration {
-    rule {
-      bucket_key_enabled = false
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-
 }
 
 resource "aws_s3_bucket_policy" "sentinel_logs" {
