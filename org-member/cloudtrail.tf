@@ -51,17 +51,37 @@ resource "aws_iam_role_policy" "cloudtrail_log_policy" {
 resource "aws_s3_bucket" "cloudtrail-s3" {
   provider = aws.member
   bucket = "cloudtrail-${data.aws_caller_identity.member.account_id}"
-  acl = "private"
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
+  # acl = "private"
+  # server_side_encryption_configuration {
+  #   rule {
+  #     apply_server_side_encryption_by_default {
+  #       sse_algorithm = "AES256"
+  #     }
+  #   }
+  # }
   tags = {
     "website" = "false"
   }
+  # policy = templatefile("${path.module}/policies/cloudtrail-s3.json",
+  #   {
+  #     cloudtrail_s3 = "cloudtrail-${data.aws_caller_identity.member.account_id}"
+  #   }
+  # )
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail-s3_sse" {
+  provider = aws.member
+  bucket = aws_s3_bucket.cloudtrail-s3.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "cloudtrail-s3-policy" {
+  provider = aws.member
+  bucket = aws_s3_bucket.cloudtrail-s3.id
   policy = templatefile("${path.module}/policies/cloudtrail-s3.json",
     {
       cloudtrail_s3 = "cloudtrail-${data.aws_caller_identity.member.account_id}"
