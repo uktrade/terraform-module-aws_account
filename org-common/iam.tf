@@ -53,6 +53,7 @@ data "aws_iam_policy_document" "iam_user_manager" {
       "iam:GetLoginProfile",
       "iam:DeleteUser",
       "iam:DeleteSSHPublicKey",
+      "iam:DeleteLoginProfile",
       "iam:DeleteSigningCertificate",
       "iam:DeleteServiceSpecificCredential",
       ]
