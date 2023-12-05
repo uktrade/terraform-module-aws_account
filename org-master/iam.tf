@@ -34,7 +34,15 @@ data "aws_iam_policy_document" "default_admin" {
     sid = "DisableOtherRegions"
     effect = "Deny"
     not_actions = [
-      "aws-portal:*",
+      "account:*",
+      "billing:*",
+      "ce:*",
+      "consolidatedbilling:*",
+      "cur:*",
+      "freetier:*",
+      "invoicing:*",
+      "payments:*",
+      "tax:*",
       "iam:*",
       "organizations:*",
       "support:*",
