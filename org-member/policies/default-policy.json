@@ -156,6 +156,7 @@
       "Sid": "DisableOtherRegions",
       "Effect": "Deny",
       "NotAction": [
+        "aws-portal:*",
         "account:Get*",
         "billing:Get*",
         "billing:List*",
