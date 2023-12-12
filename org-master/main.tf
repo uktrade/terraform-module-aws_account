@@ -9,7 +9,11 @@ variable "org" {
 variable "soc_config" {
    type    = map(string)
    default = {}
- }
+}
+
+variable "tfstate_policy" {}
+variable "tfstate_bucket_name" {}
+variable "tfstate_dynamodb_name" {}
 
 terraform {
   required_providers {
