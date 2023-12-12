@@ -55,7 +55,7 @@ data "aws_iam_policy_document" "default_admin" {
     condition {
       test = "StringNotEquals"
       variable = "aws:RequestedRegion"
-      values = ["eu-west-1", "eu-west-2"]
+      values = ["eu-west-1", "eu-west-2", "us-east-1"]
     }
   }
 }
