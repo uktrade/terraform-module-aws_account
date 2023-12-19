@@ -2,6 +2,28 @@ variable "org" {
   type = map(string)
 }
 
+variable "password_policy_minimum_password_length" {
+  default = 8
+}
+
+variable "password_policy_require_lowercase_characters" {
+  default = true
+}
+
+variable "password_policy_require_numbers" {
+  default = true
+}
+
+variable "password_policy_require_uppercase_characters" {
+  default = true
+}
+variable "password_policy_require_symbols" {
+  default = true
+}
+variable "password_policy_allow_users_to_change_password" {
+  default = true
+}
+
 terraform {
   required_providers {
     aws = {
