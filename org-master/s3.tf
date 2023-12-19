@@ -312,6 +312,9 @@ resource "aws_s3_bucket_policy" "sentinel_vpc_flowlog_bucket_account_access" {
   provider = aws.master
   bucket   = aws_s3_bucket.sentinel_vpc_flowlog_bucket.id
   policy   = data.aws_iam_policy_document.sentinel_vpc_flowlog_bucket_account_access.json
+  lifecycle {
+    ignore_changes = [ policy ]
+  }
 }
 
 data "aws_organizations_organization" "master" {
