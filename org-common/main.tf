@@ -24,6 +24,14 @@ variable "password_policy_allow_users_to_change_password" {
   default = true
 }
 
+variable "password_policy_password_reuse_prevention" {
+  default = 0
+}
+
+variable "password_policy_max_password_age" {
+  default = 0 
+}
+
 terraform {
   required_providers {
     aws = {
