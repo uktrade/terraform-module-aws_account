@@ -25,7 +25,7 @@ variable "password_policy_allow_users_to_change_password" {
 }
 
 variable "password_policy_password_reuse_prevention" {
-  default = 0
+  default = 24
 }
 
 variable "password_policy_max_password_age" {
