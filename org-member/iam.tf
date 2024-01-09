@@ -241,52 +241,6 @@ resource "aws_iam_group_policy_attachment" "bastion_admin" {
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
-resource "aws_iam_role" "bastion_admin" {
-  provider = aws.member
-  name = "dit-admin"
-  assume_role_policy = data.aws_iam_policy_document.bastion_sts_admin.json
-  max_session_duration = 43200
-  permissions_boundary = aws_iam_policy.default_admin.arn
-}
-
-data "aws_iam_policy_document" "bastion_sts_admin" {
-  provider = aws.member
-  statement {
-    sid = "TrustBastionAccount"
-    actions = ["sts:AssumeRole"]
-    principals {
-      type = "AWS"
-      identifiers = ["arn:aws:iam::${var.org["bastion_account"]}:root"]
-    }
-    condition {
-      test = "StringEquals"
-      variable = "aws:PrincipalOrgID"
-      values = [local.aws_organization_id]
-    }
-    condition {
-      test = "Bool"
-      variable = "aws:MultiFactorAuthPresent"
-      values = ["true"]
-    }
-    condition {
-      test = "Null"
-      variable = "aws:TokenIssueTime"
-      values = ["false"]
-    }
-    condition {
-      test = "Bool"
-      variable = "aws:SecureTransport"
-      values = ["true"]
-    }
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "bastion_admin" {
-  provider = aws.member
-  role = aws_iam_role.bastion_admin.name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
-}
-
 locals {
   dev = var.member["dev_access"] == "true" ? 1 : 0
   bastion = data.aws_caller_identity.member.account_id == var.org["bastion_account"] ? 1 : 0
