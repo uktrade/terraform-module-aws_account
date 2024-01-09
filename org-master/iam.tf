@@ -5,61 +5,6 @@ resource "aws_iam_policy" "default_policy" {
   policy = file("${path.module}/policies/default-boundary-policy.json")
 }
 
-resource "aws_iam_policy" "default_admin" {
-  provider = aws.master
-  name = "dit-default-admin"
-  policy = data.aws_iam_policy_document.default_admin.json
-}
-
-data "aws_iam_policy_document" "default_admin" {
-  provider = aws.master
-  statement {
-    actions = ["*"]
-    resources = ["*"]
-  }
-  statement {
-    sid = "EnableServicesForUSRegion"
-    actions = [
-      "acm:*",
-      "config:*"
-    ]
-    resources = ["*"]
-    condition {
-      test = "StringEquals"
-      variable = "aws:RequestedRegion"
-      values = ["eu-west-1", "eu-west-2", "us-east-1"]
-    }
-  }
-  statement {
-    sid = "DisableOtherRegions"
-    effect = "Deny"
-    not_actions = [
-      "aws-portal:*",
-      "account:*",
-      "billing:*",
-      "billingconductor:*",
-      "budgets:*",
-      "ce:*",
-      "consolidatedbilling:*",
-      "cur:*",
-      "freetier:*",
-      "invoicing:*",
-      "payments:*",
-      "tax:*",
-      "iam:*",
-      "organizations:*",
-      "support:*",
-      "sts:*"
-    ]
-    resources = ["*"]
-    condition {
-      test = "StringNotEquals"
-      variable = "aws:RequestedRegion"
-      values = ["eu-west-1", "eu-west-2", "us-east-1"]
-    }
-  }
-}
-
 resource "aws_iam_group" "bastion_readonly" {
   provider = aws.master
   name = "readonly"
