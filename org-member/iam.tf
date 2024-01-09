@@ -5,66 +5,6 @@ resource "aws_iam_policy" "default_policy" {
   policy = file("${path.module}/policies/default-boundary-policy.json")
 }
 
-resource "aws_iam_policy" "default_admin" {
-  provider = aws.member
-  name = "dit-default-admin"
-  policy = data.aws_iam_policy_document.default_admin.json
-}
-
-data "aws_iam_policy_document" "default_admin" {
-  provider = aws.member
-  statement {
-    actions = ["*"]
-    resources = ["*"]
-  }
-  statement {
-    sid = "EnableServicesForUSRegion"
-    actions = [
-      "acm:*",
-      "config:*"
-    ]
-    resources = ["*"]
-    condition {
-      test = "StringEquals"
-      variable = "aws:RequestedRegion"
-      values = ["eu-west-1", "eu-west-2", "us-east-1"]
-    }
-  }
-  statement {
-    sid = "DisableOtherRegions"
-    effect = "Deny"
-    not_actions = [
-      "account:Get*",
-      "billing:Get*",
-      "billing:List*",
-      "ce:Describe*",
-      "ce:Get*",
-      "ce:List*",
-      "consolidatedbilling:Get*",
-      "consolidatedbilling:List*",
-      "cur:Get*",
-      "cur:Validate*",
-      "freetier:Get*",
-      "invoicing:Get*",
-      "invoicing:List*",
-      "payments:Get*",
-      "payments:List*",
-      "tax:Get*",
-      "tax:List*",
-      "iam:*",
-      "organizations:*",
-      "support:*",
-      "sts:*"
-    ]
-    resources = ["*"]
-    condition {
-      test = "StringNotEquals"
-      variable = "aws:RequestedRegion"
-      values = ["eu-west-1", "eu-west-2"]
-    }
-  }
-}
-
 resource "aws_iam_policy" "default_dev" {
   provider = aws.member
   name = "dit-default-dev"
