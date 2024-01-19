@@ -1,3 +1,11 @@
+resource "aws_s3_account_public_access_block" "master_s3_public_access" {
+  provider = aws.master
+  block_public_acls       = try (var.org.account_public_access_block.block_public_acls, true)
+  block_public_policy     = try (var.org.account_public_access_block.block_public_policy, true)
+  ignore_public_acls      = try (var.org.account_public_access_block.ignore_public_acls, true)
+  restrict_public_buckets = try (var.org.account_public_access_block.restrict_public_buckets, true)
+}
+
 resource "aws_s3_bucket" "sentinel_logs" {
   provider = aws.master
   bucket   = "${var.soc_config["sentinel_s3_bucket_name"]}-${data.aws_caller_identity.master.account_id}"
