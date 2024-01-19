@@ -16,6 +16,15 @@ resource "aws_s3_bucket" "config_bucket" {
   }
 }
 
+resource "aws_s3_bucket_public_access_block" "config_bucket_block_public_access" {
+  provider = aws.member
+  bucket = aws_s3_bucket.config_bucket.id
+  block_public_acls = true
+  block_public_policy = true
+  ignore_public_acls = true
+  restrict_public_buckets = true
+}
+
 resource "aws_s3_bucket_server_side_encryption_configuration" "config_bucket_sse" {
   provider = aws.member
   bucket = aws_s3_bucket.config_bucket.id
