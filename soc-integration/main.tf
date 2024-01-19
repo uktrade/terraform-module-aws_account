@@ -4,7 +4,7 @@ variable "config" {
 }
 
 variable "member" {
-  type = map(string)
+  type = any
   default = {}
 }
 

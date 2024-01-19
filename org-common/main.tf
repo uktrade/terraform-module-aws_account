@@ -1,5 +1,5 @@
 variable "org" {
-  type = map(string)
+  type = any
 }
 
 variable "password_policy_minimum_password_length" {
