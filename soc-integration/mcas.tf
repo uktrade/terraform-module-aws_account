@@ -11,11 +11,9 @@ resource "aws_iam_user" "user" {
   path = "/"
 }
 
-resource "aws_iam_user_policy" "policy" {
+resource "aws_iam_policy" "cloudappsecurity_policy" {
   provider = aws.member
   name = "CloudAppSecurityPolicy"
-  user = aws_iam_user.user.name
-
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [{
@@ -38,6 +36,12 @@ resource "aws_iam_user_policy" "policy" {
       }
     ]
    })
+}
+
+resource "aws_iam_user_policy_attachment" "cloudappsecurity_policy" {
+  provider = aws.member
+  user = aws_iam_user.user.name
+  policy_arn = aws_iam_policy.cloudappsecurity_policy.arn
 }
 
 resource "aws_iam_user_policy_attachment" "security-hub-policy" {
