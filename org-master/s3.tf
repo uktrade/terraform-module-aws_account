@@ -1,27 +1,17 @@
+resource "aws_s3_account_public_access_block" "master_s3_public_access" {
+  provider = aws.master
+  block_public_acls       = try (var.org.account_public_access_block.block_public_acls, true)
+  block_public_policy     = try (var.org.account_public_access_block.block_public_policy, true)
+  ignore_public_acls      = try (var.org.account_public_access_block.ignore_public_acls, true)
+  restrict_public_buckets = try (var.org.account_public_access_block.restrict_public_buckets, true)
+}
+
 resource "aws_s3_bucket" "sentinel_logs" {
   provider = aws.master
   bucket   = "${var.soc_config["sentinel_s3_bucket_name"]}-${data.aws_caller_identity.master.account_id}"
-  # acl      = "private"
   tags     = tomap(local.sentinel_common_resource_tag)
-
-  # lifecycle_rule {
-  #   id      = "sentinel_log_expiry"
-  #   enabled = true
-  #   expiration {
-  #     days = local.sentinel_log_expiry_days
-  #   }
-  # }
-
-  # server_side_encryption_configuration {
-  #   rule {
-  #     bucket_key_enabled = false
-  #     apply_server_side_encryption_by_default {
-  #       sse_algorithm = "AES256"
-  #     }
-  #   }
-  # }
-
 }
+
 resource "aws_s3_bucket_server_side_encryption_configuration" "sentinel_logs_sse" {
   provider = aws.master
   bucket = aws_s3_bucket.sentinel_logs.id
@@ -31,6 +21,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "sentinel_logs_sse
     }
   }
 }
+
 resource "aws_s3_bucket_lifecycle_configuration" "sentinel_logs_lifecycle" {
   provider = aws.master
   bucket = aws_s3_bucket.sentinel_logs.id
