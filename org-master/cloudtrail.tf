@@ -57,6 +57,15 @@ resource "aws_s3_bucket" "cloudtrail-s3" {
   }
 }
 
+resource "aws_s3_bucket_public_access_block" "cloudtrail-s3_block_public_access" {
+  provider = aws.master
+  bucket = aws_s3_bucket.cloudtrail-s3.id
+  block_public_acls = true
+  block_public_policy = true
+  ignore_public_acls = true
+  restrict_public_buckets = true
+}
+
 resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail-s3_sse" {
   provider = aws.master
   bucket = aws_s3_bucket.cloudtrail-s3.id

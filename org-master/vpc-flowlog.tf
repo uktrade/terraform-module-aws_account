@@ -8,6 +8,15 @@ resource "aws_s3_bucket" "vpc_log" {
   bucket = "flowlog-${data.aws_caller_identity.master.account_id}"
 }
 
+resource "aws_s3_bucket_public_access_block" "vpc_log_block_public_access" {
+  provider = aws.master
+  bucket = aws_s3_bucket.vpc_log.id
+  block_public_acls = true
+  block_public_policy = true
+  ignore_public_acls = true
+  restrict_public_buckets = true
+}
+
 resource "aws_s3_bucket_server_side_encryption_configuration" "vpc_log_sse" {
   provider = aws.master
   bucket = aws_s3_bucket.vpc_log.id
