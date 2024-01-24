@@ -1,19 +1,19 @@
 # Setup GuardDuty on AWS Org account
 resource "aws_guardduty_detector" "master" {
-  provider                     = aws.master
-  enable                       = true
+  provider = aws.master
+  enable = true
   finding_publishing_frequency = "FIFTEEN_MINUTES"
 }
 
 resource "aws_sns_topic" "guardduty_sns" {
   provider = aws.master
-  name     = "org-guardduty-sns"
+  name = "org-guardduty-sns"
 }
 
 resource "aws_sns_topic_policy" "guardduty_sns" {
   provider = aws.master
-  arn      = aws_sns_topic.guardduty_sns.id
-  policy   = data.aws_iam_policy_document.guardduty_sns.json
+  arn = aws_sns_topic.guardduty_sns.id
+  policy = data.aws_iam_policy_document.guardduty_sns.json
 }
 
 data "aws_iam_policy_document" "guardduty_sns" {
@@ -32,22 +32,22 @@ data "aws_iam_policy_document" "guardduty_sns" {
       "SNS:Receive"
     ]
     principals {
-      type        = "AWS"
+      type = "AWS"
       identifiers = ["*"]
     }
     condition {
-      test     = "StringEquals"
+      test = "StringEquals"
       variable = "AWS:SourceOwner"
-      values   = [data.aws_caller_identity.master.account_id]
+      values = [data.aws_caller_identity.master.account_id]
     }
     resources = [aws_sns_topic.guardduty_sns.id]
   }
 
   statement {
-    sid     = "Allow CloudWatch Events to publish"
+    sid = "Allow CloudWatch Events to publish"
     actions = ["SNS:Publish"]
     principals {
-      type        = "Service"
+      type = "Service"
       identifiers = ["events.amazonaws.com"]
     }
     resources = [aws_sns_topic.guardduty_sns.id]
@@ -56,19 +56,19 @@ data "aws_iam_policy_document" "guardduty_sns" {
 
 resource "aws_cloudwatch_event_target" "guardduty" {
   provider = aws.master
-  arn      = aws_sns_topic.guardduty_sns.arn
-  rule     = aws_cloudwatch_event_rule.guardduty.name
+  arn = aws_sns_topic.guardduty_sns.arn
+  rule = aws_cloudwatch_event_rule.guardduty.name
   input_transformer {
-    input_paths = {
-      source       = "$.source"
+      input_paths = {
+      source = "$.source"
       awsAccountId = "$.detail.accountId"
-      awsRegion    = "$.detail.region"
-      type         = "$.detail.type"
+      awsRegion = "$.detail.region"
+      type = "$.detail.type"
       resourceType = "$.detail.resource.resourceType"
-      actionType   = "$.detail.service.action.actionType"
-      severity     = "$.detail.severity"
-      arn          = "$.detail.arn"
-      time         = "$.time"
+      actionType = "$.detail.service.action.actionType"
+      severity = "$.detail.severity"
+      arn = "$.detail.arn"
+      time = "$.time"
     }
     input_template = <<INPUT
     [{
@@ -110,8 +110,8 @@ INPUT
 }
 
 resource "aws_cloudwatch_event_rule" "guardduty" {
-  provider      = aws.master
-  name          = "org-rule-guardduty"
+  provider = aws.master
+  name = "org-rule-guardduty"
   event_pattern = <<INPUT
     {
       "source": ["aws.guardduty"],
@@ -121,10 +121,10 @@ INPUT
 }
 
 resource "aws_guardduty_publishing_destination" "master" {
-  provider        = aws.master
-  detector_id     = aws_guardduty_detector.master.id
+  provider = aws.master
+  detector_id = aws_guardduty_detector.master.id
   destination_arn = "${aws_s3_bucket.sentinel_logs.arn}/${local.sentinel_guardduty_folder}"
-  kms_key_arn     = aws_kms_key.sentinel_guard_duty.arn
+  kms_key_arn = aws_kms_key.sentinel_guard_duty.arn
   depends_on = [
     aws_s3_bucket_policy.sentinel_logs
   ]

@@ -1,42 +1,42 @@
 # Control Tower
 
 resource "aws_iam_role" "control_tower_execution" {
-  provider           = aws.common
-  name               = "AWSControlTowerExecution"
+  provider = aws.common
+  name = "AWSControlTowerExecution"
   assume_role_policy = data.aws_iam_policy_document.control_tower_execution.json
 }
 
 data "aws_iam_policy_document" "control_tower_execution" {
   provider = aws.common
   statement {
-    effect  = "Allow"
+    effect = "Allow"
     actions = ["sts:AssumeRole"]
     principals {
-      type        = "AWS"
+      type = "AWS"
       identifiers = ["arn:aws:iam::${var.org["account_id"]}:root"]
     }
-  }
+  }  
 }
 
 resource "aws_iam_role_policy_attachment" "control_tower_execution_admin_access" {
-  provider   = aws.common
-  role       = aws_iam_role.control_tower_execution.name
+  provider = aws.common
+  role = aws_iam_role.control_tower_execution.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
 # Delegated IAM User Manager Policy
 
 resource "aws_iam_policy" "iam_user_manager" {
-  provider    = aws.common
-  name        = "dit-iam-manager"
+  provider = aws.common
+  name = "dit-iam-manager"
   description = "Policy for IAM delegated manager access."
-  policy      = data.aws_iam_policy_document.iam_user_manager.json
+  policy = data.aws_iam_policy_document.iam_user_manager.json
 }
 
 data "aws_iam_policy_document" "iam_user_manager" {
   provider = aws.common
   statement {
-    sid    = "UserManagerViewAndDeleteIAMResources"
+    sid = "UserManagerViewAndDeleteIAMResources"
     effect = "Allow"
     actions = [
       "iam:ListGroupsForUser",
@@ -56,11 +56,11 @@ data "aws_iam_policy_document" "iam_user_manager" {
       "iam:DeleteLoginProfile",
       "iam:DeleteSigningCertificate",
       "iam:DeleteServiceSpecificCredential",
-    ]
+      ]
     resources = ["arn:aws:iam::${data.aws_caller_identity.common.account_id}:user/*"]
   }
   statement {
-    sid    = "UserManagerViewAndDeleteAllResources"
+    sid = "UserManagerViewAndDeleteAllResources"
     effect = "Allow"
     actions = [
       "iam:ListAccountAliases",
@@ -87,16 +87,16 @@ data "aws_iam_policy_document" "iam_user_manager" {
       "sso:GetMfaDeviceManagementForDirectory",
       "ec2:DescribeRegions",
       "notifications:ListNotificationHubs"
-    ]
+      ]
     resources = ["*"]
   }
   statement {
-    sid    = "UserManagerViewAndGetSSOResources"
+    sid = "UserManagerViewAndGetSSOResources"
     effect = "Allow"
     actions = [
       "sso:DescribeInstance",
       "sso:GetPermissionsBoundaryForPermissionSet"
-    ]
+      ]
     resources = [
       "arn:aws:sso:::instance/*",
       "arn:aws:sso:::permissionSet/*/*"
@@ -105,7 +105,7 @@ data "aws_iam_policy_document" "iam_user_manager" {
 }
 
 resource "aws_iam_account_password_policy" "strict" {
-  provider                       = aws.common
+  provider = aws.common
   minimum_password_length        = var.password_policy_minimum_password_length
   require_lowercase_characters   = var.password_policy_require_lowercase_characters
   require_numbers                = var.password_policy_require_numbers
