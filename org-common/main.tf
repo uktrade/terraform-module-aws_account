@@ -29,14 +29,14 @@ variable "password_policy_password_reuse_prevention" {
 }
 
 variable "password_policy_max_password_age" {
-  default = 0 
+  default = 0
 }
 
 terraform {
   required_providers {
     aws = {
       source                = "hashicorp/aws"
-      configuration_aliases = [ aws.common ]
+      configuration_aliases = [aws.common]
     }
   }
 }

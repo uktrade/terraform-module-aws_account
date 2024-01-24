@@ -1,9 +1,9 @@
 resource "aws_s3_account_public_access_block" "master_s3_public_access" {
-  provider = aws.master
-  block_public_acls       = try (var.org.account_public_access_block.block_public_acls, true)
-  block_public_policy     = try (var.org.account_public_access_block.block_public_policy, true)
-  ignore_public_acls      = try (var.org.account_public_access_block.ignore_public_acls, true)
-  restrict_public_buckets = try (var.org.account_public_access_block.restrict_public_buckets, true)
+  provider                = aws.master
+  block_public_acls       = try(var.org.account_public_access_block.block_public_acls, true)
+  block_public_policy     = try(var.org.account_public_access_block.block_public_policy, true)
+  ignore_public_acls      = try(var.org.account_public_access_block.ignore_public_acls, true)
+  restrict_public_buckets = try(var.org.account_public_access_block.restrict_public_buckets, true)
 }
 
 resource "aws_s3_bucket" "sentinel_logs" {
@@ -14,7 +14,7 @@ resource "aws_s3_bucket" "sentinel_logs" {
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "sentinel_logs_sse" {
   provider = aws.master
-  bucket = aws_s3_bucket.sentinel_logs.id
+  bucket   = aws_s3_bucket.sentinel_logs.id
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm = "AES256"
@@ -24,9 +24,9 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "sentinel_logs_sse
 
 resource "aws_s3_bucket_lifecycle_configuration" "sentinel_logs_lifecycle" {
   provider = aws.master
-  bucket = aws_s3_bucket.sentinel_logs.id
+  bucket   = aws_s3_bucket.sentinel_logs.id
   rule {
-    id      = "sentinel_log_expiry"
+    id     = "sentinel_log_expiry"
     status = "Enabled"
     expiration {
       days = local.sentinel_log_expiry_days
@@ -42,197 +42,197 @@ resource "aws_s3_bucket_policy" "sentinel_logs" {
 
 data "aws_iam_policy_document" "sentinel_logs" {
   provider = aws.master
-  version = "2012-10-17"
+  version  = "2012-10-17"
 
   statement {
-    sid = "Allow Sentinel role read access to S3 log bucket"
-    actions = ["s3:Get*","s3:List*"]
-    effect   = "Allow"
+    sid       = "Allow Sentinel role read access to S3 log bucket"
+    actions   = ["s3:Get*", "s3:List*"]
+    effect    = "Allow"
     resources = [aws_s3_bucket.sentinel_logs.arn]
     principals {
-      type = "AWS"
+      type        = "AWS"
       identifiers = [aws_iam_role.sentinel_role.arn]
     }
   }
 
   statement {
-    sid = "Allow GuardDuty to use the getBucketLocation operation"
-    actions = ["s3:GetBucketLocation"]
-    effect = "Allow"
+    sid       = "Allow GuardDuty to use the getBucketLocation operation"
+    actions   = ["s3:GetBucketLocation"]
+    effect    = "Allow"
     resources = [aws_s3_bucket.sentinel_logs.arn]
     principals {
-        type = "Service"
-        identifiers = ["guardduty.amazonaws.com"]
+      type        = "Service"
+      identifiers = ["guardduty.amazonaws.com"]
     }
   }
 
   statement {
-    sid = "Allow GuardDuty to upload objects to the bucket"
-    actions = ["s3:PutObject"]
-    effect = "Allow"
+    sid       = "Allow GuardDuty to upload objects to the bucket"
+    actions   = ["s3:PutObject"]
+    effect    = "Allow"
     resources = ["${aws_s3_bucket.sentinel_logs.arn}/*"]
     principals {
-        type = "Service"
-        identifiers = ["guardduty.amazonaws.com"]
+      type        = "Service"
+      identifiers = ["guardduty.amazonaws.com"]
     }
   }
 
   statement {
-    sid = "Deny GuardDuty unencrypted object uploads."
-    actions = ["s3:PutObject"]
-    effect = "Deny"
+    sid       = "Deny GuardDuty unencrypted object uploads."
+    actions   = ["s3:PutObject"]
+    effect    = "Deny"
     resources = ["${aws_s3_bucket.sentinel_logs.arn}/*"]
     principals {
-        type = "Service"
-        identifiers = ["guardduty.amazonaws.com"]
+      type        = "Service"
+      identifiers = ["guardduty.amazonaws.com"]
     }
     condition {
-      test = "StringNotEquals"
+      test     = "StringNotEquals"
       variable = "s3:x-amz-server-side-encryption"
-      values = ["aws:kms"]
+      values   = ["aws:kms"]
     }
   }
 
   statement {
-    sid = "Deny GuardDuty incorrect encryption header."
-    actions = ["s3:PutObject"]
-    effect = "Deny"
+    sid       = "Deny GuardDuty incorrect encryption header."
+    actions   = ["s3:PutObject"]
+    effect    = "Deny"
     resources = ["${aws_s3_bucket.sentinel_logs.arn}/*"]
     principals {
-        type = "Service"
-        identifiers = ["guardduty.amazonaws.com"]
+      type        = "Service"
+      identifiers = ["guardduty.amazonaws.com"]
     }
     condition {
-      test = "StringNotEquals"
+      test     = "StringNotEquals"
       variable = "s3:x-amz-server-side-encryption-aws-kms-key-id"
-      values = [aws_kms_key.sentinel_guard_duty.arn]
+      values   = [aws_kms_key.sentinel_guard_duty.arn]
     }
   }
 
   statement {
-    sid = "Deny non-HTTPS access."
-    actions = ["s3:*"]
-    effect = "Deny"
+    sid       = "Deny non-HTTPS access."
+    actions   = ["s3:*"]
+    effect    = "Deny"
     resources = ["${aws_s3_bucket.sentinel_logs.arn}/*"]
     principals {
-        type = "Service"
-        identifiers = ["guardduty.amazonaws.com"]
+      type        = "Service"
+      identifiers = ["guardduty.amazonaws.com"]
     }
     condition {
-      test = "Bool"
+      test     = "Bool"
       variable = "aws:SecureTransport"
-      values = ["false"]
+      values   = ["false"]
     }
   }
 
   statement {
-    sid = "AWSLogDeliveryWrite"
-    actions = ["s3:PutObject"]
-    effect = "Allow"
+    sid       = "AWSLogDeliveryWrite"
+    actions   = ["s3:PutObject"]
+    effect    = "Allow"
     resources = ["${aws_s3_bucket.sentinel_logs.arn}/*"]
     principals {
-        type = "Service"
-        identifiers = ["delivery.logs.amazonaws.com"]
+      type        = "Service"
+      identifiers = ["delivery.logs.amazonaws.com"]
     }
   }
 
   statement {
-    sid = "AWSLogDeliveryCheck"
-    actions = ["s3:GetBucketAcl", "s3:ListBucket"]
-    effect = "Allow"
+    sid       = "AWSLogDeliveryCheck"
+    actions   = ["s3:GetBucketAcl", "s3:ListBucket"]
+    effect    = "Allow"
     resources = ["${aws_s3_bucket.sentinel_logs.arn}"]
     principals {
-        type = "Service"
-        identifiers = ["delivery.logs.amazonaws.com"]
+      type        = "Service"
+      identifiers = ["delivery.logs.amazonaws.com"]
     }
   }
 
   statement {
-    sid = "AWSCloudTrailWrite"
-    actions = ["s3:PutObject"]
-    effect = "Allow"
+    sid       = "AWSCloudTrailWrite"
+    actions   = ["s3:PutObject"]
+    effect    = "Allow"
     resources = ["${aws_s3_bucket.sentinel_logs.arn}/${local.sentinel_cloudtrail_folder}/*"]
     principals {
-        type = "Service"
-        identifiers = ["cloudtrail.amazonaws.com"]
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
     }
     condition {
-      test = "StringEquals"
+      test     = "StringEquals"
       variable = "s3:x-amz-acl"
-      values = ["bucket-owner-full-control"]
+      values   = ["bucket-owner-full-control"]
     }
   }
 
   statement {
-    sid = "AWSCloudTrailAclCheck"
-    actions = ["s3:GetBucketAcl"]
-    effect = "Allow"
+    sid       = "AWSCloudTrailAclCheck"
+    actions   = ["s3:GetBucketAcl"]
+    effect    = "Allow"
     resources = [aws_s3_bucket.sentinel_logs.arn]
     principals {
-        type = "Service"
-        identifiers = ["cloudtrail.amazonaws.com"]
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
     }
   }
 
   statement {
-    sid = "AWSCloudTrailAclCheck20150319"
-    actions = ["s3:GetBucketAcl"]
-    effect = "Allow"
+    sid       = "AWSCloudTrailAclCheck20150319"
+    actions   = ["s3:GetBucketAcl"]
+    effect    = "Allow"
     resources = [aws_s3_bucket.sentinel_logs.arn]
     principals {
-        type = "Service"
-        identifiers = ["cloudtrail.amazonaws.com"]
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
     }
     condition {
-      test = "StringEquals"
+      test     = "StringEquals"
       variable = "AWS:SourceArn"
-      values = [aws_cloudtrail.sentinel-trail.arn]
+      values   = [aws_cloudtrail.sentinel-trail.arn]
     }
   }
 
   statement {
-    sid = "AWSCloudTrailWrite20150319-Account"
+    sid     = "AWSCloudTrailWrite20150319-Account"
     actions = ["s3:PutObject"]
-    effect = "Allow"
+    effect  = "Allow"
     resources = [
       "${aws_s3_bucket.sentinel_logs.arn}/CloudTrail/AWSLogs/${data.aws_caller_identity.master.account_id}/*"
     ]
     principals {
-        type = "Service"
-        identifiers = ["cloudtrail.amazonaws.com"]
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
     }
     condition {
-      test = "StringEquals"
+      test     = "StringEquals"
       variable = "AWS:SourceArn"
-      values = [aws_cloudtrail.sentinel-trail.arn]
+      values   = [aws_cloudtrail.sentinel-trail.arn]
     }
     condition {
-      test = "StringEquals"
+      test     = "StringEquals"
       variable = "s3:x-amz-acl"
-      values = ["bucket-owner-full-control"]
+      values   = ["bucket-owner-full-control"]
     }
   }
 
   statement {
-    sid = "AWSCloudTrailWrite20150319-Organization"
+    sid     = "AWSCloudTrailWrite20150319-Organization"
     actions = ["s3:PutObject"]
-    effect = "Allow"
+    effect  = "Allow"
     resources = [
       "${aws_s3_bucket.sentinel_logs.arn}/CloudTrail/AWSLogs/${local.aws_organization_id}/*"
     ]
     principals {
-        type = "Service"
-        identifiers = ["cloudtrail.amazonaws.com"]
+      type        = "Service"
+      identifiers = ["cloudtrail.amazonaws.com"]
     }
     condition {
-      test = "StringEquals"
+      test     = "StringEquals"
       variable = "AWS:SourceArn"
-      values = [aws_cloudtrail.sentinel-trail.arn]
+      values   = [aws_cloudtrail.sentinel-trail.arn]
     }
     condition {
-      test = "StringEquals"
+      test     = "StringEquals"
       variable = "s3:x-amz-acl"
-      values = ["bucket-owner-full-control"]
+      values   = ["bucket-owner-full-control"]
     }
   }
 
@@ -256,7 +256,7 @@ resource "aws_s3_bucket_notification" "sentinel_logs" {
     filter_suffix = ".gz"
   }
 
-    queue {
+  queue {
     queue_arn     = aws_sqs_queue.sentinel_cloudtrail_queue.arn
     events        = ["s3:ObjectCreated:*"]
     filter_prefix = "${local.sentinel_cloudtrail_folder}/"
@@ -309,14 +309,14 @@ data "aws_organizations_organization" "master" {
   provider = aws.master
 }
 
-data "aws_sqs_queue" "sqs_sentinel_s3_vpc_flowlog_incoming"{
+data "aws_sqs_queue" "sqs_sentinel_s3_vpc_flowlog_incoming" {
   provider = aws.elk
-  name = "microsoft-sentinel-s3-vpc_flowlog"
+  name     = "microsoft-sentinel-s3-vpc_flowlog"
 }
 
 data "aws_iam_role" "ecsTaskRole" {
-  provider =  aws.elk
-  name = "sentinel-vpc-flowlog-task-ecs"
+  provider = aws.elk
+  name     = "sentinel-vpc-flowlog-task-ecs"
 
 }
 data "aws_iam_policy_document" "sentinel_vpc_flowlog_bucket_account_access" {
@@ -345,7 +345,7 @@ data "aws_iam_policy_document" "sentinel_vpc_flowlog_bucket_account_access" {
   }
 
   /* Ploicy to give write access from vpc flow log service to sentinel bucket */
-   statement {
+  statement {
     sid = "service-write-access-from-accounts-for-vpc_flowlog-logging"
 
     actions = ["s3:PutObject"]
