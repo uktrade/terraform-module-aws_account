@@ -4,7 +4,7 @@ variable "config" {
 }
 
 variable "member" {
-  type = any
+  type    = any
   default = {}
 }
 
@@ -12,7 +12,7 @@ terraform {
   required_providers {
     aws = {
       source                = "hashicorp/aws"
-      configuration_aliases = [ aws.member ]
+      configuration_aliases = [aws.member]
     }
   }
 }

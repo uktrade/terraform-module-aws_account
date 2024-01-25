@@ -2,8 +2,8 @@ variable "org" {
   type = map(string)
   default = {
     "aws_shared_credentials_file" = "~/.aws/credentials"
-    "aws_profile" = "default"
-    "bastion_account" = "0"
+    "aws_profile"                 = "default"
+    "bastion_account"             = "0"
   }
 }
 
@@ -11,9 +11,9 @@ variable "member" {
   type = any
   default = {
     "aws_shared_credentials_file" = "~/.aws/credentials"
-    "aws_profile" = "default"
-    "dev_access" = "false"
-    "aws_config_service_role" = "AWS_ConfigRole"
+    "aws_profile"                 = "default"
+    "dev_access"                  = "false"
+    "aws_config_service_role"     = "AWS_ConfigRole"
   }
 }
 
@@ -28,7 +28,7 @@ terraform {
   required_providers {
     aws = {
       source                = "hashicorp/aws"
-      configuration_aliases = [ aws.master, aws.member ]
+      configuration_aliases = [aws.master, aws.member]
     }
   }
 }
