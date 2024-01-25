@@ -1,10 +1,10 @@
 variable "org" {
-  type = map(string)
+  type    = map(string)
   default = {}
 }
 
 variable "member" {
-  type = any
+  type    = any
   default = {}
 }
 
@@ -12,7 +12,7 @@ terraform {
   required_providers {
     aws = {
       source                = "hashicorp/aws"
-      configuration_aliases = [ aws.master ]
+      configuration_aliases = [aws.master]
     }
   }
 }
