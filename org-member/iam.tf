@@ -208,8 +208,8 @@ resource "aws_iam_group_policy" "role_dev_policy_jump" {
   group    = aws_iam_group.bastion_dev[0].name
   # policy = data.aws_iam_policy_document.default_dev_policy_jump.json
   # depends_on = [ data.aws_iam_policy_document.data.aws_iam_policy_document.default_dev_policy_jump ]
-  policy     = file("${path.root}/policies/dev_sts_policy.json")
-  depends_on = [local_file.default_dev_policy_jump]
+  policy     = file("${path.root}/../../policies/dev_sts_policy.json")
+  # depends_on = [local_file.default_dev_policy_jump]
 }
 
 data "aws_iam_policy_document" "default_dev_policy_jump" {
@@ -224,11 +224,11 @@ data "aws_iam_policy_document" "default_dev_policy_jump" {
   }
 }
 
-resource "local_file" "default_dev_policy_jump" {
-  count    = local.dev
-  content  = data.aws_iam_policy_document.default_dev_policy_jump[0].json
-  filename = "${path.root}/policies/dev_sts_policy.json"
-}
+# resource "local_file" "default_dev_policy_jump" {
+#   count    = local.dev
+#   content  = data.aws_iam_policy_document.default_dev_policy_jump[0].json
+#   filename = "${path.root}/policies/dev_sts_policy.json"
+# }
 
 resource "aws_iam_role" "bastion_dev" {
   provider             = aws.member
