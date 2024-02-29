@@ -52,6 +52,7 @@ data "aws_caller_identity" "master" {
 data "aws_caller_identity" "member" {
   provider = aws.member
 }
+
 data "aws_caller_identity" "logarchive" {
   provider = aws.logarchive
 }
