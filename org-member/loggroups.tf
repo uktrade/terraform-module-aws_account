@@ -4,51 +4,51 @@
 # e.g. if var.member.createloggroups == true, set count to 1 and create the resource. 
 
 resource "aws_iam_role" "CWLtoSubscriptionFilterRole" {
-  count = try(var.member.createloggroups == true ? 1 : 0, 0)
-  name = "CWLtoSubscriptionFilterRole"
+  count    = try(var.member.createloggroups == true ? 1 : 0, 0)
+  name     = "CWLtoSubscriptionFilterRole"
   provider = aws.member
 
   assume_role_policy = jsonencode({
-  Version   = "2008-10-17"
-  "Statement": {
-      "Effect": "Allow",
-      "Principal": { "Service": "logs.amazonaws.com" },
-      "Action": "sts:AssumeRole"
+    Version = "2008-10-17"
+    "Statement" : {
+      "Effect" : "Allow",
+      "Principal" : { "Service" : "logs.amazonaws.com" },
+      "Action" : "sts:AssumeRole"
     }
-})
+  })
 }
 
 resource "aws_iam_policy" "Permissions-Policy-For-CWL-Subscription-filter" {
-  count = try(var.member.createloggroups == true ? 1 : 0, 0)
-  name = "Permissions-Policy-For-CWL-Subscription-filter"
+  count    = try(var.member.createloggroups == true ? 1 : 0, 0)
+  name     = "Permissions-Policy-For-CWL-Subscription-filter"
   provider = aws.member
-  path = "/"
-  policy = jsonencode({ 
-  Version = "2012-10-17"
-  "Statement": [
-      { 
-          "Effect": "Allow", 
-          "Action": "logs:PutLogEvents", 
-          "Resource": "arn:aws:logs:eu-west-2:${data.aws_caller_identity.member.account_id}:log-group:*:*" 
-      } 
-  ] 
-})
+  path     = "/"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : "logs:PutLogEvents",
+        "Resource" : "arn:aws:logs:eu-west-2:${data.aws_caller_identity.member.account_id}:log-group:*:*"
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "Permissions-Policy-For-CWL-Subscription-filter" {
-  count = try(var.member.createloggroups == true ? 1 : 0, 0)
-  provider = aws.member
+  count      = try(var.member.createloggroups == true ? 1 : 0, 0)
+  provider   = aws.member
   role       = aws_iam_role.CWLtoSubscriptionFilterRole[0].name
   policy_arn = aws_iam_policy.Permissions-Policy-For-CWL-Subscription-filter[0].arn
 }
 
 resource "aws_ssm_parameter" "central_log_groups" {
-  count = try(var.member.createloggroups == true ? 1 : 0, 0)
+  count    = try(var.member.createloggroups == true ? 1 : 0, 0)
   provider = aws.member
-  name  = "/copilot/tools/central_log_groups"
-  type  = "String"
+  name     = "/copilot/tools/central_log_groups"
+  type     = "String"
   value = jsonencode({
-    "prod": "arn:aws:logs:eu-west-2:${data.aws_caller_identity.logarchive.account_id}:destination:cwl_log_destination", 
-    "dev": "arn:aws:logs:eu-west-2:${data.aws_caller_identity.logarchive.account_id}:destination:cwl_log_destination"
+    "prod" : "arn:aws:logs:eu-west-2:${data.aws_caller_identity.logarchive.account_id}:destination:cwl_log_destination",
+    "dev" : "arn:aws:logs:eu-west-2:${data.aws_caller_identity.logarchive.account_id}:destination:cwl_log_destination"
   })
 }
