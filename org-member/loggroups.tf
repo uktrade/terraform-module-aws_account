@@ -4,9 +4,9 @@
 # e.g. if var.member.createloggroups == true, set count to 1 and create the resource. 
 
 resource "aws_iam_role" "CWLtoSubscriptionFilterRole" {
+  provider = aws.member
   count    = try(var.member.createloggroups == true ? 1 : 0, 0)
   name     = "CWLtoSubscriptionFilterRole"
-  provider = aws.member
 
   assume_role_policy = jsonencode({
     Version = "2008-10-17"
@@ -19,9 +19,9 @@ resource "aws_iam_role" "CWLtoSubscriptionFilterRole" {
 }
 
 resource "aws_iam_policy" "Permissions-Policy-For-CWL-Subscription-filter" {
+  provider = aws.member
   count    = try(var.member.createloggroups == true ? 1 : 0, 0)
   name     = "Permissions-Policy-For-CWL-Subscription-filter"
-  provider = aws.member
   path     = "/"
   policy = jsonencode({
     Version = "2012-10-17"
@@ -36,15 +36,15 @@ resource "aws_iam_policy" "Permissions-Policy-For-CWL-Subscription-filter" {
 }
 
 resource "aws_iam_role_policy_attachment" "Permissions-Policy-For-CWL-Subscription-filter" {
-  count      = try(var.member.createloggroups == true ? 1 : 0, 0)
   provider   = aws.member
+  count      = try(var.member.createloggroups == true ? 1 : 0, 0)
   role       = aws_iam_role.CWLtoSubscriptionFilterRole[0].name
   policy_arn = aws_iam_policy.Permissions-Policy-For-CWL-Subscription-filter[0].arn
 }
 
 resource "aws_ssm_parameter" "central_log_groups" {
-  count    = try(var.member.createloggroups == true ? 1 : 0, 0)
   provider = aws.member
+  count    = try(var.member.createloggroups == true ? 1 : 0, 0)
   name     = "/copilot/tools/central_log_groups"
   type     = "String"
   value = jsonencode({
