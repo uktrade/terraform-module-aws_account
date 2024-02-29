@@ -42,7 +42,8 @@ resource "aws_iam_role_policy_attachment" "Permissions-Policy-For-CWL-Subscripti
   policy_arn = aws_iam_policy.Permissions-Policy-For-CWL-Subscription-filter[0].arn
 }
 
-# To avoid hardcoding in the logarchive account ID, we pass a provider specifically to pull this.
+# To avoid hardcoding in the logarchive account ID, we've passed aws.logarchive a provider specifically to pull this.
+# There is also a relevant data aws_caller_identity block in main.tf for this.
 resource "aws_ssm_parameter" "central_log_groups" {
   provider = aws.member
   count    = try(var.member.createloggroups == true ? 1 : 0, 0)
