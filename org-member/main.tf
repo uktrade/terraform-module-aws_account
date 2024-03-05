@@ -22,8 +22,6 @@ variable "soc_config" {
   default = {}
 }
 
-variable "dev_iam_policy" {}
-
 terraform {
   required_providers {
     aws = {
