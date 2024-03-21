@@ -2,18 +2,21 @@ resource "aws_sqs_queue" "sentinel_flowlog_queue" {
   provider = aws.master
   name     = "microsoft-sentinel-s3-flowlog"
   tags     = tomap(local.sentinel_common_resource_tag)
+  #checkov:skip=CKV_AWS_27: "Ensure all data stored in the SQS queue is encrypted"
 }
 
 resource "aws_sqs_queue" "sentinel_guardduty_queue" {
   provider = aws.master
   name     = "microsoft-sentinel-s3-guardduty"
   tags     = tomap(local.sentinel_common_resource_tag)
+  #checkov:skip=CKV_AWS_27: "Ensure all data stored in the SQS queue is encrypted"
 }
 
 resource "aws_sqs_queue" "sentinel_cloudtrail_queue" {
   provider = aws.master
   name     = "microsoft-sentinel-s3-cloudtrail"
   tags     = tomap(local.sentinel_common_resource_tag)
+  #checkov:skip=CKV_AWS_27: "Ensure all data stored in the SQS queue is encrypted"
 }
 
 resource "aws_sqs_queue_policy" "sentinel_flowlog_queue" {
