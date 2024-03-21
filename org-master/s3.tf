@@ -26,6 +26,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "sentinel_logs_lifecycle" {
   provider = aws.master
   bucket   = aws_s3_bucket.sentinel_logs.id
   rule {
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
     id     = "sentinel_log_expiry"
     status = "Enabled"
     expiration {

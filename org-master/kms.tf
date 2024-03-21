@@ -1,8 +1,9 @@
 # Sentinel
 
 resource "aws_kms_key" "sentinel_guard_duty" {
-  provider    = aws.master
-  description = "Sentinel GuardDuty KMS Key"
+  provider              = aws.master
+  description           = "Sentinel GuardDuty KMS Key"
+  enable_key_rotation   = true
   policy = templatefile("${path.module}/policies/guardduty-kms.json",
     {
       master_account_id = data.aws_caller_identity.master.account_id
@@ -21,8 +22,9 @@ resource "aws_kms_alias" "sentinel_guard_duty" {
 # Control Tower
 
 resource "aws_kms_key" "control_tower" {
-  provider    = aws.master
-  description = "KMS key for Control Tower"
+  provider              = aws.master
+  description           = "KMS key for Control Tower"
+  enable_key_rotation   = true
 }
 
 resource "aws_kms_key_policy" "control_tower" {

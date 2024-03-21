@@ -31,6 +31,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "vpc_log_lifecycle" {
   provider = aws.master
   bucket   = aws_s3_bucket.vpc_log.id
   rule {
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
     status = "Enabled"
     id     = "expire-90-days"
     expiration {
