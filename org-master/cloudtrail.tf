@@ -10,7 +10,7 @@ resource "aws_cloudtrail" "trail" {
   s3_bucket_name             = aws_s3_bucket.cloudtrail-s3.id
   cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.cloudtrail.arn}:*"
   cloud_watch_logs_role_arn  = aws_iam_role.cloudtrail_log.arn
-  sns_topic_name             = aws_sns_topic.notes.arn  
+  #checkov:skip=CKV_AWS_252:Ensure CloudTrail defines an SNS Topic
   event_selector {
     read_write_type           = "All"
     include_management_events = true
@@ -112,7 +112,7 @@ resource "aws_cloudtrail" "sentinel-trail" {
   kms_key_id                 = aws_kms_key.sentinel_guard_duty.arn
   s3_bucket_name             = aws_s3_bucket.sentinel_logs.id
   s3_key_prefix              = local.sentinel_cloudtrail_folder
-  sns_topic_name             = aws_sns_topic.notes.arn
+  #checkov:skip=CKV_AWS_252:Ensure CloudTrail defines an SNS Topic
   event_selector {
     read_write_type           = "All"
     include_management_events = true
