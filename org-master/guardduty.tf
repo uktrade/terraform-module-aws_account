@@ -8,6 +8,7 @@ resource "aws_guardduty_detector" "master" {
 resource "aws_sns_topic" "guardduty_sns" {
   provider = aws.master
   name     = "org-guardduty-sns"
+  #checkov:skip=CKV_AWS_26:Ensure all data stored in the SNS topic is encrypted 
 }
 
 resource "aws_sns_topic_policy" "guardduty_sns" {

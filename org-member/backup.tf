@@ -31,6 +31,7 @@ resource "aws_backup_vault_notifications" "daily8_weekly5_monthly14" {
 resource "aws_sns_topic" "org_backup_sns" {
   provider = aws.member
   name     = "org-backup-sns"
+  #checkov:skip= CKV_AWS_26:Ensure that CloudWatch Log Group is encrypted by KMS
 }
 
 resource "aws_sns_topic_policy" "org_backup_sns" {

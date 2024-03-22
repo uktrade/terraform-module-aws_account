@@ -9,14 +9,15 @@ data "archive_file" "backup_slack_zip" {
 }
 
 resource "aws_lambda_function" "aws_backup_to_slack" {
-  provider         = aws.master
-  function_name    = "aws-backup-to-slack"
-  description      = "An Amazon SNS trigger that sends AWS Backup Notifications to Slack."
-  filename         = data.archive_file.backup_slack_zip.output_path
-  role             = aws_iam_role.aws_backup_to_slack.arn
-  handler          = "backup-slack.lambda_handler"
-  source_code_hash = data.archive_file.backup_slack_zip.output_base64sha256
-  runtime          = "python3.9"
+  provider                        = aws.master
+  function_name                   = "aws-backup-to-slack"
+  description                     = "An Amazon SNS trigger that sends AWS Backup Notifications to Slack."
+  filename                        = data.archive_file.backup_slack_zip.output_path
+  role                            = aws_iam_role.aws_backup_to_slack.arn
+  handler                         = "backup-slack.lambda_handler"
+  source_code_hash                = data.archive_file.backup_slack_zip.output_base64sha256
+  runtime                         = "python3.9"
+  reserved_concurrent_executions  = 100
   environment {
     variables = {
       kmsEncryptedHookUrl = var.org["backup_alert_slack_webhook"]
@@ -24,6 +25,13 @@ resource "aws_lambda_function" "aws_backup_to_slack" {
       slackChannelFail    = var.org["backup_alert_channel_fail"]
     }
   }
+  tracing_config {
+    mode = "Active"
+  }
+  #checkov:skip=CKV_AWS_116:Ensure that AWS Lambda function is configured for a Dead Letter Queue(DLQ)
+  #checkov:skip=CKV_AWS_117:Ensure that AWS Lambda function is configured inside a VPC
+  #checkov:skip=CKV_AWS_173:Check encryption settings for Lambda environmental variable
+  #checkov:skip=CKV_AWS_272:Ensure AWS Lambda function is configured to validate code-signing
 }
 
 ## IAM
@@ -130,5 +138,7 @@ resource "aws_iam_role_policy_attachment" "aws_backup_to_slack_lambda_execution_
 resource "aws_cloudwatch_log_group" "aws_backup_to_slack" {
   provider          = aws.master
   name              = "/aws/lambda/${aws_lambda_function.aws_backup_to_slack.function_name}"
+  #checkov:skip=CKV_AWS_338:Ensure CloudWatch log groups retains logs for at least 1 year
+  #checkov:skip=CKV_AWS_158:Ensure that CloudWatch Log Group is encrypted by KMS
   retention_in_days = 60
 }

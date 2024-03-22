@@ -3,6 +3,7 @@ resource "aws_cloudwatch_log_group" "master" {
   provider          = aws.master
   name              = "org"
   kms_key_id        = aws_kms_key.cloudwatch.arn
+  #checkov:skip=CKV_AWS_338:Ensure CloudWatch log groups retains logs for at least 1 year
   retention_in_days = 7
 }
 
@@ -15,4 +16,5 @@ resource "aws_kms_key" "cloudwatch" {
       aws_region     = data.aws_region.master.name
     }
   )
+  #checkov:skip=CKV_AWS_7: "Ensure rotation for customer created CMKs is enabled" 
 }

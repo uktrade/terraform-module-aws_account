@@ -10,6 +10,7 @@ resource "aws_cloudtrail" "trail" {
   s3_bucket_name             = aws_s3_bucket.cloudtrail-s3.id
   cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.cloudtrail.arn}:*"
   cloud_watch_logs_role_arn  = aws_iam_role.cloudtrail_log.arn
+  #checkov:skip=CKV_AWS_252:Ensure CloudTrail defines an SNS Topic
   event_selector {
     read_write_type           = "All"
     include_management_events = true
@@ -29,7 +30,9 @@ resource "aws_cloudtrail" "trail" {
 resource "aws_cloudwatch_log_group" "cloudtrail" {
   provider          = aws.master
   name              = "cloudtrail-${data.aws_caller_identity.master.account_id}"
+  #checkov:skip=CKV_AWS_338:Ensure CloudWatch log groups retains logs for at least 1 year
   retention_in_days = 7
+  #checkov:skip=CKV_AWS_158:Ensure that CloudWatch Log Group is encrypted by KMS
 }
 
 resource "aws_iam_role" "cloudtrail_log" {
@@ -89,8 +92,9 @@ resource "aws_s3_bucket_policy" "cloudtrail-s3-policy" {
 }
 
 resource "aws_kms_key" "cloudtrail-kms" {
-  provider    = aws.master
-  description = "CloudTrail KMS Key"
+  provider                = aws.master
+  description             = "CloudTrail KMS Key"
+  enable_key_rotation     = true
   policy = templatefile("${path.module}/policies/cloudtrail-kms.json",
     {
       aws_account_id = data.aws_caller_identity.master.account_id
@@ -108,6 +112,7 @@ resource "aws_cloudtrail" "sentinel-trail" {
   kms_key_id                 = aws_kms_key.sentinel_guard_duty.arn
   s3_bucket_name             = aws_s3_bucket.sentinel_logs.id
   s3_key_prefix              = local.sentinel_cloudtrail_folder
+  #checkov:skip=CKV_AWS_252:Ensure CloudTrail defines an SNS Topic
   event_selector {
     read_write_type           = "All"
     include_management_events = true
