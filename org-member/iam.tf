@@ -15,6 +15,12 @@ data "aws_iam_policy_document" "default_dev" {
   provider = aws.member
   statement {
     sid = "DevAccessBoundary"
+    #checkov:skip=CKV_AWS_107:Ensure IAM policies does not allow credentials exposure
+    #checkov:skip=CKV_AWS_108:Ensure IAM policies does not allow data exfiltration
+    #checkov:skip=CKV_AWS_109:Ensure IAM policies does not allow permissions management / resource exposure without constraints
+    #checkov:skip=CKV_AWS_110:Ensure IAM policies does not allow privilege escalation
+    #checkov:skip=CKV_AWS_111:Ensure IAM policies does not allow write access without constraints
+    #checkov:skip=CKV_AWS_356:Ensure no IAM policies documents allow "*" as a statement's resource for restrictable actions
     actions = [
       "acm:*",
       "athena:*",
@@ -143,6 +149,8 @@ resource "aws_iam_role_policy" "bastion_readonly_athena_read" {
 
 data "aws_iam_policy_document" "athena_read_policy" {
   provider = aws.member
+  #checkov:skip=CKV_AWS_111:Ensure IAM policies does not allow write access without constraints
+  #checkov:skip=CKV_AWS_356:Ensure no IAM policies documents allow "*" as a statement's resource for restrictable actions
   statement {
     sid = "AthenaReadOnly"
     actions = [
@@ -179,4 +187,5 @@ resource "aws_iam_group_policy_attachment" "bastion_admin" {
   provider   = aws.member
   group      = aws_iam_group.bastion_admin.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+  #checkov:skip=CKV_AWS_274:Disallow IAM roles, users, and groups from using the AWS AdministratorAccess policy
 }

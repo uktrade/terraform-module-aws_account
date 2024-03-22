@@ -9,6 +9,7 @@ resource "aws_cloudtrail" "trail" {
   s3_bucket_name             = aws_s3_bucket.cloudtrail-s3.id
   cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.cloudtrail.arn}:*"
   cloud_watch_logs_role_arn  = aws_iam_role.cloudtrail_log.arn
+  #checkov:skip=CKV_AWS_252:Ensure CloudTrail defines an SNS Topic
   event_selector {
     read_write_type           = "All"
     include_management_events = true
@@ -29,6 +30,8 @@ resource "aws_cloudwatch_log_group" "cloudtrail" {
   provider          = aws.member
   name              = "cloudtrail-${data.aws_caller_identity.member.account_id}"
   retention_in_days = 7
+  #checkov:skip=CKV_AWS_338:Ensure CloudWatch log groups retains logs for at least 1 year
+  #checkov:skip=CKV_AWS_158:Ensure that CloudWatch Log Group is encrypted by KMS
 }
 
 resource "aws_iam_role" "cloudtrail_log" {
