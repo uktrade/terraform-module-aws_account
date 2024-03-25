@@ -2,7 +2,6 @@
 
 ## Lambda
 
-# tflint-ignore: terraform_required_providers
 data "archive_file" "backup_slack_zip" {
   type        = "zip"
   source_file = "${path.module}/lambda/backup-slack.py"
