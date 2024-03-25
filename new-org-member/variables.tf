@@ -1,4 +1,3 @@
-# tflint-ignore: terraform_unused_declarations
 variable "org" {
   type    = map(string)
   default = {}
@@ -9,7 +8,6 @@ variable "member" {
   default = {}
 }
 
-# tflint-ignore: terraform_unused_declarations
 variable "aws_regions" {
   type = list(string)
   default = [
