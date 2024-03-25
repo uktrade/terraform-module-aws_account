@@ -105,7 +105,6 @@ data "aws_iam_policy_document" "iam_user_manager" {
   }
 }
 
-
 resource "aws_iam_account_password_policy" "strict" {
   provider                       = aws.common
   #checkov:skip=CKV_AWS_10:Ensure IAM password policy requires minimum length of 14 or greater

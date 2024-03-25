@@ -61,6 +61,7 @@ data "aws_iam_policy_document" "vpc_log" {
     actions = ["s3:*"]
     effect  = "Deny"
     resources = [
+
       "${aws_s3_bucket.vpc_log.arn}",
       "${aws_s3_bucket.vpc_log.arn}/*"
     ]
