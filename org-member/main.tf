@@ -6,7 +6,6 @@ data "aws_region" "member" {
   provider = aws.member
 }
 
-# tflint-ignore: terraform_unused_declarations
 data "aws_region" "all_regions" {
   provider = aws.member
 }

@@ -22,7 +22,6 @@ variable "soc_config" {
   default = {}
 }
 
-# tflint-ignore: terraform_unused_declarations
 variable "aws_regions" {
   type = list(string)
   default = [
