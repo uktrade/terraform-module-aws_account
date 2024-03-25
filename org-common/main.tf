@@ -1,4 +1,3 @@
-# tflint-ignore: terraform_unused_declarations
 data "aws_region" "common" {
   provider = aws.common
 }

@@ -1,4 +1,3 @@
-# tflint-ignore: terraform_unused_declarations
 variable "org" {
   type = any
 }
