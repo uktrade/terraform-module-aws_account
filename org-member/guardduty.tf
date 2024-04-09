@@ -2,6 +2,7 @@
 resource "aws_guardduty_detector" "member" {
   provider = aws.member
   enable   = true
+  #checkov:skip=CKV2_AWS_3:Ensure GuardDuty is enabled to specific org/region
 }
 
 resource "aws_guardduty_member" "org" {

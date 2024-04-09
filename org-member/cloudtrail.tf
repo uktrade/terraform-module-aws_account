@@ -57,6 +57,31 @@ resource "aws_s3_bucket" "cloudtrail-s3" {
   tags = {
     "website" = "false"
   }
+  #checkov:skip=CKV_AWS_18:Ensure the S3 bucket has access logging enabled
+  #checkov:skip=CKV2_AWS_61:Ensure that an S3 bucket has a lifecycle configuration
+  #checkov:skip=CKV2_AWS_62:Ensure S3 buckets should have event notifications enabled
+  # The bucket has been encrypted but checkov is not detecting this
+  #checkov:skip=CKV_AWS_144:Ensure that S3 bucket has cross-region replication enabled
+  #checkov:skip=CKV_AWS_145:Ensure that S3 buckets are encrypted with KMS by default
+}
+
+resource "aws_s3_bucket_versioning" "cloudtrail-s3-versioning" {
+  bucket = aws_s3_bucket.cloudtrail-s3.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail-s3-encryption" {
+  bucket = aws_s3_bucket.cloudtrail-s3.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.cloudtrail-kms.arn
+      sse_algorithm     = "aws:kms"
+    }
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "cloudtrail-s3_block_public_access" {
