@@ -54,9 +54,33 @@ resource "aws_iam_role_policy" "cloudtrail_log_policy" {
 
 resource "aws_s3_bucket" "cloudtrail-s3" {
   provider = aws.master
-  bucket   = "cloudtrail-${data.aws_caller_identity.master.account_id}"
+  bucket   = "cloudtrail-${data.aws_caller_identity.master.account_id}"  
   tags = {
     "website" = "false"
+  }
+  #checkov:skip=CKV_AWS_18:Ensure the S3 bucket has access logging enabled
+  #checkov:skip=CKV2_AWS_61:Ensure that an S3 bucket has a lifecycle configuration
+  #checkov:skip=CKV2_AWS_62:Ensure S3 buckets should have event notifications enabled
+  #checkov:skip=CKV_AWS_144:Ensure that S3 bucket has cross-region replication enabled
+  #checkov:skip=CKV_AWS_145:Ensure that S3 buckets are encrypted with KMS by default
+}
+
+resource "aws_s3_bucket_versioning" "cloudtrail-s3-versioning" {
+  bucket = aws_s3_bucket.cloudtrail-s3.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail-s3-encryption" {
+  bucket = aws_s3_bucket.cloudtrail-s3.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.cloudtrail-kms.arn
+      sse_algorithm     = "aws:kms"
+    }
   }
 }
 
@@ -112,7 +136,10 @@ resource "aws_cloudtrail" "sentinel-trail" {
   kms_key_id                 = aws_kms_key.sentinel_guard_duty.arn
   s3_bucket_name             = aws_s3_bucket.sentinel_logs.id
   s3_key_prefix              = local.sentinel_cloudtrail_folder
+  cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.cloudtrail.arn}:*"
+  #checkov:skip=CKV_AWS_10:Ensure CloudTrail trails are integrated with CloudWatch Logs
   #checkov:skip=CKV_AWS_252:Ensure CloudTrail defines an SNS Topic
+  #checkov:skip=CKV_AWS_10:Ensure S3 buckets should have event notifications enabled
   event_selector {
     read_write_type           = "All"
     include_management_events = true

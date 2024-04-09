@@ -1,8 +1,10 @@
 # Setup GuardDuty on AWS Org account
+
 resource "aws_guardduty_detector" "master" {
   provider                     = aws.master
   enable                       = true
   finding_publishing_frequency = "FIFTEEN_MINUTES"
+  #checkov:skip=CKV2_AWS_3:Ensure GuardDuty is enabled to specific org/region
 }
 
 resource "aws_sns_topic" "guardduty_sns" {

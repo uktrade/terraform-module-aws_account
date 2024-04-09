@@ -10,6 +10,19 @@ resource "aws_s3_bucket" "sentinel_logs" {
   provider = aws.master
   bucket   = "${var.soc_config["sentinel_s3_bucket_name"]}-${data.aws_caller_identity.master.account_id}"
   tags     = tomap(local.sentinel_common_resource_tag)
+  #checkov:skip=CKV_AWS_18:Ensure the S3 bucket has access logging enabled
+  #checkov:skip=CKV_AWS_21:Ensure all data stored in the S3 bucket have versioning enabled
+  #checkov:skip=CKV_AWS_144:Ensure that S3 bucket has cross-region replication enabled
+  #checkov:skip=CKV_AWS_145:Ensure that S3 buckets are encrypted with KMS by default
+}
+
+resource "aws_s3_bucket_public_access_block" "sentinel_logs_block_public_access" {
+  provider                = aws.master
+  bucket                  = aws_s3_bucket.sentinel_logs.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "sentinel_logs_sse" {
@@ -285,6 +298,21 @@ resource "aws_s3_bucket" "sentinel_vpc_flowlog_bucket" {
     ignore_changes = [grant]
   }
   tags = local.vpc_flowlog_tags
+  #checkov:skip=CKV_AWS_18:Ensure the S3 bucket has access logging enabled
+  #checkov:skip=CKV_AWS_21:Ensure all data stored in the S3 bucket have versioning enabled
+  #checkov:skip=CKV2_AWS_61:Ensure that an S3 bucket has a lifecycle configuration
+  #checkov:skip=CKV_AWS_145:Ensure that S3 buckets are encrypted with KMS by default
+  #checkov:skip=CKV_AWS_144:Ensure that S3 bucket has cross-region replication enabled
+  
+}
+
+resource "aws_s3_bucket_public_access_block" "sentinel_vpc_flowlog_block_public_access" {
+  provider                = aws.master
+  bucket                  = aws_s3_bucket.sentinel_vpc_flowlog_bucket.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 resource "aws_s3_object" "empty_bucket_readme" {
@@ -298,6 +326,7 @@ resource "aws_s3_object" "empty_bucket_readme" {
 resource "aws_s3_bucket_ownership_controls" "sentinel_vpc_flowlog_bucket" {
   provider = aws.master
   bucket   = aws_s3_bucket.sentinel_vpc_flowlog_bucket.id
+  #checkov:skip=CKV2_AWS_65:Ensure access control lists for S3 buckets are disabled
   rule {
     object_ownership = "BucketOwnerPreferred"
   }

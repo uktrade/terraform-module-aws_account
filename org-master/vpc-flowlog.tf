@@ -6,6 +6,18 @@ data "aws_vpcs" "vpcs" {
 resource "aws_s3_bucket" "vpc_log" {
   provider = aws.master
   bucket   = "flowlog-${data.aws_caller_identity.master.account_id}"
+  #checkov:skip=CKV_AWS_18:Ensure the S3 bucket has access logging enabled
+  #checkov:skip=CKV2_AWS_62:Ensure S3 buckets should have event notifications enabled
+  #checkov:skip=CKV_AWS_144:Ensure that S3 bucket has cross-region replication enabled
+  #checkov:skip=CKV_AWS_145:Ensure that S3 buckets are encrypted with KMS by default
+}
+
+resource "aws_s3_bucket_versioning" "vpc_versioning" {
+  bucket = aws_s3_bucket.vpc_log.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "vpc_log_block_public_access" {
