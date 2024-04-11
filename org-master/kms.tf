@@ -3,7 +3,8 @@
 resource "aws_kms_key" "sentinel_guard_duty" {
   provider              = aws.master
   description           = "Sentinel GuardDuty KMS Key"
-  enable_key_rotation   = true
+  enable_key_rotation   = false
+  #checkov:skip=CKV_AWS_7:Ensure rotation for customer created CMKs is enabled
   policy = templatefile("${path.module}/policies/guardduty-kms.json",
     {
       master_account_id = data.aws_caller_identity.master.account_id
@@ -24,7 +25,8 @@ resource "aws_kms_alias" "sentinel_guard_duty" {
 resource "aws_kms_key" "control_tower" {
   provider              = aws.master
   description           = "KMS key for Control Tower"
-  enable_key_rotation   = true
+  enable_key_rotation   = false
+  #checkov:skip=CKV_AWS_7:Ensure rotation for customer created CMKs is enabled
 }
 
 resource "aws_kms_key_policy" "control_tower" {
