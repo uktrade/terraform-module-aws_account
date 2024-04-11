@@ -94,7 +94,7 @@ resource "aws_s3_bucket_policy" "cloudtrail-s3-policy" {
 resource "aws_kms_key" "cloudtrail-kms" {
   provider                = aws.master
   description             = "CloudTrail KMS Key"
-  enable_key_rotation     = true
+  enable_key_rotation     = false
   policy = templatefile("${path.module}/policies/cloudtrail-kms.json",
     {
       aws_account_id = data.aws_caller_identity.master.account_id
