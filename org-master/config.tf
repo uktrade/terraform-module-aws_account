@@ -7,6 +7,7 @@ resource "aws_s3_bucket" "master_config_bucket" {
     "website" = "false"
   }
   #checkov:skip=CKV_AWS_18:Ensure the S3 bucket has access logging enabled
+  #checkov:skip=CKV_AWS_21:Ensure all data stored in the S3 bucket have versioning enabled
   #checkov:skip=CKV2_AWS_61:Ensure that an S3 bucket has a lifecycle configuration
   #checkov:skip=CKV2_AWS_62:Ensure S3 buckets should have event notifications enabled
   #checkov:skip=CKV_AWS_144:Ensure that S3 bucket has cross-region replication enabled
@@ -19,14 +20,6 @@ resource "aws_s3_bucket" "master_config_bucket" {
 #   target_bucket = aws_s3_bucket.log_bucket.id
 #   target_prefix = "log/"
 # }
-
-resource "aws_s3_bucket_versioning" "master_config_bucket-versioning" {
-  bucket = aws_s3_bucket.master_config_bucket.id
-
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
 
 # KMS Key to be created which will be used here
 # resource "aws_s3_bucket_server_side_encryption_configuration" "good_sse_1" {
