@@ -18,3 +18,30 @@ resource "aws_kms_key" "cloudwatch" {
   )
   #checkov:skip=CKV_AWS_7: "Ensure rotation for customer created CMKs is enabled" 
 }
+
+data "aws_cloudwatch_event_bus" "default" {
+  provider = aws.master
+  name     = "default"
+}
+
+data "aws_iam_policy_document" "default_event_bus_policy" {
+  provider = aws.master
+  statement {
+    sid       = "MemberAccountAccess"
+    effect    = "Allow"
+    actions   = ["events:PutEvents"]
+    resources = [data.aws_cloudwatch_event_bus.default.arn]
+    principals {
+      type        = "AWS"
+      identifiers = [for id in data.aws_organizations_organization.master.non_master_accounts[*].id :
+        "arn:aws:iam::${id}:root"
+      ]
+    }
+  }
+}
+
+resource "aws_cloudwatch_event_bus_policy" "default" {
+  provider       = aws.master
+  policy         = data.aws_iam_policy_document.default_event_bus_policy.json
+  event_bus_name = data.aws_cloudwatch_event_bus.default.name
+}

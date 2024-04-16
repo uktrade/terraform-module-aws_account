@@ -17,7 +17,7 @@ resource "aws_lambda_function" "aws_backup_to_slack" {
   handler                         = "backup-slack.lambda_handler"
   source_code_hash                = data.archive_file.backup_slack_zip.output_base64sha256
   runtime                         = "python3.9"
-  reserved_concurrent_executions  = 100
+  reserved_concurrent_executions  = -1
   environment {
     variables = {
       kmsEncryptedHookUrl = var.org["backup_alert_slack_webhook"]
@@ -26,7 +26,7 @@ resource "aws_lambda_function" "aws_backup_to_slack" {
     }
   }
   tracing_config {
-    mode = "Active"
+    mode = "PassThrough"
   }
   #checkov:skip=CKV_AWS_116:Ensure that AWS Lambda function is configured for a Dead Letter Queue(DLQ)
   #checkov:skip=CKV_AWS_117:Ensure that AWS Lambda function is configured inside a VPC
