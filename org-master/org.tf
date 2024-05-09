@@ -15,6 +15,7 @@ resource "aws_organizations_organization" "org" {
     "backup.amazonaws.com",
     "controltower.amazonaws.com",
     "inspector2.amazonaws.com",
+    "member.org.stacksets.cloudformation.amazonaws.com",
     "health.amazonaws.com"
   ]
   enabled_policy_types = [
