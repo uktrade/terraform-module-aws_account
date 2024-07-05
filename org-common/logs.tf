@@ -30,7 +30,8 @@ resource "aws_cloudformation_stack" "account_wide_logs_data_protection_policy" {
               {
                 Sid = "audit-policy"
                 DataIdentifier = [
-                  "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
+                  "arn:aws:dataprotection::aws:data-identifier/AwsSecretKey",
+                  "arn:aws:dataprotection::aws:data-identifier/OpenSshPrivateKey",
                   "Password",
                   "SecretKey"
                 ]
@@ -43,7 +44,8 @@ resource "aws_cloudformation_stack" "account_wide_logs_data_protection_policy" {
               {
                 Sid = "redact-policy"
                 DataIdentifier = [
-                  "arn:aws:dataprotection::aws:data-identifier/EmailAddress",
+                  "arn:aws:dataprotection::aws:data-identifier/AwsSecretKey",
+                  "arn:aws:dataprotection::aws:data-identifier/OpenSshPrivateKey",
                   "Password",
                   "SecretKey"
                 ]
