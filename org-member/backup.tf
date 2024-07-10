@@ -54,6 +54,7 @@ resource "aws_sns_topic_subscription" "org_backup_sns_to_lambda" {
 
 resource "aws_lambda_permission" "aws_lambda_from_member_sns" {
   provider      = aws.master
+  count         = try(var.member.createslacklambda == true ? 1 : 0, 0)
   statement_id  = "AllowExecutionFromMember_${data.aws_caller_identity.member.account_id}"
   principal     = "sns.amazonaws.com"
   action        = "lambda:InvokeFunction"
