@@ -37,7 +37,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "vpc_log_lifecycle" {
       days = 90
     }
     abort_incomplete_multipart_upload {
-     days_after_initiation = 7
+      days_after_initiation = 7
     }
   }
 }
@@ -61,7 +61,7 @@ data "aws_iam_policy_document" "vpc_log" {
     effect  = "Deny"
     resources = [
       "${aws_s3_bucket.vpc_log.arn}",
-      "${aws_s3_bucket.vpc_log.arn}/*"     
+      "${aws_s3_bucket.vpc_log.arn}/*"
     ]
     condition {
       test     = "Bool"
