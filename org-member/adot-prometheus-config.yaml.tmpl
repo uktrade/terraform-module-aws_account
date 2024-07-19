@@ -108,5 +108,7 @@ service:
     metrics:
       receivers: [awsecscontainermetrics ]
       processors: [filter, metricstransform]
-      exporters: [ logging, prometheusremotewrite ]
+      # Add logging to the exporters list to get debug output
+      #exporters: [ logging, prometheusremotewrite ]
+      exporters: [ prometheusremotewrite ]
   extensions: [sigv4auth]

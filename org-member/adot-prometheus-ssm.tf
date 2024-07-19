@@ -16,7 +16,7 @@ locals {
 
 resource "aws_ssm_parameter" "adot-prometheus-dev-config" {
   name            = "/observability/prometheus-dev/adot_config"
-  description     = "Configuration to enable the ADOT sidecar image to ship an ECS service contaniers metrics into Prometheus."
+  description     = "Configuration to enable the ADOT sidecar image to ship ECS container metrics into Prometheus."
   type            = "String"
   insecure_value  = templatefile("${path.module}/adot-prometheus-config.yaml.tmpl", local.dev)
   tier            = "Intelligent-Tiering"
@@ -26,7 +26,7 @@ resource "aws_ssm_parameter" "adot-prometheus-dev-config" {
 
 resource "aws_ssm_parameter" "adot-prometheus-config" {
   name            = "/observability/prometheus/adot_config"
-  description     = "Configuration to enable the ADOT sidecar image to ship an ECS service contaniers metrics into Prometheus."
+  description     = "Configuration to enable the ADOT sidecar image to ship ECS container metrics into Prometheus."
   type            = "String"
   insecure_value  = templatefile("${path.module}/adot-prometheus-config.yaml.tmpl", local.prod)
   tier            = "Intelligent-Tiering"
