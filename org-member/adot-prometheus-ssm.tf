@@ -15,6 +15,8 @@ locals {
 }
 
 resource "aws_ssm_parameter" "adot-prometheus-dev-config" {
+  provider        = aws.member
+
   name            = "/observability/prometheus-dev/adot_config"
   description     = "Configuration to enable the ADOT sidecar image to ship ECS container metrics into Prometheus."
   type            = "String"
@@ -25,6 +27,8 @@ resource "aws_ssm_parameter" "adot-prometheus-dev-config" {
 }
 
 resource "aws_ssm_parameter" "adot-prometheus-config" {
+  provider        = aws.member
+
   name            = "/observability/prometheus/adot_config"
   description     = "Configuration to enable the ADOT sidecar image to ship ECS container metrics into Prometheus."
   type            = "String"
