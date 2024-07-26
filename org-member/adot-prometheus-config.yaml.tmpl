@@ -1,0 +1,114 @@
+receivers:
+  awsecscontainermetrics: # collect 52 metrics
+  # available metrics: https://aws-otel.github.io/docs/components/ecs-metrics-receiver#available-metrics
+
+extensions:
+  sigv4auth:
+    service: "aps"
+    region: "eu-west-2"
+    assume_role:
+      arn: "${assume_role}"
+      sts_region: "eu-west-2"
+
+processors:
+  filter: # filter metrics
+    metrics:
+      include:
+        match_type: strict
+        metric_names: # select only 8 task level metrics out of 52
+          # full list of metrics here: https://aws-otel.github.io/docs/components/ecs-metrics-receiver#available-metrics
+          # task level metrics
+          - ecs.task.memory.reserved
+          - ecs.task.memory.utilized
+          - ecs.task.cpu.reserved
+          - ecs.task.cpu.utilized
+          - ecs.task.network.rate.rx
+          - ecs.task.network.rate.tx
+          - ecs.task.storage.read_bytes
+          - ecs.task.storage.write_bytes
+          # Container level metrics
+          - container.memory.reserved
+          - container.memory.utilized
+          - container.cpu.reserved
+          - container.cpu.utilized
+          - container.network.rate.rx
+          - container.network.rate.tx
+          - container.storage.read_bytes
+          - container.storage.write_bytes
+
+  metricstransform: # update metric names
+  # docs: https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/metricstransformprocessor/README.md
+    transforms:
+      # task metrics
+      - include: ecs.task.memory.reserved
+        action: update
+        new_name: TaskMemoryReserved
+      - include: ecs.task.memory.utilized
+        action: update
+        new_name: TaskMemoryUtilized
+      - include: ecs.task.cpu.reserved
+        action: update
+        new_name: TaskCpuReserved
+      - include: ecs.task.cpu.utilized
+        action: update
+        new_name: TaskCpuUtilised
+      - include: ecs.task.network.rate.rx
+        action: update
+        new_name: TaskNetworkRxBytes
+      - include: ecs.task.network.rate.tx
+        action: update
+        new_name: TaskNetworkTxBytes
+      - include: ecs.task.storage.read_bytes
+        action: update
+        new_name: TaskStorageReadBytes
+      - include: ecs.task.storage.write_bytes
+        action: update
+        new_name: TaskStorageWriteBytes
+      # container metrics
+      - include: container.memory.reserved
+        action: update
+        new_name: ContainerMemoryReserved
+      - include: container.memory.utilized
+        action: update
+        new_name: ContainerMemoryUtilized
+      - include: container.cpu.reserved
+        action: update
+        new_name: ContainerCpuReserved
+      - include: container.cpu.utilized
+        action: update
+        new_name: ContainerCpuUtilised
+      - include: container.network.rate.rx
+        action: update
+        new_name: ContainerNetworkRxBytes
+      - include: container.network.rate.tx
+        action: update
+        new_name: ContainerNetworkTxBytes
+      - include: container.storage.read_bytes
+        action: update
+        new_name: ContainerStorageReadBytes
+      - include: container.storage.write_bytes
+        action: update
+        new_name: ContainerStorageWriteBytes
+exporters:
+  logging:
+    verbosity: detailed
+  prometheusremotewrite:
+    endpoint: ${endpoint}
+    auth:
+      authenticator: sigv4auth
+    add_metric_suffixes: false
+    external_labels:
+      Application: $${env:COPILOT_APPLICATION_NAME}
+      Environment: $${env:COPILOT_ENVIRONMENT_NAME}
+      Service: $${env:COPILOT_SERVICE_NAME}
+    resource_to_telemetry_conversion:
+      enabled: true # Convert resource attributes to metric labels
+service:
+  pipelines:
+    metrics:
+      receivers: [awsecscontainermetrics ]
+      processors: [filter, metricstransform]
+      # Add logging to the exporters list to get debug output
+      #exporters: [ logging, prometheusremotewrite ]
+      exporters: [ prometheusremotewrite ]
+  extensions: [sigv4auth]
