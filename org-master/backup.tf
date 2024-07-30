@@ -9,15 +9,15 @@ data "archive_file" "backup_slack_zip" {
 }
 
 resource "aws_lambda_function" "aws_backup_to_slack" {
-  provider                        = aws.master
-  function_name                   = "aws-backup-to-slack"
-  description                     = "An Amazon SNS trigger that sends AWS Backup Notifications to Slack."
-  filename                        = data.archive_file.backup_slack_zip.output_path
-  role                            = aws_iam_role.aws_backup_to_slack.arn
-  handler                         = "backup-slack.lambda_handler"
-  source_code_hash                = data.archive_file.backup_slack_zip.output_base64sha256
-  runtime                         = "python3.9"
-  reserved_concurrent_executions  = -1
+  provider                       = aws.master
+  function_name                  = "aws-backup-to-slack"
+  description                    = "An Amazon SNS trigger that sends AWS Backup Notifications to Slack."
+  filename                       = data.archive_file.backup_slack_zip.output_path
+  role                           = aws_iam_role.aws_backup_to_slack.arn
+  handler                        = "backup-slack.lambda_handler"
+  source_code_hash               = data.archive_file.backup_slack_zip.output_base64sha256
+  runtime                        = "python3.9"
+  reserved_concurrent_executions = -1
   environment {
     variables = {
       kmsEncryptedHookUrl = var.org["backup_alert_slack_webhook"]
@@ -136,8 +136,8 @@ resource "aws_iam_role_policy_attachment" "aws_backup_to_slack_lambda_execution_
 ## CloudWatch
 
 resource "aws_cloudwatch_log_group" "aws_backup_to_slack" {
-  provider          = aws.master
-  name              = "/aws/lambda/${aws_lambda_function.aws_backup_to_slack.function_name}"
+  provider = aws.master
+  name     = "/aws/lambda/${aws_lambda_function.aws_backup_to_slack.function_name}"
   #checkov:skip=CKV_AWS_338:Ensure CloudWatch log groups retains logs for at least 1 year
   #checkov:skip=CKV_AWS_158:Ensure that CloudWatch Log Group is encrypted by KMS
   retention_in_days = 60

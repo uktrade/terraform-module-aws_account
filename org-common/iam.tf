@@ -19,8 +19,8 @@ data "aws_iam_policy_document" "control_tower_execution" {
 }
 
 resource "aws_iam_role_policy_attachment" "control_tower_execution_admin_access" {
-  provider   = aws.common
-  role       = aws_iam_role.control_tower_execution.name
+  provider = aws.common
+  role     = aws_iam_role.control_tower_execution.name
   #checkov:skip=CKV_AWS_274:Disallow IAM roles, users, and groups from using the AWS AdministratorAccess policy
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
@@ -106,7 +106,7 @@ data "aws_iam_policy_document" "iam_user_manager" {
 }
 
 resource "aws_iam_account_password_policy" "strict" {
-  provider                       = aws.common
+  provider = aws.common
   #checkov:skip=CKV_AWS_10:Ensure IAM password policy requires minimum length of 14 or greater
   minimum_password_length        = var.password_policy_minimum_password_length
   require_lowercase_characters   = var.password_policy_require_lowercase_characters
@@ -115,6 +115,6 @@ resource "aws_iam_account_password_policy" "strict" {
   require_symbols                = var.password_policy_require_symbols
   allow_users_to_change_password = var.password_policy_allow_users_to_change_password
   #checkov:skip=CKV_AWS_9:Ensure IAM password policy expires passwords within 90 days or less
-  max_password_age               = var.password_policy_max_password_age
-  password_reuse_prevention      = var.password_policy_password_reuse_prevention
+  max_password_age          = var.password_policy_max_password_age
+  password_reuse_prevention = var.password_policy_password_reuse_prevention
 }

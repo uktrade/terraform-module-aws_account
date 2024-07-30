@@ -70,7 +70,7 @@ resource "aws_iam_group" "bastion_admin" {
 
 resource "aws_iam_group_policy_attachment" "bastion_admin" {
   provider   = aws.master
-  group      = aws_iam_group.bastion_admin.name  
+  group      = aws_iam_group.bastion_admin.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
   #checkov:skip=CKV_AWS_274:Disallow IAM roles, users, and groups from using the AWS AdministratorAccess policy  
 }

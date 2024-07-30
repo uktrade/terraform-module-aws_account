@@ -28,8 +28,8 @@ resource "aws_cloudtrail" "trail" {
 }
 
 resource "aws_cloudwatch_log_group" "cloudtrail" {
-  provider          = aws.master
-  name              = "cloudtrail-${data.aws_caller_identity.master.account_id}"
+  provider = aws.master
+  name     = "cloudtrail-${data.aws_caller_identity.master.account_id}"
   #checkov:skip=CKV_AWS_338:Ensure CloudWatch log groups retains logs for at least 1 year
   retention_in_days = 7
   #checkov:skip=CKV_AWS_158:Ensure that CloudWatch Log Group is encrypted by KMS
@@ -92,9 +92,9 @@ resource "aws_s3_bucket_policy" "cloudtrail-s3-policy" {
 }
 
 resource "aws_kms_key" "cloudtrail-kms" {
-  provider                = aws.master
-  description             = "CloudTrail KMS Key"
-  enable_key_rotation     = false
+  provider            = aws.master
+  description         = "CloudTrail KMS Key"
+  enable_key_rotation = false
   policy = templatefile("${path.module}/policies/cloudtrail-kms.json",
     {
       aws_account_id = data.aws_caller_identity.master.account_id
