@@ -140,9 +140,9 @@ data "aws_iam_policy_document" "sentinel_logs" {
   }
 
   statement {
-    sid       = "AWSLogDeliveryCheck"
-    actions   = ["s3:GetBucketAcl", "s3:ListBucket"]
-    effect    = "Allow"
+    sid     = "AWSLogDeliveryCheck"
+    actions = ["s3:GetBucketAcl", "s3:ListBucket"]
+    effect  = "Allow"
 
     resources = ["${aws_s3_bucket.sentinel_logs.arn}"]
     principals {

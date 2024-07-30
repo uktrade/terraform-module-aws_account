@@ -1,8 +1,8 @@
 # Setup CloudWatch on AWS Org account
 resource "aws_cloudwatch_log_group" "master" {
-  provider          = aws.master
-  name              = "org"
-  kms_key_id        = aws_kms_key.cloudwatch.arn
+  provider   = aws.master
+  name       = "org"
+  kms_key_id = aws_kms_key.cloudwatch.arn
   #checkov:skip=CKV_AWS_338:Ensure CloudWatch log groups retains logs for at least 1 year
   retention_in_days = 7
 }
@@ -32,7 +32,7 @@ data "aws_iam_policy_document" "default_event_bus_policy" {
     actions   = ["events:PutEvents"]
     resources = [data.aws_cloudwatch_event_bus.default.arn]
     principals {
-      type        = "AWS"
+      type = "AWS"
       identifiers = [for id in data.aws_organizations_organization.master.non_master_accounts[*].id :
         "arn:aws:iam::${id}:root"
       ]
