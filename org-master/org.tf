@@ -19,7 +19,7 @@ resource "aws_organizations_organization" "org" {
     "health.amazonaws.com",
     "cost-optimization-hub.bcm.amazonaws.com",
     "compute-optimizer.amazonaws.com",
-    "reporting.trustedadvisor.amazonaws.com"
+    "trustedadvisor.amazonaws.com"
   ]
   enabled_policy_types = [
     "BACKUP_POLICY",
