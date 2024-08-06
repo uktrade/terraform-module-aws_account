@@ -18,7 +18,8 @@ resource "aws_organizations_organization" "org" {
     "member.org.stacksets.cloudformation.amazonaws.com",
     "health.amazonaws.com",
     "cost-optimization-hub.bcm.amazonaws.com",
-    "compute-optimizer.amazonaws.com"
+    "compute-optimizer.amazonaws.com",
+    "trustedadvisor.amazonaws.com"
   ]
   enabled_policy_types = [
     "BACKUP_POLICY",
