@@ -1,0 +1,25 @@
+block-list-secret-scan: []
+branch: main
+compact: true
+directory:
+- .
+download-external-modules: false
+evaluate-variables: true
+external-modules-download-path: .external_modules
+mask: []
+quiet: False
+secrets-history-timeout: 12h
+secrets-scan-file-type: []
+check:
+- LOW
+- MEDIUM
+- HIGH
+- CRITICAL
+skip-check:
+- CKV_DOCKER_3
+- CKV_DOCKER_26
+- CKV2_AWS_62
+skip-framework:
+- - dockerfile
+soft-fail: true
+summary-position: top
