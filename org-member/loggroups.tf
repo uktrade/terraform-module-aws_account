@@ -1,7 +1,7 @@
 # Create log groups for accounts.
 # At time of writing (29th Feb 2024) I wasn't sure if we wanted to roll this out to all accounts.
-# So I've added in a 'count' to act as an if statement. 
-# e.g. if var.member.createloggroups == true, set count to 1 and create the resource. 
+# So I've added in a 'count' to act as an if statement.
+# e.g. if var.member.createloggroups == true, set count to 1 and create the resource.
 
 resource "aws_iam_role" "CWLtoSubscriptionFilterRole" {
   provider = aws.member
@@ -54,4 +54,6 @@ resource "aws_ssm_parameter" "central_log_groups" {
     "prod" : "arn:aws:logs:eu-west-2:${data.aws_caller_identity.logarchive.account_id}:destination:cwl_log_destination",
     "dev" : "arn:aws:logs:eu-west-2:${data.aws_caller_identity.logarchive.account_id}:destination:cwl_log_destination"
   })
+
+  tags = local.ssm_tags
 }
