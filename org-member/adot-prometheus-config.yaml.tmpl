@@ -189,7 +189,7 @@ service:
   pipelines:
     metrics:
       receivers: [awsecscontainermetrics ]
-      processors: [filter, metricstransform]
+      processors: [metricstransform]
       # Add logging to the exporters list to get debug output, e.g:
       #exporters: [ logging, prometheusremotewrite ]
       exporters: [ prometheusremotewrite ]
