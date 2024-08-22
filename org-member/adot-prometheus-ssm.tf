@@ -1,8 +1,4 @@
 locals {
-  tags = {
-    managed-by = "DBT Platform - Terraform"
-  }
-
   prod = {
     assume_role = "arn:aws:iam::480224066791:role/amp-prometheus-role"
     endpoint    = "https://aps-workspaces.eu-west-2.amazonaws.com/workspaces/ws-7297af06-7c1a-4bfc-affd-4abe053797e16e/api/v1/remote_write"
@@ -23,7 +19,7 @@ resource "aws_ssm_parameter" "adot-prometheus-dev-config" {
   insecure_value = templatefile("${path.module}/adot-prometheus-config.yaml.tmpl", local.dev)
   tier           = "Intelligent-Tiering"
 
-  tags = local.tags
+  tags = local.ssm_tags
 }
 
 resource "aws_ssm_parameter" "adot-prometheus-config" {
@@ -35,5 +31,5 @@ resource "aws_ssm_parameter" "adot-prometheus-config" {
   insecure_value = templatefile("${path.module}/adot-prometheus-config.yaml.tmpl", local.prod)
   tier           = "Intelligent-Tiering"
 
-  tags = local.tags
+  tags = local.ssm_tags
 }

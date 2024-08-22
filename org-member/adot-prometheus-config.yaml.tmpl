@@ -1,6 +1,6 @@
+# docs: https://aws-otel.github.io/docs/components/ecs-metrics-receiver
 receivers:
   awsecscontainermetrics: # collect 52 metrics
-  # available metrics: https://aws-otel.github.io/docs/components/ecs-metrics-receiver#available-metrics
 
 extensions:
   sigv4auth:
@@ -11,82 +11,164 @@ extensions:
       sts_region: "eu-west-2"
 
 processors:
-  filter: # filter metrics
-    metrics:
-      include:
-        match_type: strict
-        metric_names: # select only 8 task level metrics out of 52
-          # full list of metrics here: https://aws-otel.github.io/docs/components/ecs-metrics-receiver#available-metrics
-          # task level metrics
-          - ecs.task.memory.reserved
-          - ecs.task.memory.utilized
-          - ecs.task.cpu.reserved
-          - ecs.task.cpu.utilized
-          - ecs.task.network.rate.rx
-          - ecs.task.network.rate.tx
-          - ecs.task.storage.read_bytes
-          - ecs.task.storage.write_bytes
-          # Container level metrics
-          - container.memory.reserved
-          - container.memory.utilized
-          - container.cpu.reserved
-          - container.cpu.utilized
-          - container.network.rate.rx
-          - container.network.rate.tx
-          - container.storage.read_bytes
-          - container.storage.write_bytes
-
   metricstransform: # update metric names
-  # docs: https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/metricstransformprocessor/README.md
     transforms:
-      # task metrics
-      - include: ecs.task.memory.reserved
+      ### task metrics
+      - include: ecs.task.memory.usage  # type: Bytes
+        action: update
+        new_name: TaskMemoryUsage
+      - include: ecs.task.memory.usage.max  # type: Bytes
+        action: update
+        new_name: TaskMemoryUsageMax
+      - include: ecs.task.memory.usage.limit  # type: Bytes
+        action: update
+        new_name: TaskMemoryUsageLimit
+      - include: ecs.task.memory.reserved  # type: Megabytes
         action: update
         new_name: TaskMemoryReserved
-      - include: ecs.task.memory.utilized
+      - include: ecs.task.memory.utilized  # type: Megabytes
         action: update
         new_name: TaskMemoryUtilized
-      - include: ecs.task.cpu.reserved
+      - include: ecs.task.cpu.usage.total  # type: Nanoseconds
+        action: update
+        new_name: TaskCpuUsageTotal
+      - include: ecs.task.cpu.usage.kernelmode  # type: Nanoseconds
+        action: update
+        new_name: TaskCpuUsageKernelmode
+      - include: ecs.task.cpu.usage.usermode  # type: Nanoseconds
+        action: update
+        new_name: TaskCpuUsageUsermode
+      - include: ecs.task.cpu.usage.system  # type: Nanoseconds
+        action: update
+        new_name: TaskCpuUsageSystem
+      - include: ecs.task.cpu.usage.vcpu  # type: vCPU
+        action: update
+        new_name: TaskCpuUsageVcpu
+      - include: ecs.task.cpu.cores  # type: Count
+        action: update
+        new_name: TaskCpuCores
+      - include: ecs.task.cpu.onlines  # type: Count
+        action: update
+        new_name: TaskCpuOnlines
+      - include: ecs.task.cpu.reserved  # type: vCPU
         action: update
         new_name: TaskCpuReserved
-      - include: ecs.task.cpu.utilized
+      - include: ecs.task.cpu.utilized  # type: Percent
         action: update
-        new_name: TaskCpuUtilised
-      - include: ecs.task.network.rate.rx
+        new_name: TaskCpuUtilized
+      - include: ecs.task.network.rate.rx  # type: Bytes/Second
         action: update
-        new_name: TaskNetworkRxBytes
-      - include: ecs.task.network.rate.tx
+        new_name: TaskNetworkRateRx
+      - include: ecs.task.network.rate.tx  # type: Bytes/Second
         action: update
-        new_name: TaskNetworkTxBytes
-      - include: ecs.task.storage.read_bytes
+        new_name: TaskNetworkRateTx
+      - include: ecs.task.network.io.usage.rx_bytes  # type: Bytes
+        action: update
+        new_name: TaskNetworkIoUsageRxBytes
+      - include: ecs.task.network.io.usage.rx_packets  # type: Count
+        action: update
+        new_name: TaskNetworkIoUsageRxPackets
+      - include: ecs.task.network.io.usage.rx_errors  # type: Count
+        action: update
+        new_name: TaskNetworkIoUsageRxErrors
+      - include: ecs.task.network.io.usage.rx_dropped  # type: Count
+        action: update
+        new_name: TaskNetworkIoUsageRxDropped
+      - include: ecs.task.network.io.usage.tx_bytes  # type: Bytes
+        action: update
+        new_name: TaskNetworkIoUsageTxBytes
+      - include: ecs.task.network.io.usage.tx_packets  # type: Count
+        action: update
+        new_name: TaskNetworkIoUsageTxPackets
+      - include: ecs.task.network.io.usage.tx_errors  # type: Count
+        action: update
+        new_name: TaskNetworkIoUsageTxErrors
+      - include: ecs.task.network.io.usage.tx_dropped  # type: Count
+        action: update
+        new_name: TaskNetworkIoUsageTxDropped
+      - include: ecs.task.storage.read_bytes  # type: Bytes
         action: update
         new_name: TaskStorageReadBytes
-      - include: ecs.task.storage.write_bytes
+      - include: ecs.task.storage.write_bytes  # type: Bytes
         action: update
         new_name: TaskStorageWriteBytes
-      # container metrics
-      - include: container.memory.reserved
+      ### container metrics
+      - include: container.memory.usage  # type: Bytes
+        action: update
+        new_name: ContainerMemoryUsage
+      - include: container.memory.usage.max  # type: Bytes
+        action: update
+        new_name: ContainerMemoryUsageMax
+      - include: container.memory.usage.limit  # type: Bytes
+        action: update
+        new_name: ContainerMemoryUsageLimit
+      - include: container.memory.reserved  # type: Megabytes
         action: update
         new_name: ContainerMemoryReserved
-      - include: container.memory.utilized
+      - include: container.memory.utilized  # type: Megabytes
         action: update
         new_name: ContainerMemoryUtilized
-      - include: container.cpu.reserved
+      - include: container.cpu.usage.total  # type: Nanoseconds
+        action: update
+        new_name: ContainerCpuUsageTotal
+      - include: container.cpu.usage.kernelmode  # type: Nanoseconds
+        action: update
+        new_name: ContainerCpuUsageKernelmode
+      - include: container.cpu.usage.usermode  # type: Nanoseconds
+        action: update
+        new_name: ContainerCpuUsageUsermode
+      - include: container.cpu.usage.system  # type: Nanoseconds
+        action: update
+        new_name: ContainerCpuUsageSystem
+      - include: container.cpu.usage.vcpu  # type: vCPU
+        action: update
+        new_name: ContainerCpuUsageVcpu
+      - include: container.cpu.cores  # type: Count
+        action: update
+        new_name: ContainerCpuCores
+      - include: container.cpu.onlines  # type: Count
+        action: update
+        new_name: ContainerCpuOnlines
+      - include: container.cpu.reserved  # type: vCPU
         action: update
         new_name: ContainerCpuReserved
-      - include: container.cpu.utilized
+      - include: container.cpu.utilized  # type: Percent
         action: update
-        new_name: ContainerCpuUtilised
-      - include: container.network.rate.rx
+        new_name: ContainerCpuUtilized
+      - include: container.network.rate.rx  # type: Bytes/Second
         action: update
-        new_name: ContainerNetworkRxBytes
-      - include: container.network.rate.tx
+        new_name: ContainerNetworkRateRx
+      - include: container.network.rate.tx  # type: Bytes/Second
         action: update
-        new_name: ContainerNetworkTxBytes
-      - include: container.storage.read_bytes
+        new_name: ContainerNetworkRateTx
+      - include: container.network.io.usage.rx_bytes  # type: Bytes
+        action: update
+        new_name: ContainerNetworkIoUsageRxBytes
+      - include: container.network.io.usage.rx_packets  # type: Count
+        action: update
+        new_name: ContainerNetworkIoUsageRxPackets
+      - include: container.network.io.usage.rx_errors  # type: Count
+        action: update
+        new_name: ContainerNetworkIoUsageRxErrors
+      - include: container.network.io.usage.rx_dropped  # type: Count
+        action: update
+        new_name: ContainerNetworkIoUsageRxDropped
+      - include: container.network.io.usage.tx_bytes  # type: Bytes
+        action: update
+        new_name: ContainerNetworkIoUsageTxBytes
+      - include: container.network.io.usage.tx_packets  # type: Count
+        action: update
+        new_name: ContainerNetworkIoUsageTxPackets
+      - include: container.network.io.usage.tx_errors  # type: Count
+        action: update
+        new_name: ContainerNetworkIoUsageTxErrors
+      - include: container.network.io.usage.tx_dropped  # type: Count
+        action: update
+        new_name: ContainerNetworkIoUsageTxDropped
+      - include: container.storage.read_bytes  # type: Bytes
         action: update
         new_name: ContainerStorageReadBytes
-      - include: container.storage.write_bytes
+      - include: container.storage.write_bytes  # type: Bytes
         action: update
         new_name: ContainerStorageWriteBytes
 exporters:
@@ -107,8 +189,8 @@ service:
   pipelines:
     metrics:
       receivers: [awsecscontainermetrics ]
-      processors: [filter, metricstransform]
-      # Add logging to the exporters list to get debug output
+      processors: [metricstransform]
+      # Add logging to the exporters list to get debug output, e.g:
       #exporters: [ logging, prometheusremotewrite ]
       exporters: [ prometheusremotewrite ]
   extensions: [sigv4auth]
