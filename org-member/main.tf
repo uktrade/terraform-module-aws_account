@@ -22,3 +22,6 @@ data "aws_caller_identity" "logarchive" {
   provider = aws.logarchive
 }
 
+data "aws_organizations_organization" "org" {
+  provider = aws.master
+}
