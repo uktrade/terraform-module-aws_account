@@ -1,0 +1,95 @@
+{
+  "rules": [
+    {
+      "rulePriority": 1,
+      "description": "Expire images with tagPrefix 'branch-master'",
+      "selection": {
+        "tagStatus": "tagged",
+        "tagPrefixList": ["branch-master"],
+        "countType": "ImageCountMoreThan",
+        "countNumber": 1
+      },
+      "action": {
+        "type": "expire"
+      }
+    },
+    {
+      "rulePriority": 2,
+      "description": "Expire images with tagPrefix 'branch-main'",
+      "selection": {
+        "tagStatus": "tagged",
+        "tagPrefixList": ["branch-main"],
+        "countType": "ImageCountMoreThan",
+        "countNumber": 1
+      },
+      "action": {
+        "type": "expire"
+      }
+    },
+    {
+      "rulePriority": 3,
+      "description": "Expire images with tagPrefix 'tag-latest'",
+      "selection": {
+        "tagStatus": "tagged",
+        "tagPrefixList": ["tag-latest"],
+        "countType": "ImageCountMoreThan",
+        "countNumber": 1
+      },
+      "action": {
+        "type": "expire"
+      }
+    },
+    {
+      "rulePriority": 4,
+      "description": "Expire images with tagPrefix 'latest'",
+      "selection": {
+        "tagStatus": "tagged",
+        "tagPrefixList": ["latest"],
+        "countType": "ImageCountMoreThan",
+        "countNumber": 1
+      },
+      "action": {
+        "type": "expire"
+      }
+    },
+    {
+      "rulePriority": 5,
+      "description": "Expire images with tagWildcard 'branch-*'",
+      "selection": {
+        "tagStatus": "tagged",
+        "tagPatternList": ["branch-*"],
+        "countType": "ImageCountMoreThan",
+        "countNumber": 3
+      },
+      "action": {
+        "type": "expire"
+      }
+    },
+    {
+      "rulePriority": 6,
+      "description": "Expire images with tagWildcard 'tag-*'",
+      "selection": {
+        "tagStatus": "tagged",
+        "tagPatternList": ["tag-*"],
+        "countType": "ImageCountMoreThan",
+        "countNumber": 3
+      },
+      "action": {
+        "type": "expire"
+      }
+    },
+    {
+      "rulePriority": 7,
+      "description": "Expire any images older than 30 days, not meeting rules 1 to 6",
+      "selection": {
+        "tagStatus": "any",
+        "countType": "sinceImagePushed",
+        "countUnit": "days",
+        "countNumber": 30
+      },
+      "action": {
+        "type": "expire"
+      }
+    }
+  ]
+}

@@ -43,3 +43,8 @@ variable "aws_regions" {
     "us-west-2"
   ]
 }
+
+variable "deploy_ecr_policy" {
+  type = bool
+  default = false
+}
