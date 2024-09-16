@@ -23,6 +23,7 @@ data "aws_iam_policy_document" "default_dev" {
     #checkov:skip=CKV_AWS_356:Ensure no IAM policies documents allow "*" as a statement's resource for restrictable actions
     actions = [
       "acm:*",
+      "applicationinsights:*",
       "athena:*",
       "cloudfront:*",
       "cloudtrail:*",
