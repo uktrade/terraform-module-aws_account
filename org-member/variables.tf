@@ -47,3 +47,8 @@ variable "aws_regions" {
 variable "datadog-api-key" {
   type = string
 }
+
+variable "use_new_logging_infrastructure" {
+  type    = bool
+  default = false
+}

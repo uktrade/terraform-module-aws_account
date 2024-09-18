@@ -52,7 +52,7 @@ resource "aws_ssm_parameter" "central_log_groups" {
   #checkov:skip=CKV_AWS_337:Ensure SSM parameters are using KMS CMK
   value = jsonencode({
     "prod" : "arn:aws:logs:eu-west-2:${data.aws_caller_identity.logarchive.account_id}:destination:cwl_log_destination",
-    "dev" : "arn:aws:logs:eu-west-2:${data.aws_caller_identity.logarchive.account_id}:destination:cwl_log_destination"
+    "dev" : var.use_new_logging_infrastructure ? "arn:aws:logs:eu-west-2:${data.aws_caller_identity.logarchive.account_id}:destination:platform-logging-logstash-distributor-non-production" : "arn:aws:logs:eu-west-2:${data.aws_caller_identity.logarchive.account_id}:destination:cwl_log_destination"
   })
 
   tags = local.ssm_tags
