@@ -14,5 +14,5 @@ resource "aws_organizations_account" "member" {
   name                       = var.member["name"]
   email                      = var.member["email"]
   iam_user_access_to_billing = "ALLOW"
-  parent_id = data.aws_organizations_organizational_unit.ou.id
+  # parent_id = data.aws_organizations_organizational_unit.ou.id
 }
