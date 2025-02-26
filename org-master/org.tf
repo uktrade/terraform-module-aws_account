@@ -23,7 +23,8 @@ resource "aws_organizations_organization" "org" {
   ]
   enabled_policy_types = [
     "BACKUP_POLICY",
-    "SERVICE_CONTROL_POLICY"
+    "SERVICE_CONTROL_POLICY",
+    "RESOURCE_CONTROL_POLICY"
   ]
 }
 

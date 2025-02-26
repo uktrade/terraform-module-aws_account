@@ -3,7 +3,7 @@ terraform {
   required_providers {
     aws = {
       source                = "hashicorp/aws"
-      version               = ">= 4.55"
+      version               = ">= 5.77"
       configuration_aliases = [aws.master, aws.elk]
     }
   }
