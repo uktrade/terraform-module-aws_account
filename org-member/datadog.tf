@@ -32,9 +32,11 @@ resource "aws_cloudwatch_event_rule" "ebr-datadog" {
   })
 }
 
-resource "aws_cloudwatch_event_target" "sns" {
+resource "aws_cloudwatch_event_target" "ebt-datadog" {
   rule      = aws_cloudwatch_event_rule.ebr-datadog.name
   arn       = aws_cloudwatch_event_api_destination.eb-apid-datadog.arn
+
+  role_arn            = aws_iam_role.api_dest_role.arn
 
   http_target {
     header_parameters = {
@@ -48,3 +50,49 @@ resource "aws_cloudwatch_event_target" "sns" {
 # EventBridge Rule created for DataDog, which uses above API destination
 
  
+ # trust relationship document for role
+data "aws_iam_policy_document" "assume_role" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["events.amazonaws.com"]
+    }
+  }
+}
+
+# iam permission to allow API invocation for API destinations
+resource "aws_iam_policy" "invoke_api_policy" {
+
+  name        = "invoke-api-policy"
+  path        = "/"
+  description = "Allows invocation of target http api"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "events:InvokeApiDestination"
+        ]
+        Effect = "Allow"
+        Resource = [
+          "${aws_cloudwatch_event_api_destination.eb-apid-datadog.arn}"
+        ]
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role" "api_dest_role" {
+  name               = "ApiDestinationRole"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+}
+
+# attach the invoke api policy
+resource "aws_iam_role_policy_attachment" "invoke_api" {
+  role       = aws_iam_role.api_dest_role.id
+  policy_arn = aws_iam_policy.invoke_api_policy.arn
+}
