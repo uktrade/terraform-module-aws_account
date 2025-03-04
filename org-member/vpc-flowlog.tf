@@ -30,6 +30,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "vpc_log_sse" {
 resource "aws_s3_bucket_lifecycle_configuration" "vpc_log_lifecycle" {
   provider = aws.member
   bucket   = aws_s3_bucket.vpc_log.id
+  transition_default_minimum_object_size = "varies_by_storage_class"
   rule {
     status = "Enabled"
     id     = "expire-90-days"

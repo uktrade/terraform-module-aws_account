@@ -2,6 +2,7 @@ resource "aws_cloudwatch_event_connection" "eb-conn-datadog" {
   name               = "datadog-${var.member.name}-connection"
   description        = "Datadog visibility of AWS builds"
   authorization_type = "API_KEY"
+  provider = aws.member
 
   auth_parameters {
     api_key {
@@ -13,6 +14,7 @@ resource "aws_cloudwatch_event_connection" "eb-conn-datadog" {
 
 resource "aws_cloudwatch_event_api_destination" "eb-apid-datadog" {
   name                             = "datadog-${var.member.name}-api-destination"
+  provider = aws.member
   description                      = "Datadog visibility of AWS builds"
   invocation_endpoint              = "https://webhook-intake.datadoghq.eu/api/v2/webhook"
   http_method                      = "POST"
@@ -23,6 +25,7 @@ resource "aws_cloudwatch_event_api_destination" "eb-apid-datadog" {
 resource "aws_cloudwatch_event_rule" "ebr-datadog" {
   name        = "datadog-${var.member.name}-rule"
   description = "Datadog visibility of AWS builds"
+  provider = aws.member
 
   event_pattern = jsonencode({
     source = ["aws.codepipeline"]
@@ -37,6 +40,7 @@ resource "aws_cloudwatch_event_target" "ebt-datadog" {
   arn       = aws_cloudwatch_event_api_destination.eb-apid-datadog.arn
 
   role_arn            = aws_iam_role.api_dest_role.arn
+  provider = aws.member
 
   http_target {
     header_parameters = {
@@ -69,6 +73,7 @@ resource "aws_iam_policy" "invoke_api_policy" {
   name        = "invoke-api-policy"
   path        = "/"
   description = "Allows invocation of target http api"
+  provider = aws.member
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -89,10 +94,12 @@ resource "aws_iam_policy" "invoke_api_policy" {
 resource "aws_iam_role" "api_dest_role" {
   name               = "ApiDestinationRole"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
+  provider = aws.member
 }
 
 # attach the invoke api policy
 resource "aws_iam_role_policy_attachment" "invoke_api" {
   role       = aws_iam_role.api_dest_role.id
   policy_arn = aws_iam_policy.invoke_api_policy.arn
+  provider = aws.member
 }
