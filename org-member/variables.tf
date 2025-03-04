@@ -43,3 +43,7 @@ variable "aws_regions" {
     "us-west-2"
   ]
 }
+
+variable "datadog-api-key" {
+  type = string
+}
