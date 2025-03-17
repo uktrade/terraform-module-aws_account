@@ -1,7 +1,12 @@
 # datadog provider: https://registry.terraform.io/providers/DataDog/datadog/latest/docs
 
-data "aws_caller_identity" "current" {}
-data "aws_iam_account_alias" "current" {}
+data "aws_caller_identity" "current" {
+  provider = aws.member
+}
+
+# data "aws_iam_account_alias" "current" {
+#   provider = aws.member
+# }
 
 locals {
   tags = {
@@ -14,8 +19,7 @@ locals {
 }
 
 resource "datadog_integration_aws_account" "datadog_integration" {
-
-  account_tags   = []
+  account_tags   = ["aws_account:${data.aws_caller_identity.current.account_id}"]
   aws_account_id = data.aws_caller_identity.current.id
   aws_partition  = "aws"
   aws_regions {
@@ -49,6 +53,8 @@ resource "datadog_api_key" "api_key" {
 }
 
 resource "aws_ssm_parameter" "datadog_api_key" {
+  provider = aws.member
+
   name        = "DATADOG_API_KEY"
   description = "An API key for sending data to datadog for the ${local.alias} account only."
   type        = "SecureString"
@@ -58,6 +64,8 @@ resource "aws_ssm_parameter" "datadog_api_key" {
 }
 
 data "aws_iam_policy_document" "datadog_aws_integration_assume_role" {
+  provider = aws.member
+
   statement {
     actions = ["sts:AssumeRole"]
     principals {
@@ -201,19 +209,30 @@ data "aws_iam_policy_document" "datadog_aws_integration" {
 }
 
 resource "aws_iam_policy" "datadog_aws_integration" {
+  provider = aws.member
+
   name   = "DatadogAWSIntegrationPolicy"
   policy = data.aws_iam_policy_document.datadog_aws_integration.json
 }
+
 resource "aws_iam_role" "datadog_aws_integration" {
+  provider = aws.member
+
   name               = "DatadogIntegrationRole"
   description        = "Role for Datadog AWS Integration"
   assume_role_policy = data.aws_iam_policy_document.datadog_aws_integration_assume_role.json
 }
+
 resource "aws_iam_role_policy_attachment" "datadog_aws_integration" {
+  provider = aws.member
+
   role       = aws_iam_role.datadog_aws_integration.name
   policy_arn = aws_iam_policy.datadog_aws_integration.arn
 }
+
 resource "aws_iam_role_policy_attachment" "datadog_aws_integration_security_audit" {
+  provider = aws.member
+
   role       = aws_iam_role.datadog_aws_integration.name
   policy_arn = "arn:aws:iam::aws:policy/SecurityAudit"
 }
