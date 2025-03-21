@@ -44,8 +44,3 @@ variable "org_ou_structure" {
 variable "deployment_environment" {
   type = string
 }
-
-variable "rcp_accounts" {
-  type = list(string)
-  default = []
-}
