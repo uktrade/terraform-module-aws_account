@@ -19,6 +19,8 @@ locals {
 }
 
 resource "datadog_integration_aws_account" "datadog_integration" {
+  count = var.connect_aws_account ? 1 : 0
+
   account_tags   = ["aws_account:${data.aws_caller_identity.current.account_id}"]
   aws_account_id = data.aws_caller_identity.current.id
   aws_partition  = "aws"
@@ -48,22 +50,9 @@ resource "datadog_integration_aws_account" "datadog_integration" {
   }
 }
 
-resource "datadog_api_key" "api_key" {
-  name = "aws-account-${local.alias}"
-}
-
-resource "aws_ssm_parameter" "datadog_api_key" {
-  provider = aws.member
-
-  name        = "DATADOG_API_KEY"
-  description = "An API key for sending data to datadog for the ${local.alias} account only."
-  type        = "SecureString"
-  value       = resource.datadog_api_key.api_key.key
-
-  tags = local.tags
-}
-
 data "aws_iam_policy_document" "datadog_aws_integration_assume_role" {
+  count = var.connect_aws_account ? 1 : 0
+
   provider = aws.member
 
   statement {
@@ -76,13 +65,15 @@ data "aws_iam_policy_document" "datadog_aws_integration_assume_role" {
       test     = "StringEquals"
       variable = "sts:ExternalId"
       values = [
-        "${datadog_integration_aws_account.datadog_integration.auth_config.aws_auth_config_role.external_id}"
+        "${datadog_integration_aws_account.datadog_integration[0].auth_config.aws_auth_config_role.external_id}"
       ]
     }
   }
 }
 
 data "aws_iam_policy_document" "datadog_aws_integration" {
+  count = var.connect_aws_account ? 1 : 0
+
   statement {
     actions = [
       "apigateway:GET",
@@ -209,30 +200,38 @@ data "aws_iam_policy_document" "datadog_aws_integration" {
 }
 
 resource "aws_iam_policy" "datadog_aws_integration" {
+  count = var.connect_aws_account ? 1 : 0
+
   provider = aws.member
 
   name   = "DatadogAWSIntegrationPolicy"
-  policy = data.aws_iam_policy_document.datadog_aws_integration.json
+  policy = data.aws_iam_policy_document.datadog_aws_integration[0].json
 }
 
 resource "aws_iam_role" "datadog_aws_integration" {
+  count = var.connect_aws_account ? 1 : 0
+
   provider = aws.member
 
   name               = "DatadogIntegrationRole"
   description        = "Role for Datadog AWS Integration"
-  assume_role_policy = data.aws_iam_policy_document.datadog_aws_integration_assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.datadog_aws_integration_assume_role[0].json
 }
 
 resource "aws_iam_role_policy_attachment" "datadog_aws_integration" {
+  count = var.connect_aws_account ? 1 : 0
+
   provider = aws.member
 
-  role       = aws_iam_role.datadog_aws_integration.name
-  policy_arn = aws_iam_policy.datadog_aws_integration.arn
+  role       = aws_iam_role.datadog_aws_integration[0].name
+  policy_arn = aws_iam_policy.datadog_aws_integration[0].arn
 }
 
 resource "aws_iam_role_policy_attachment" "datadog_aws_integration_security_audit" {
+  count = var.connect_aws_account ? 1 : 0
+
   provider = aws.member
 
-  role       = aws_iam_role.datadog_aws_integration.name
+  role       = aws_iam_role.datadog_aws_integration[0].name
   policy_arn = "arn:aws:iam::aws:policy/SecurityAudit"
 }
