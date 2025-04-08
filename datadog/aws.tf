@@ -299,7 +299,7 @@ resource "aws_iam_policy" "datadog_billing_policy" {
   policy = data.aws_iam_policy_document.dd_cloud_cost[0].json
 }
 
-resource "aws_iam_role_policy_attachment" "datadog_aws_integration" {
+resource "aws_iam_role_policy_attachment" "datadog_aws_billing_policy" {
   count = var.is_master ? 1 : 0
 
   provider = aws.member
