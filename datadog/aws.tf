@@ -236,7 +236,7 @@ resource "aws_iam_role_policy_attachment" "datadog_aws_integration_security_audi
   policy_arn = "arn:aws:iam::aws:policy/SecurityAudit"
 }
 
-# Additional policies so that the master account can retreive cross account billing information
+# Additional policies so that datadog can retrieve centralised billing information from the master account
 
 data "aws_iam_policy_document" "dd_cloud_cost" {
   count = var.is_master ? 1 : 0
