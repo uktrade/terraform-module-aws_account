@@ -235,3 +235,75 @@ resource "aws_iam_role_policy_attachment" "datadog_aws_integration_security_audi
   role       = aws_iam_role.datadog_aws_integration[0].name
   policy_arn = "arn:aws:iam::aws:policy/SecurityAudit"
 }
+
+# Additional policies so that the master account can retreive cross account billing information
+
+data "aws_iam_policy_document" "dd_cloud_cost" {
+  count = var.is_master ? 1 : 0
+
+  provider = aws.member
+
+  statement {
+    sid    = "DDCloudCostReadBucket"
+    effect = "Allow"
+    actions = [
+      "s3:ListBucket"
+    ]
+    resources = ["arn:aws:s3:::datadog-dbt-billing"]
+  }
+
+  statement {
+    sid    = "DDCloudCostGetBill"
+    effect = "Allow"
+    actions = [
+      "s3:GetObject"
+    ]
+    resources = ["arn:aws:s3:::datadog-dbt-billing/report/Datadog-export/*"]
+  }
+
+  statement {
+    sid    = "DDCloudCostCheckAccuracy"
+    effect = "Allow"
+    actions = [
+      "ce:Get*"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "DDCloudCostListCURs"
+    effect = "Allow"
+    actions = [
+      "cur:DescribeReportDefinitions"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "DDCloudCostListOrganizations"
+    effect = "Allow"
+    actions = [
+      "organizations:Describe*",
+      "organizations:List*"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "datadog_billing_policy" {
+  count = var.is_master ? 1 : 0
+
+  provider = aws.member
+
+  name   = "DatadogAWSIntegrationPolicy"
+  policy = data.aws_iam_policy_document.dd_cloud_cost[0].json
+}
+
+resource "aws_iam_role_policy_attachment" "datadog_aws_integration" {
+  count = var.is_master ? 1 : 0
+
+  provider = aws.member
+
+  role       = aws_iam_role.datadog_aws_integration[0].name
+  policy_arn = aws_iam_policy.datadog_billing_policy[0].arn
+}
