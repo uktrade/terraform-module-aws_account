@@ -295,7 +295,7 @@ resource "aws_iam_policy" "datadog_billing_policy" {
 
   provider = aws.member
 
-  name   = "DatadogAWSIntegrationPolicy"
+  name   = "DatadogAWSBillingPolicy"
   policy = data.aws_iam_policy_document.dd_cloud_cost[0].json
 }
 
