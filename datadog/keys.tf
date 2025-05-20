@@ -14,7 +14,9 @@ resource "aws_ssm_parameter" "datadog_api_key" {
   type        = "SecureString"
   value       = resource.datadog_api_key.api_key.key
 
-  tags = local.tags
+  tags = merge(local.tags, {
+    "copilot-application"="__all__"
+  })
 }
 
 resource "aws_ssm_parameter" "datadog_app_key" {
@@ -25,5 +27,7 @@ resource "aws_ssm_parameter" "datadog_app_key" {
   type        = "SecureString"
   value       = resource.datadog_application_key.app_key.key
 
-  tags = local.tags
+  tags = merge(local.tags, {
+    "copilot-application"="__all__"
+  })
 }
