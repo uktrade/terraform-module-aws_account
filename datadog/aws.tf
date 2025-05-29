@@ -202,7 +202,8 @@ resource "datadog_integration_aws_account" "datadog_integration" {
         "AWS/SNS",
         "AWS/SQS",
         "AWS/Usage",
-    ]
+      ]
+    }
   }
   resources_config {}
 
